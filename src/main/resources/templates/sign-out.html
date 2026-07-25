@@ -2,9 +2,49 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Out</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600;700;800;900&family=Roboto+Slab:wght@100;300;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" />
+
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="../static/style.css" th:href="@{/css/style.css}">
 </head>
 
 <body>
+    <header>
+        <nav class="navbar">
+            <ul class="links-container">
+                <li class="link-item"><a href="home.html" th:href="@{home}">Home</a></li>
+                <li class="link-item"><a href="login.html" th:href="@{login}">Login</a></li>
+                <li class="link-item"><a href="register.html" th:href="@{register}">Register</a></li>
+                <li class="link-item"><a href="#support-section">Support</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="sign-out-section">
+        <h2>Sign Out</h2>
+        <p>You have been successfully signed out.</p>
+        <a href="login.html">Login Again</a>
+    </section>
+
+    <footer class="footer" id="support-section">
+        <!--<img src="../static/img/logo.png" class="footer-logo" alt="">-->
+        <div class="footer-text">
+            <p>Contact us</p>
+            <p>Email - support@WTA.com</p>
+            <p>Phone - 98 76 556655, 98 76 556644</p>
+        </div>
+    </footer>
 
 </body>
 

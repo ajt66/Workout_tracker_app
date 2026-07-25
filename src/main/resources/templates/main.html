@@ -23,12 +23,85 @@
     <header>
         <nav class="navbar">
             <ul class="links-container">
-                <li class="link-item"><a href="home.html">Home</a></li>
-                <li class="link-item"><a href="sign-out.html">Sign out</li>
-                <li class="link-item"><a href="home.html#support-section">Support</a></li>
+                <li class="link-item"><a href="home.html" th:href="@{home}">Home</a></li>
+                <li class="link-item"><a href="sign-out.html" th:href="@{sign-out}">Sign out</a></li>
+                <li class="link-item"><a href="#support-section">Support</a></li>
             </ul>
         </nav>
     </header>
+
+    <div class="tab">
+        <button class="tablinks" onclick="opentab(event, 'details')" id="detailstab">Details</button>
+        <button class="tablinks" onclick="opentab(event, 'schedule')" id="scheduletab">Schedule</button>
+        <button class="tablinks" onclick="opentab(event, 'inputworkouts')" id="inputworkoutstab">Input Workouts</button>
+        <button class="tablinks" onclick="opentab(event, 'exercises')" id="exercisestab">Exercises</button>
+        <button class="tablinks" onclick="opentab(event, 'Analyze')" id="Analyzetab">Analyze</button>
+    </div>
+
+    <section class="tabcontent" id="detailscontent">
+        <h2>Details</h2>
+        <p>This is the details section.</p>
+    </section>
+
+    <section class="tabcontent" id="schedulecontent">
+        <h2>Schedule</h2>
+        <p>This is the schedule section.</p>
+    </section>
+
+    <section class="tabcontent" id="inputworkoutscontent">
+        <h2>Input Workouts</h2>
+        <p>This is the input workouts section.</p>
+    </section>
+
+    <section class="tabcontent" id="exercisescontent">
+        <h2>Exercises</h2>
+        <p>This is the exercises section.</p>
+    </section>
+
+    <section class="tabcontent" id="Analyzecontent">
+        <h2>Analyze</h2>
+        <p>This is the analyze section.</p>
+    </section>
+
+    <footer class="footer" id="support-section">
+        <!--<img src="../static/img/logo.png" class="footer-logo" alt="">-->
+        <div class="footer-text">
+            <p>Contact us</p>
+            <p>Email - support@WTA.com</p>
+            <p>Phone - 98 76 556655, 98 76 556644</p>
+        </div>
+    </footer>
+
+    <script>
+
+        window.onload = function () {
+            const activeTab = localStorage.getItem('activeTab');
+            if (activeTab) {
+                document.getElementById(activeTab).click();
+            } else {
+                document.getElementById("detailstab").click();
+            }
+        };
+
+        function opentab(evt, tabName) {
+            var i, tabcontent, tablinks;
+
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+            localStorage.setItem('activeTab', evt.currentTarget.id);
+        }
+
+    </script>
 
 </body>
 
