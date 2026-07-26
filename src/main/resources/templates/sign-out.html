@@ -23,9 +23,9 @@
     <header>
         <nav class="navbar">
             <ul class="links-container">
-                <li class="link-item"><a href="home.html" th:href="@{home}">Home</a></li>
-                <li class="link-item"><a href="login.html" th:href="@{login}">Login</a></li>
-                <li class="link-item"><a href="register.html" th:href="@{register}">Register</a></li>
+                <li class="link-item"><a href="home.html" th:href="@{/api/home}">Home</a></li>
+                <li class="link-item"><a href="login.html" th:href="@{/api/login}">Login</a></li>
+                <li class="link-item"><a href="register.html" th:href="@{/api/register}">Register</a></li>
                 <li class="link-item"><a href="#support-section">Support</a></li>
             </ul>
         </nav>
@@ -34,7 +34,7 @@
     <section class="sign-out-section">
         <h2>Sign Out</h2>
         <p>You have been successfully signed out.</p>
-        <a href="login.html">Login Again</a>
+        <a href="login.html" th:href="@{/api/login}">Login Again</a>
     </section>
 
     <footer class="footer" id="support-section">

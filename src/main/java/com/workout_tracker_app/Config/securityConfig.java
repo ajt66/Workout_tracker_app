@@ -37,13 +37,16 @@ public class securityConfig {
                         .requestMatchers(
                                 "/api/home",
                                 "/api/register",
+                                "/api/register/main",
                                 "/api/login",
+                                "/api/login/main",
+                                "/api/sign-out",
                                 "/css/**",
                                 "/img/**",
                                 "/js/**",
                                 "/webjars/**",
-                                "/favicon.ico"
-                        ).permitAll()
+                                "/favicon.ico")
+                        .permitAll()
                         // Everything else requires authentication
                         .anyRequest().authenticated())
 

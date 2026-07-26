@@ -38,8 +38,8 @@ public class mainController {
     }
 
     @PostMapping(path = "/register/main", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String showRegisterMain(@ModelAttribute("registerRequest") RegisterRequest request,
-            HttpServletResponse response) throws Exception {
+    public String showRegisterMain(@ModelAttribute("registerRequest") @Nullable RegisterRequest request,
+            Model model, HttpServletResponse response) throws Exception {
         // Register new user and return JWT
         try {
             AuthResponse service = AService.register(request);
@@ -53,6 +53,7 @@ public class mainController {
             return "main";
         } catch (Exception e) {
             // Handle registration error (e.g., user already exists)
+            model.addAttribute("error", "Could not register user: " + e.getMessage());
             return "register";
         }
     }
@@ -64,7 +65,7 @@ public class mainController {
     }
 
     @PostMapping(path = "/login/main", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String showLoginMain(@ModelAttribute("authRequest") AuthRequest Request,
+    public String showLoginMain(@ModelAttribute("authRequest") AuthRequest Request, Model model,
             HttpServletResponse response) {
         // Authenticate and return JWT
         try {
@@ -78,10 +79,22 @@ public class mainController {
 
             return "main";
         } catch (Exception e) {
-            // Handle authentication error (e.g., invalid credentials)
+            model.addAttribute("error", "Could not authenticate user: " + e.getMessage());
             return "login";
         }
 
     }
 
+    @GetMapping("/sign-out")
+    public String showSignOut(HttpServletResponse response) {
+        // Clear the JWT cookie
+        Cookie cookie = new Cookie("jwt", null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // Expire the cookie immediately
+        cookie.setSecure(true);
+        response.addCookie(cookie);
+
+        return "sign-out"; // Redirect to login page after sign-out
+    }
 }
