@@ -30,7 +30,6 @@ public class securityConfig {
         http
                 // Disable CSRF - not needed for stateless JWT auth
                 .csrf(csrf -> csrf.disable())
-
                 // Configure authorization rules
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints - no auth required

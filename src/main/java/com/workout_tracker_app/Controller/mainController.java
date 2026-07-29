@@ -1,5 +1,6 @@
 package com.workout_tracker_app.Controller;
 
+import com.workout_tracker_app.Repository.UserRepository;
 import com.workout_tracker_app.Service.authService;
 import com.workout_tracker_app.dto.AuthRequest;
 import com.workout_tracker_app.dto.AuthResponse;
@@ -10,6 +11,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -18,6 +20,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.ui.Model;
+
+import java.security.Security;
+
 import org.springframework.http.MediaType;
 
 @Controller
@@ -25,6 +30,7 @@ import org.springframework.http.MediaType;
 @RequiredArgsConstructor
 public class mainController {
     private final authService AService;
+    private final UserRepository userRepo;
 
     @GetMapping("/home")
     public String show() {
@@ -49,6 +55,9 @@ public class mainController {
             cookie.setMaxAge(3600);
             cookie.setSecure(true); // Ensure the cookie is sent over HTTPS
             response.addCookie(cookie);
+
+            String username = request.getUsername();
+            model.addAttribute("User", userRepo.findByUsername(username));
 
             return "main";
         } catch (Exception e) {
@@ -77,6 +86,8 @@ public class mainController {
             cookie.setSecure(true);
             response.addCookie(cookie);
 
+            String username = Request.getUsername();
+            model.addAttribute("User", userRepo.findByUsername(username));
             return "main";
         } catch (Exception e) {
             model.addAttribute("error", "Could not authenticate user: " + e.getMessage());

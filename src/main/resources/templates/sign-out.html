@@ -16,7 +16,7 @@
 
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="../static/style.css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="../static/css/style.css" th:href="@{/css/style.css}">
 </head>
 
 <body>
@@ -32,9 +32,12 @@
     </header>
 
     <section class="sign-out-section">
-        <h2>Sign Out</h2>
-        <p>You have been successfully signed out.</p>
-        <a href="login.html" th:href="@{/api/login}">Login Again</a>
+        <h2>Signed Out</h2>
+
+        <div class="section-content">
+            <p>You have been successfully signed out.</p>
+            <a href="login.html" th:href="@{/api/login}">Login Again</a>
+        </div>
     </section>
 
     <footer class="footer" id="support-section">

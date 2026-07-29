@@ -11,7 +11,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.UUID;
 
 @Entity
 @Table(name = "exerciselist")
@@ -33,5 +32,8 @@ public class ExerciseList {
 
     @Column(name = "Muscle_Group", nullable = false)
     private String Muscle_Group; // Related muscle group of exercise
+
+    @Column(name = "Category", nullable = false)
+    private String Category; // Push, Pull or Legs
 
 }

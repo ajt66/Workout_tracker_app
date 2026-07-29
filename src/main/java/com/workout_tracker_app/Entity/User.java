@@ -1,13 +1,15 @@
 package com.workout_tracker_app.Entity;
 
-import java.util.UUID;
+import java.time.LocalDate;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,10 +29,20 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "Username", nullable = false, unique = true)
     private String username;
+
+    @Column(name = "Email", nullable = false, unique = true)
     private String email;
+
+    @Column(name = "Password", nullable = false)
     private String password;
+
+    @Column(name = "Role", nullable = false)
     private String role;
+
+    @Column(name = "Created-At", nullable = false)
+    private LocalDate createdAt;
 
     public UserDetails convertToUserDetails() {
         return org.springframework.security.core.userdetails.User.builder()

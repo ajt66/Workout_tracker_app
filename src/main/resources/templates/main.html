@@ -16,7 +16,7 @@
 
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="../static/style.css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="../static/css/style.css" th:href="@{/css/style.css}">
 </head>
 
 <body>
@@ -25,12 +25,13 @@
             <ul class="links-container">
                 <li class="link-item"><a href="home.html" th:href="@{/api/home}">Home</a></li>
                 <li class="link-item"><a href="sign-out.html" th:href="@{/api/sign-out}">Sign out</a></li>
-                <li class="link-item"><a href="#support-section">Support</a></li>
+                <li class="link-item"><a href="#support-div">Support</a></li>
             </ul>
         </nav>
     </header>
 
-    <div class="tab">
+    <div class="tab" id="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         <button class="tablinks" onclick="opentab(event, 'details')" id="detailstab">Details</button>
         <button class="tablinks" onclick="opentab(event, 'schedule')" id="scheduletab">Schedule</button>
         <button class="tablinks" onclick="opentab(event, 'inputworkouts')" id="inputworkoutstab">Input Workouts</button>
@@ -38,39 +39,58 @@
         <button class="tablinks" onclick="opentab(event, 'Analyze')" id="Analyzetab">Analyze</button>
     </div>
 
-    <section class="tabcontent" id="detailscontent">
-        <h2>Details</h2>
-        <p>This is the details section.</p>
-    </section>
+    <span class="toggle-button" onclick="openNav()">&#9776;</span>
 
-    <section class="tabcontent" id="schedulecontent">
-        <h2>Schedule</h2>
-        <p>This is the schedule section.</p>
-    </section>
+    <div class="page-content">
 
-    <section class="tabcontent" id="inputworkoutscontent">
-        <h2>Input Workouts</h2>
-        <p>This is the input workouts section.</p>
-    </section>
 
-    <section class="tabcontent" id="exercisescontent">
-        <h2>Exercises</h2>
-        <p>This is the exercises section.</p>
-    </section>
+        <h1 class="welcome-heading">Welcome, <span th:text="${User.getUserName()}"></span>
+        </h1>
 
-    <section class="tabcontent" id="Analyzecontent">
-        <h2>Analyze</h2>
-        <p>This is the analyze section.</p>
-    </section>
-
-    <footer class="footer" id="support-section">
-        <!--<img src="../static/img/logo.png" class="footer-logo" alt="">-->
-        <div class="footer-text">
-            <p>Contact us</p>
-            <p>Email - support@WTA.com</p>
-            <p>Phone - 98 76 556655, 98 76 556644</p>
+        <div class="tabcontent" id="details">
+            <div class="main-content" id="detailsmain">
+                <h2>Details</h2>
+                <p><span th:text="${User.getUserName()}"></p>
+                <p><span th:text="${User.getEmail()}"></p>
+                <p><span th:text="${User.getPassword()}"></p>
+                <p><span th:text="${User.getRole()}"></p>
+                <p><span th:text="${User.getCreatedAt()}"></p>
+            </div>
         </div>
-    </footer>
+
+        <div class="tabcontent" id="schedule">
+            <div class="main-content" id="schedulemain">
+                <h2>Schedule</h2>
+                <p>This is the schedule div.</p>
+            </div>
+        </div>
+
+        <div class="tabcontent" id="inputworkouts">
+            <div class="main-content" id="inputmain">
+                <h2>Input Workouts</h2>
+                <p>This is the input workouts div.</p>
+            </div>
+        </div>
+
+        <div class="tabcontent" id="exercises">
+            <h2>Exercises</h2>
+            <p>This is the exercises div.</p>
+        </div>
+
+        <div class="tabcontent" id="Analyze">
+            <h2>Analyze</h2>
+            <p>This is the analyze div.</p>
+        </div>
+
+        <section class="footer" id="support-section">
+            <!--<img src="../static/img/logo.png" class="footer-logo" alt="">-->
+            <div class="footer-text">
+                <p>Contact us</p>
+                <p>Email - support@WTA.com</p>
+                <p>Phone - 98 76 556655, 98 76 556644</p>
+            </div>
+        </section>
+    </div>
 
     <script>
 
@@ -99,6 +119,14 @@
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
             localStorage.setItem('activeTab', evt.currentTarget.id);
+        }
+
+        function openNav() {
+            document.getElementById("sidenav").classList.add("open");
+        }
+
+        function closeNav() {
+            document.getElementById("sidenav").classList.remove("open");
         }
 
     </script>
