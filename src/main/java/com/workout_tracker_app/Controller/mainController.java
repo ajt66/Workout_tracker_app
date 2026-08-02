@@ -96,6 +96,26 @@ public class mainController {
 
     }
 
+    @GetMapping("/Schedule")
+    public String showSchedule(Model model) {
+        return "Schedule";
+    }
+
+    @GetMapping("/Programs")
+    public String showPrograms(Model model) {
+        return "Programs";
+    }
+
+    @GetMapping("/Exercise")
+    public String showExercise(Model model) {
+        return "Exercise";
+    }
+
+    @GetMapping("/Analyze")
+    public String showAnalyze(Model model) {
+        return "Analyze";
+    }
+
     @GetMapping("/sign-out")
     public String showSignOut(HttpServletResponse response) {
         // Clear the JWT cookie

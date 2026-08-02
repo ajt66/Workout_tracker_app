@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>Main Page</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,8 +33,8 @@
     <div class="tab" id="sidenav">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         <button class="tablinks" onclick="opentab(event, 'details')" id="detailstab">Details</button>
+        <button class="tablinks" onclick="opentab(event, 'programs')" id="programstab">Programs</button>
         <button class="tablinks" onclick="opentab(event, 'schedule')" id="scheduletab">Schedule</button>
-        <button class="tablinks" onclick="opentab(event, 'inputworkouts')" id="inputworkoutstab">Input Workouts</button>
         <button class="tablinks" onclick="opentab(event, 'exercises')" id="exercisestab">Exercises</button>
         <button class="tablinks" onclick="opentab(event, 'Analyze')" id="Analyzetab">Analyze</button>
     </div>
@@ -50,25 +50,25 @@
         <div class="tabcontent" id="details">
             <div class="main-content" id="detailsmain">
                 <h2>Details</h2>
-                <p><span th:text="${User.getUserName()}"></p>
-                <p><span th:text="${User.getEmail()}"></p>
-                <p><span th:text="${User.getPassword()}"></p>
-                <p><span th:text="${User.getRole()}"></p>
-                <p><span th:text="${User.getCreatedAt()}"></p>
+                <p><span th:text="${User.getUserName()}"></span></p>
+                <p><span th:text="${User.getEmail()}"></span></p>
+                <p><span th:text="${User.getPassword()}"></span></p>
+                <p><span th:text="${User.getRole()}"></span></p>
+                <p><span th:text="${User.getCreatedAt()}"></span></p>
             </div>
         </div>
 
         <div class="tabcontent" id="schedule">
             <div class="main-content" id="schedulemain">
-                <h2>Schedule</h2>
+                <h2>Schedule Workouts</h2>
                 <p>This is the schedule div.</p>
             </div>
         </div>
 
-        <div class="tabcontent" id="inputworkouts">
-            <div class="main-content" id="inputmain">
-                <h2>Input Workouts</h2>
-                <p>This is the input workouts div.</p>
+        <div class="tabcontent" id="programs">
+            <div class="main-content" id="programsmain">
+                <h2>Workouts and Programs</h2>
+                <p>This is the workouts and programs div.</p>
             </div>
         </div>
 

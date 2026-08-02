@@ -163,6 +163,7 @@ body {
     outline: none;
     display: block;
     cursor: pointer;
+    align-items: left;
     padding: 14px 16px;
     transition: 0.3s;
     font-size: 17px;

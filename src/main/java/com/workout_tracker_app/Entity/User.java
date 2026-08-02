@@ -41,7 +41,7 @@ public class User {
     @Column(name = "Role", nullable = false)
     private String role;
 
-    @Column(name = "Created-At", nullable = false)
+    @Column(name = "Created-At")
     private LocalDate createdAt;
 
     public UserDetails convertToUserDetails() {
@@ -50,5 +50,12 @@ public class User {
                 .password(this.password)
                 .authorities(this.role)
                 .build();
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDate.now();
+        }
     }
 }
