@@ -34,14 +34,21 @@ public class Program {
         CARDIO, CORE, STRETCHING
     }
 
+    public enum Status {
+        ACTIVE, INACTIVE
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long programId;
 
+    @Column(name = "program_name", nullable = false)
+    private String programName;
+
     @OneToMany(mappedBy = "programs", fetch = FetchType.LAZY, orphanRemoval = false)
     private List<ExerciseList> exerciseId;
 
-    @Column(name = "day", nullable = true)
+    @Column(name = "day", nullable = false)
     private String day;
 
     @Column(name = "sets", nullable = true)
@@ -54,7 +61,10 @@ public class Program {
     private Integer duration;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "tag", nullable = true)
+    @Column(name = "tag", nullable = false)
     private Tag tag;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private Status status;
 }

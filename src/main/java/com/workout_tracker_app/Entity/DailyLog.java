@@ -60,6 +60,6 @@ public class DailyLog {
     private String comment;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = true)
+    @Column(name = "status", nullable = false)
     private Status status;
 }

@@ -47,25 +47,108 @@
 
         <div class="sidenav-content" id="programs">
             <div class="content-header">
-                <h2>Workouts and Programs</h2>
+                <h2>Workouts and Programs</h2><br>
                 <p>This page allows users to view, create and manage workouts and programs. They can add exercises and
                     optionally their respective sets and reps/duration on a particular day of the week. Alternatively,
                     users can choose from Program Presets that can also be modified.
-                </p>
+                </p><br>
                 <p>(Note: Current Selected program will by default be displayed here as well as be scheduled in the
                     Schedule tab. Also, programs can only be run in 7 days block.)</p>
             </div>
 
             <div class="main-content">
+                <div class="programs-header">
+                    <h3>Current Program: <span th:text="${currentProgram.getProgramName()}">program name will appear
+                            here</span>
+                    </h3>
+                </div>
                 <div class="programs-container">
-                    <div class="programs-header">
-                        <h3>Current Program:</h3>
-                        <button class="add-program-btn">Add Program</button>
+                    <div class="program-card">
+                        <p>
+                            Monday<br>
+                            <span th:text="${currentProgram.getTag()}">tag</span><br>
+                            <span th:text="${currentProgram.getProgramName()}">program name</span><br>
+                            <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
+                            <span th:text="${currentProgram.getSets()}">sets</span>x
+                            <span th:text="${currentProgram.getReps()}">reps</span>
+                        </p>
                     </div>
-                    <div class="programs-list">
-                        <!-- List of programs will be dynamically populated here -->
+                    <div class="program-card">
+                        <p>
+                            Tuesday<br>
+                            <span th:text="${currentProgram.getTag()}">tag</span><br>
+                            <span th:text="${currentProgram.getProgramName()}">program name</span><br>
+                            <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
+                            <span th:text="${currentProgram.getSets()}">sets</span> x
+                            <span th:text="${currentProgram.getReps()}">reps</span>
+                        </p>
                     </div>
+                    <div class="program-card">
+                        <p>
+                            Wednesday<br>
+                            <span th:text="${currentProgram.getTag()}">tag</span><br>
+                            <span th:text="${currentProgram.getProgramName()}">program name</span><br>
+                            <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
+                            <span th:text="${currentProgram.getSets()}">sets</span> x
+                            <span th:text="${currentProgram.getReps()}">reps</span>
+                        </p>
+                    </div>
+                    <div class="program-card">
+                        <p>
+                            Thursday<br>
+                            <span th:text="${currentProgram.getTag()}">tag</span><br>
+                            <span th:text="${currentProgram.getProgramName()}">program name</span><br>
+                            <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
+                            <span th:text="${currentProgram.getSets()}">sets</span> x
+                            <span th:text="${currentProgram.getReps()}">reps</span>
+                        </p>
+                    </div>
+                    <div class="program-card">
+                        <p>
+                            Friday<br>
+                            <span th:text="${currentProgram.getTag()}">tag</span><br>
+                            <span th:text="${currentProgram.getProgramName()}">program name</span><br>
+                            <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
+                            <span th:text="${currentProgram.getSets()}">sets</span>x
+                            <span th:text="${currentProgram.getReps()}">reps</span>
+                        </p>
+                    </div>
+                    <div class="program-card">
+                        <p>
+                            Saturday<br>
+                            <span th:text="${currentProgram.getTag()}">tag</span><br>
+                            <span th:text="${currentProgram.getProgramName()}">program name</span><br>
+                            <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
+                            <span th:text="${currentProgram.getSets()}">sets</span>x
+                            <span th:text="${currentProgram.getReps()}">reps</span>
+                        </p>
+                    </div>
+                    <div class="program-card">
+                        <p>
+                            Sunday<br>
+                            <span th:text="${currentProgram.getTag()}">tag</span><br>
+                            <span th:text="${currentProgram.getProgramName()}">program name</span><br>
+                            <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
+                            <span th:text="${currentProgram.getSets()}">sets</span>x
+                            <span th:text="${currentProgram.getReps()}">reps</span>
+                        </p>
+                    </div>
+                </div>
 
+                <div class="programs-header">
+                    <h3>Available Programs:</h3>
+                    <div class="programs-list">
+                        <div class="program-card" th:each="program : ${programs}">
+                            <p th:text="${program.getProgramName()}">program name</p>
+                            <button class="select-program-btn"
+                                th:onclick="'selectProgram(' + ${program.getProgramId()} + ')'">Select Program</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="programs-header">
+                    <h3>Add Programs:</h3>
+                    <button class="add-program-btn">Add Program</button>
                 </div>
             </div>
         </div>
@@ -82,7 +165,7 @@
 
     <script>
 
-        window.onload = function () {
+        /*window.onload = function () {
             const activeTab = localStorage.getItem('activeTab');
             if (activeTab) {
                 document.getElementById(activeTab).click();
@@ -107,7 +190,7 @@
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
             localStorage.setItem('activeTab', evt.currentTarget.id);
-        }
+        }*/
 
         function openNav() {
             document.getElementById("sidenav").classList.add("open");
