@@ -11,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,40 +18,44 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "exerciselist", uniqueConstraints = { @UniqueConstraint(columnNames = { "Exerciseid" }) })
+@Table(name = "exerciselist")
 @Builder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExerciseList {
-    enum Type {
+    public enum Type {
         ISOLATION, COMPOUND
     }
 
-    enum Category {
+    public enum Category {
         CARDIO, STRENGTH, FLEXIBILTY, HYPERTROPHY, ISOMETRICS
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Exerciseid;
+    private Long exerciseId;
 
-    @Column(name = "Name", nullable = false)
-    private String Name; // Name of exercise
+    @Column(name = "exercise_name", nullable = false)
+    private String name; // Name of exercise
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "Type", nullable = true)
+    @Column(name = "type", nullable = true)
     private Type type; // Type: compound or isolation
 
-    @Column(name = "Muscle-Group", nullable = true)
-    private String Muscle_Group; // Related muscle group of exercise.
+    @Column(name = "muscle_group", nullable = true)
+    private String muscleGroup; // Related muscle group of exercise.
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "Category", nullable = false)
-    private Category Category; // cardio, strength, flexibility
+    @Column(name = "category", nullable = false)
+    private Category category; // cardio, strength, flexibility
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dailyLog.id", nullable = false)
+    @JoinColumn(name = "dailylog_id", referencedColumnName = "logId", nullable = false)
     private DailyLog dailyLog;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "programs_id", referencedColumnName = "programId", nullable = false)
+    private Program programs;
 }

@@ -30,26 +30,26 @@
         </nav>
     </header>
 
-    <div class="tab" id="sidenav">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-        <button class="tablinks" onclick="opentab(event, 'details')" id="detailstab">Details</button>
-        <button class="tablinks" onclick="opentab(event, 'programs')" id="programstab">Programs</button>
-        <button class="tablinks" onclick="opentab(event, 'schedule')" id="scheduletab">Schedule</button>
-        <button class="tablinks" onclick="opentab(event, 'exercises')" id="exercisestab">Exercises</button>
-        <button class="tablinks" onclick="opentab(event, 'Analyze')" id="Analyzetab">Analyze</button>
+    <div class="sidenav-bar" id="sidenav">
+        <ul class="sidenav-container">
+            <li><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a></li>
+            <li class="sidenav-links"><a href="Main.html" th:href="@{/api/Main}">Details</a></li>
+            <li class="sidenav-links"><a href="Programs.html" th:href="@{/api/Programs}">Programs</a></li>
+            <li class="sidenav-links"><a href="Schedule.html" th:href="@{/api/Schedule}">Schedule</a></li>
+            <li class="sidenav-links"><a href="Exercise.html" th:href="@{/api/Exercise}">Exercises</a></li>
+            <li class="sidenav-links"><a href="#Analyze">Analyze</a></li>
+        </ul>
     </div>
 
     <span class="toggle-button" onclick="openNav()">&#9776;</span>
 
     <div class="page-content">
 
-
-        <h1 class="welcome-heading">Welcome, <span th:text="${User.getUserName()}"></span>
-        </h1>
-
-        <div class="tabcontent" id="Analyze">
-            <h2>Analyze</h2>
-            <p>This is the analyze div.</p>
+        <div class="sidenav-content" id="Analyze">
+            <div class="content-header">
+                <h2>Analyze</h2>
+                <p>This is the analyze div.</p>
+            </div>
         </div>
 
         <section class="footer" id="support-section">

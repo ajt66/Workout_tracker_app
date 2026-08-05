@@ -31,43 +31,44 @@
         </nav>
     </header>
 
-    <section class="error-section">
-        <span th:if="${error}" style="color: red;">Invalid username or password.</span>
-    </section>
+    <div class="page-content">
+        <section class="error-section">
+            <span th:if="${error}" style="color: red;">Invalid username or password.</span>
+        </section>
 
-    <section class="form-section">
-        <div class="form-content">
-            <form th:action="@{/api/register/main}" th:object="${registerRequest}" method="post">
-                <h2>Register</h2>
-                <div class="form-group">
-                    <label for="username">Username:</label>
-                    <input type="text" id="username" th:field="*{username}" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="text" id="email" th:field="*{email}" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" th:field="*{password}" required>
-                </div>
-                <div class="form-group">
-                    <input type="hidden" id="action" th:field="*{action}" value="register">
-                </div>
-                <button type="submit">Register</button>
-            </form>
-        </div>
-    </section>
+        <section class="form-section">
+            <div class="form-content">
+                <form th:action="@{/api/register/main}" th:object="${registerRequest}" method="post">
+                    <h2>Register</h2>
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" th:field="*{username}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="text" id="email" th:field="*{email}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" th:field="*{password}" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="hidden" id="action" th:field="*{action}" value="register">
+                    </div>
+                    <button type="submit">Register</button>
+                </form>
+            </div>
+        </section>
 
-    <footer class="footer" id="support-section">
-        <!--<img src="../static/img/logo.png" class="footer-logo" alt="">-->
-        <div class="footer-text">
-            <p>Contact us</p>
-            <p>Email - support@WTA.com</p>
-            <p>Phone - 98 76 556655, 98 76 556644</p>
-        </div>
-    </footer>
-
+        <footer class="footer" id="support-section">
+            <!--<img src="../static/img/logo.png" class="footer-logo" alt="">-->
+            <div class="footer-text">
+                <p>Contact us</p>
+                <p>Email - support@WTA.com</p>
+                <p>Phone - 98 76 556655, 98 76 556644</p>
+            </div>
+        </footer>
+    </div>
 </body>
 
 </html>

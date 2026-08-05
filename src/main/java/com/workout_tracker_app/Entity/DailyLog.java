@@ -3,8 +3,6 @@ package com.workout_tracker_app.Entity;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.security.core.userdetails.UserDetails;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,9 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,7 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "dailylog", uniqueConstraints = { @UniqueConstraint(columnNames = { "Exerciseid" }) })
+@Table(name = "dailylog")
 @Builder
 @Getter
 @Setter
@@ -37,33 +33,33 @@ public class DailyLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Logid;
+    private Long logId;
 
-    @Column(name = "Day", nullable = false)
-    private String Day;
+    @Column(name = "day", nullable = false)
+    private String day;
 
-    @Column(name = "Logging_Date", nullable = false)
-    private LocalDate Date;
+    @Column(name = "logging_date", nullable = false)
+    private LocalDate date;
 
-    @OneToMany(mappedBy = "dailyLog", fetch = FetchType.LAZY, orphanRemoval = false)
-    private List<ExerciseList> exerciseID;
+    @OneToMany(mappedBy = "dailylog", fetch = FetchType.LAZY, orphanRemoval = false)
+    private List<ExerciseList> exercises;
 
-    @Column(name = "Weights", nullable = true)
-    private int weights;
+    @Column(name = "weights", nullable = true)
+    private Integer weights;
 
-    @Column(name = "Sets", nullable = true)
-    private int sets;
+    @Column(name = "sets", nullable = true)
+    private Integer sets;
 
-    @Column(name = "Reps", nullable = true)
-    private int reps;
+    @Column(name = "reps", nullable = true)
+    private Integer reps;
 
-    @Column(name = "Duration", nullable = true)
+    @Column(name = "duration", nullable = true)
     private String duration;
 
-    @Column(name = "Comment", nullable = true)
-    private String Comment;
+    @Column(name = "comment", nullable = true)
+    private String comment;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "Status", nullable = true)
-    private Status Status;
+    @Column(name = "status", nullable = true)
+    private Status status;
 }

@@ -30,13 +30,16 @@
         </nav>
     </header>
 
-    <div class="tab" id="sidenav">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-        <button class="tablinks" onclick="opentab(event, 'details')" id="detailstab">Details</button>
-        <button class="tablinks" onclick="opentab(event, 'programs')" id="programstab">Programs</button>
-        <button class="tablinks" onclick="opentab(event, 'schedule')" id="scheduletab">Schedule</button>
-        <button class="tablinks" onclick="opentab(event, 'exercises')" id="exercisestab">Exercises</button>
-        <button class="tablinks" onclick="opentab(event, 'Analyze')" id="Analyzetab">Analyze</button>
+    <div class="sidenav-bar" id="sidenav">
+        <ul class="sidenav-container">
+            <li><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a></li>
+            <li class="sidenav-links"><a href="#details">Details</a></li>
+            <li class="sidenav-links"><a href="Programs.html" th:href="@{/api/Programs}">Programs</a></li>
+            <li class="sidenav-links"><a href="Schedule.html" th:href="@{/api/Schedule}">Schedule</a></li>
+            <li class="sidenav-links"><a href="Exercise.html" th:href="@{/api/Exercise}">Exercises</a>
+            </li>
+            <li class="sidenav-links"><a href="Analyze.html" th:href="@{/api/Analyze}">Analyze</a></li>
+        </ul>
     </div>
 
     <span class="toggle-button" onclick="openNav()">&#9776;</span>
@@ -47,8 +50,8 @@
         <h1 class="welcome-heading">Welcome, <span th:text="${User.getUserName()}"></span>
         </h1>
 
-        <div class="tabcontent" id="details">
-            <div class="main-content" id="detailsmain">
+        <div class="sidenav-content" id="details">
+            <div class="content-header">
                 <h2>Details</h2>
                 <p><span th:text="${User.getUserName()}"></span></p>
                 <p><span th:text="${User.getEmail()}"></span></p>
@@ -56,30 +59,6 @@
                 <p><span th:text="${User.getRole()}"></span></p>
                 <p><span th:text="${User.getCreatedAt()}"></span></p>
             </div>
-        </div>
-
-        <div class="tabcontent" id="schedule">
-            <div class="main-content" id="schedulemain">
-                <h2>Schedule Workouts</h2>
-                <p>This is the schedule div.</p>
-            </div>
-        </div>
-
-        <div class="tabcontent" id="programs">
-            <div class="main-content" id="programsmain">
-                <h2>Workouts and Programs</h2>
-                <p>This is the workouts and programs div.</p>
-            </div>
-        </div>
-
-        <div class="tabcontent" id="exercises">
-            <h2>Exercises</h2>
-            <p>This is the exercises div.</p>
-        </div>
-
-        <div class="tabcontent" id="Analyze">
-            <h2>Analyze</h2>
-            <p>This is the analyze div.</p>
         </div>
 
         <section class="footer" id="support-section">

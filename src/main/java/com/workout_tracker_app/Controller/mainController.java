@@ -96,6 +96,14 @@ public class mainController {
 
     }
 
+    @GetMapping("/Main")
+    public String showMain(Model model) {
+        // Get the authenticated user's username from the security context
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        model.addAttribute("User", userRepo.findByUsername(username));
+        return "main";
+    }
+
     @GetMapping("/Schedule")
     public String showSchedule(Model model) {
         return "Schedule";

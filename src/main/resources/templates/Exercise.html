@@ -30,26 +30,140 @@
         </nav>
     </header>
 
-    <div class="tab" id="sidenav">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-        <button class="tablinks" onclick="opentab(event, 'details')" id="detailstab">Details</button>
-        <button class="tablinks" onclick="opentab(event, 'programs')" id="programstab">Programs</button>
-        <button class="tablinks" onclick="opentab(event, 'schedule')" id="scheduletab">Schedule</button>
-        <button class="tablinks" onclick="opentab(event, 'exercises')" id="exercisestab">Exercises</button>
-        <button class="tablinks" onclick="opentab(event, 'Analyze')" id="Analyzetab">Analyze</button>
+    <div class="sidenav-bar" id="sidenav">
+        <ul class="sidenav-container">
+            <li><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a></li>
+            <li class="sidenav-links"><a href="Main.html" th:href="@{/api/Main}">Details</a></li>
+            <li class="sidenav-links"><a href="Programs.html" th:href="@{/api/Programs}">Programs</a></li>
+            <li class="sidenav-links"><a href="Schedule.html" th:href="@{/api/Schedule}">Schedule</a></li>
+            <li class="sidenav-links"><a href="#Exercise">Exercises</a></li>
+            <li class="sidenav-links"><a href="Analyze.html" th:href="@{/api/Analyze}">Analyze</a></li>
+        </ul>
     </div>
 
     <span class="toggle-button" onclick="openNav()">&#9776;</span>
 
     <div class="page-content">
 
+        <div class="sidenav-content" id="Exercise">
+            <div class="content-header">
+                <h2>Exercises</h2>
+                <p>This is page is used to list all the exercises as well as the muscle groups they belong to.
+                    Users can input, update and delete exercises. The exercises are categorised according to
+                    muscle groups, cardio , isometrics and flexibility to help users correctly identify them.
+                </p>
+            </div>
 
-        <h1 class="welcome-heading">Welcome, <span th:text="${User.getUserName()}"></span>
-        </h1>
+            <div class="main-content">
+                <button class="collapsible">Abs</button>
+                <div class="collapsible-content" id="Abs-content">
+                    <ul class="exercise-table">
+                        <li>Add new exercise</li>
+                        <li>abs1</li>
+                        <li>abs2</li>
+                    </ul>
+                </div>
 
-        <div class="tabcontent" id="exercises">
-            <h2>Exercises</h2>
-            <p>This is the exercises div.</p>
+                <button class="collapsible">Back</button>
+                <div class="collapsible-content" id="Back-content">
+                    <ul class="exercise-table">
+                        <li>Add new exercise</li>
+                        <li>back1</li>
+                        <li>back2</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Biceps</button>
+                <div class="collapsible-content" id="Biceps-content">
+                    <ul class="exercise-table">
+                        <li>Add new exercise</li>
+                        <li>biceps1</li>
+                        <li>biceps2</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Cardio</button>
+                <div class="collapsible-content" id="Cardio-content">
+                    <ul class="exercise-table">
+                        <li>Add new exercise</li>
+                        <li>cardio1</li>
+                        <li>cardio2</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Chest</button>
+                <div class="collapsible-content" id="Chest-content">
+                    <ul class="exercise-table">
+                        <li>Add new exercise</li>
+                        <li>chest1</li>
+                        <li>chest2</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Flexibility</button>
+                <div class="collapsible-content" id="Flexibility-content">
+                    <ul class="exercise-table">
+                        <li>Add new exercise</li>
+                        <li>flexibility1</li>
+                        <li>flexibility2</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Forearms</button>
+                <div class="collapsible-content" id="Forearms-content">
+                    <ul class="exercise-table">
+                        <li>Add new exercise</li>
+                        <li>forearms1</li>
+                        <li>forearms2</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Isometrics</button>
+                <div class="collapsible-content" id="Isometrics-content">
+                    <ul class="exercise-table">
+                        <li>Add new exercise</li>
+                        <li>isometrics1</li>
+                        <li>isometrics2</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Legs</button>
+                <div class="collapsible-content" id="Legs-content">
+                    <ul class="exercise-table">
+                        <li>Add new exercise</li>
+                        <li>legs1</li>
+                        <li>legs2</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Neck</button>
+                <div class="collapsible-content" id="Neck-content">
+                    <ul class="exercise-table">
+                        <li>Add new exercise</li>
+                        <li>neck1</li>
+                        <li>neck2</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Shoulders</button>
+                <div class="collapsible-content" id="Shoulders-content">
+                    <ul class="exercise-table">
+                        <li>Add new exercise</li>
+                        <li>shoulders1</li>
+                        <li>shoulders2</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Triceps</button>
+                <div class="collapsible-content" id="Triceps-content">
+                    <ul class="exercise-table">
+                        <li>Add new exercise</li>
+                        <li>triceps1</li>
+                        <li>triceps2</li>
+                    </ul>
+                </div>
+
+            </div>
         </div>
 
         <section class="footer" id="support-section">
@@ -64,7 +178,7 @@
 
     <script>
 
-        window.onload = function () {
+        /*window.onload = function () {
             const activeTab = localStorage.getItem('activeTab');
             if (activeTab) {
                 document.getElementById(activeTab).click();
@@ -76,12 +190,12 @@
         function opentab(evt, tabName) {
             var i, tabcontent, tablinks;
 
-            tabcontent = document.getElementsByClassName("tabcontent");
+            tabcontent = document.getElementsByClassName("table-content");
             for (i = 0; i < tabcontent.length; i++) {
                 tabcontent[i].style.display = "none";
             }
 
-            tablinks = document.getElementsByClassName("tablinks");
+            tablinks = document.getElementsByClassName("table-header");
             for (i = 0; i < tablinks.length; i++) {
                 tablinks[i].className = tablinks[i].className.replace(" active", "");
             }
@@ -89,6 +203,21 @@
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
             localStorage.setItem('activeTab', evt.currentTarget.id);
+        }*/
+
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            });
         }
 
         function openNav() {
