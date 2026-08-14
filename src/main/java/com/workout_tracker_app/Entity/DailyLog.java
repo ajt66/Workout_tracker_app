@@ -27,7 +27,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DailyLog {
-    enum Status {
+    public enum Status {
         PENDING, COMPLETED, CANCELLED
     }
 

@@ -23,6 +23,7 @@
     <header>
         <nav class="navbar">
             <ul class="links-container">
+                <span class="toggle-button" onclick="openNav()">&#9776;</span>
                 <li class="link-item"><a href="home.html" th:href="@{/api/home}">Home</a></li>
                 <li class="link-item"><a href="sign-out.html" th:href="@{/api/sign-out}">Sign out</a></li>
                 <li class="link-item"><a href="#support-div">Support</a></li>
@@ -41,14 +42,17 @@
         </ul>
     </div>
 
-    <span class="toggle-button" onclick="openNav()">&#9776;</span>
 
     <div class="page-content">
 
         <div class="sidenav-content" id="schedule">
             <div class="content-header">
                 <h2>Schedule Workouts</h2>
-                <p>This is the schedule div.</p>
+                <p>This page is used to schedule your workouts. Users can add, edit, and delete their workout schedules
+                    here.
+                    Workouts can be scheduled for any day of the week.</p><br>
+                <p>(Note: Current Selected program in the Programs tab will by default be scheduled in the Schedule tab.
+                    Also, programs can only be run in 7 days block.)</p>
             </div>
         </div>
 

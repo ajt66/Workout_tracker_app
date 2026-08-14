@@ -26,11 +26,11 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ExerciseList {
     public enum Type {
-        ISOLATION, COMPOUND
+        isolation, compound
     }
 
     public enum Category {
-        CARDIO, STRENGTH, FLEXIBILTY, HYPERTROPHY, ISOMETRICS
+        cardio, strength, flexibility, hypertrophy, isometrics
     }
 
     @Id

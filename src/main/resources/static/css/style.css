@@ -23,6 +23,16 @@ body {
     overflow-x: hidden;
 }
 
+.tab2 {
+    display: inline-block;
+    margin-left: 20px;
+}
+
+.tab4 {
+    display: inline-block;
+    margin-left: 40px;
+}
+
 .navbar {
     position: fixed;
     top: 0;
@@ -31,11 +41,19 @@ body {
     width: 100%;
     height: 100px;
     padding: 20px 10vw;
-    margin-left: 40px;
 }
 
 .navbar.bg {
     background: #161813;
+}
+
+.links-container .toggle-button {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    font-size: 30px;
+    cursor: pointer;
+    color: #fff;
 }
 
 .links-container {
@@ -43,6 +61,7 @@ body {
     align-items: center;
     justify-content: center;
     list-style: none;
+    width: 100%;
 }
 
 .link-item {
@@ -181,24 +200,13 @@ body {
     color: #f1f1f1;
 }
 
-.sidenav-bar .closebtn {
+.closebtn {
     position: absolute;
     top: 0;
     right: 25px;
     font-size: 25px;
     margin-left: 50px;
-}
-
-.toggle-button {
-    display: inline-block;
-    z-index: 9;
-    top: 0;
-    padding-top: 10px;
-    left: 0;
-    margin-bottom: 10px;
-    font-size: 30px;
     cursor: pointer;
-    color: #fff;
 }
 
 .page-content {
@@ -284,9 +292,9 @@ body {
 
 .collapsible-content {
     padding: 0 15px;
-    padding-bottom: 10px;
     font-size: 17px;
     max-height: 0;
+    visibility: hidden;
     text-align: left;
     overflow: hidden;
     transition: max-height 0.2s ease-out;
@@ -294,7 +302,75 @@ body {
     list-style: none;
 }
 
-.programs-container {
+.add-item {
+    text-decoration: none;
+    outline: none;
+    cursor: pointer;
+    border-style: none;
+    width: 100%;
+    text-align: left;
+    background: #222;
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+    font-size: 17px;
+}
+
+.add-item:after {
+    content: '\002B';
+    color: white;
+    font-weight: bold;
+    float: right;
+    margin-left: 5px;
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    z-index: 6;
+    width: 40%;
+    transition: 1s ease;
+    margin-top: 20px;
+    margin-left: 250px;
+    height: 60%;
+    overflow-x: hidden;
+    background-color: #333;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+}
+
+.popup form {
+    box-sizing: border-box;
+    padding: 50px;
+    margin-top: 50px;
+    margin-left: 100px;
+}
+
+.popup form h2 {
+    position:absolute;
+    top: 10px;
+    left: 120px;
+}
+
+.popup form button {
+    position:absolute;
+    bottom:10px;
+    left:20px;
+    font-size: 17px;
+    background: #222;
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+    padding: 10px;
+}
+
+.programs-list .columns-container {
+    max-height: 0;
+    visibility: hidden;
+    text-align: left;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+}
+
+.columns-container {
     display: flex;
     flex-wrap: wrap;
     padding: 10px;
@@ -302,7 +378,7 @@ body {
     gap: 20px;
 }
 
-.programs-container .program-card {
+.columns-container .column-card {
     /* flex: 1 1 calc(33.333% - 20px); */
     background-color: #222;
     border: 1px solid #ccc;
@@ -310,6 +386,42 @@ body {
     padding: 20px;
     box-sizing: border-box;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tab {
+    list-style: none;
+    display: flex;
+}
+
+.tab li {
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+#firstTab {
+    border-top-left-radius: 12px;
+}
+
+#lastTab {
+    border-top-right-radius: 12px;
+}
+
+.tablink {
+    border-style: none;
+    background: inherit;
+    font-size: 17px;
+    color: #fff;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.tab-content {
+    display: none;
+    width: 100%;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
 }
 
 .footer {

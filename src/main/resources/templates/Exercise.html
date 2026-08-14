@@ -23,6 +23,7 @@
     <header>
         <nav class="navbar">
             <ul class="links-container">
+                <span class="toggle-button" onclick="openNav()">&#9776;</span>
                 <li class="link-item"><a href="home.html" th:href="@{/api/home}">Home</a></li>
                 <li class="link-item"><a href="sign-out.html" th:href="@{/api/sign-out}">Sign out</a></li>
                 <li class="link-item"><a href="#support-div">Support</a></li>
@@ -41,9 +42,383 @@
         </ul>
     </div>
 
-    <span class="toggle-button" onclick="openNav()">&#9776;</span>
-
+    
     <div class="page-content">
+        <div class="popup-container">
+    
+            <div class="popup" id="abspopup">
+                <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+                <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
+                    <h2>Add new Abs exercise</h2>
+                    <div class="form-group">
+                        <label for="name">Enter Exercise Name :</label><br>
+                        <input type="text" id="name" th:field="*{name}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="type">Enter Exercise type :</label>
+                        <select th:field="*{type}">
+                            <option th:value="isolation" th:text="Isolation">Isolation</option>
+                            <option th:value="compound" th:text="Compound">Compound</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" value="abs" id="muscleGroup" th:field="*{muscleGroup}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Select the appropriate category :</label>
+                        <select th:field="*{category}">
+                            <option th:value="strength" th:text="Strength">Strength</option>
+                            <option th:value="hypertrophy" th:text="Hypertrophy">Hypertrophy</option>
+                        </select>
+                    </div>
+
+                    <button type="submit">Add Exercise</button>
+                </form>
+            </div>
+    
+            <div class="popup" id="backpopup">
+                <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+                <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
+                    <h2>Add new Back exercise</h2>
+                    <div class="form-group">
+                        <label for="name">Enter Exercise Name :</label><br>
+                        <input type="text" id="name" th:field="*{name}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="type">Enter Exercise type :</label>
+                        <select th:field="*{type}">
+                            <option th:value="isolation" th:text="Isolation">Isolation</option>
+                            <option th:value="compound" th:text="Compound">Compound</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" value="back" id="muscleGroup" th:field="*{muscleGroup}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Select the appropriate category :</label>
+                        <select th:field="*{category}">
+                            <option th:value="strength" th:text="Strength">Strength</option>
+                            <option th:value="hypertrophy" th:text="Hypertrophy">Hypertrophy</option>
+                        </select>
+                    </div>
+
+                    <button type="submit">Add Exercise</button>
+                </form>
+            </div>
+    
+            <div class="popup" id="bicepspopup">
+                <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+                <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
+                    <h2>Add new Biceps exercise</h2>
+                    <div class="form-group">
+                        <label for="name">Enter Exercise Name :</label><br>
+                        <input type="text" id="name" th:field="*{name}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="type">Enter Exercise type :</label>
+                        <select th:field="*{type}">
+                            <option th:value="isolation" th:text="Isolation">Isolation</option>
+                            <option th:value="compound" th:text="Compound">Compound</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" value="biceps" id="muscleGroup" th:field="*{muscleGroup}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Select the appropriate category :</label>
+                        <select th:field="*{category}">
+                            <option th:value="strength" th:text="Strength">Strength</option>
+                            <option th:value="hypertrophy" th:text="Hypertrophy">Hypertrophy</option>
+                        </select>
+                    </div>
+
+                    <button type="submit">Add Exercise</button>
+                </form>
+            </div>
+    
+            <div class="popup" id="cardiopopup">
+                <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+                <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
+                    <h2>Add new Cardio exercise</h2>
+                    <div class="form-group">
+                        <label for="name">Enter Exercise Name :</label><br>
+                        <input type="text" id="name" th:field="*{name}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" value="null" id="type" th:field="*{type}">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" value="null" id="muscleGroup" th:field="*{muscleGroup}">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" value="cardio" id="category" th:field="*{category}">
+                    </div>
+
+                    <button type="submit">Add Exercise</button>
+                </form>
+            </div>
+    
+            <div class="popup" id="chestpopup">
+                <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+                <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
+                    <h2>Add new Chest exercise</h2>
+                    <div class="form-group">
+                        <label for="name">Enter Exercise Name :</label><br>
+                        <input type="text" id="name" th:field="*{name}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="type">Enter Exercise type :</label>
+                        <select th:field="*{type}">
+                            <option th:value="isolation" th:text="Isolation">Isolation</option>
+                            <option th:value="compound" th:text="Compound">Compound</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" value="chest" id="muscleGroup" th:field="*{muscleGroup}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Select the appropriate category :</label>
+                        <select th:field="*{category}">
+                            <option th:value="strength" th:text="Strength">Strength</option>
+                            <option th:value="hypertrophy" th:text="Hypertrophy">Hypertrophy</option>
+                        </select>
+                    </div>
+
+                    <button type="submit">Add Exercise</button>
+                </form>
+            </div>
+    
+            <div class="popup" id="flexpopup">
+                <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+                <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
+                    <h2>Add new Flexibility exercise</h2>
+                    <div class="form-group">
+                        <label for="name">Enter Exercise Name :</label><br>
+                        <input type="text" id="name" th:field="*{name}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" value="null" id="type" th:field="*{type}">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" value="null" id="muscleGroup" th:field="*{muscleGroup}">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" value="flexibility" id="category" th:field="*{category}">
+                    </div>
+
+                    <button type="submit">Add Exercise</button>
+                </form>
+            </div>
+            
+            <div class="popup" id="forearmspopup">
+                <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+                <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
+                    <h2>Add new Forearms exercise</h2>
+                    <div class="form-group">
+                        <label for="name">Enter Exercise Name :</label><br>
+                        <input type="text" id="name" th:field="*{name}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="type">Enter Exercise type :</label>
+                        <select th:field="*{type}">
+                            <option th:value="isolation" th:text="Isolation">Isolation</option>
+                            <option th:value="compound" th:text="Compound">Compound</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" value="forearms" id="muscleGroup" th:field="*{muscleGroup}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Select the appropriate category :</label>
+                        <select th:field="*{category}">
+                            <option th:value="strength" th:text="Strength">Strength</option>
+                            <option th:value="hypertrophy" th:text="Hypertrophy">Hypertrophy</option>
+                        </select>
+                    </div>
+
+                    <button type="submit">Add Exercise</button>
+                </form>
+            </div>
+    
+            <div class="popup" id="isopopup">
+                <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+                <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
+                    <h2>Add new Isolation exercise</h2>
+                    <div class="form-group">
+                        <label for="name">Enter Exercise Name :</label><br>
+                        <input type="text" id="name" th:field="*{name}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" value="null" id="type" th:field="*{type}">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" value="null" id="muscleGroup" th:field="*{muscleGroup}">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" value="isolation" id="category" th:field="*{category}">
+                    </div>
+
+                    <button type="submit">Add Exercise</button>
+                </form>
+            </div>
+    
+            <div class="popup" id="legspopup">
+                <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+                <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
+                    <h2>Add new Legs exercise</h2>
+                    <div class="form-group">
+                        <label for="name">Enter Exercise Name :</label><br>
+                        <input type="text" id="name" th:field="*{name}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="type">Enter Exercise type :</label>
+                        <select th:field="*{type}">
+                            <option th:value="isolation" th:text="Isolation">Isolation</option>
+                            <option th:value="compound" th:text="Compound">Compound</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" value="legs" id="muscleGroup" th:field="*{muscleGroup}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Select the appropriate category :</label>
+                        <select th:field="*{category}">
+                            <option th:value="strength" th:text="Strength">Strength</option>
+                            <option th:value="hypertrophy" th:text="Hypertrophy">Hypertrophy</option>
+                        </select>
+                    </div>
+
+                    <button type="submit">Add Exercise</button>
+                </form>
+            </div>
+    
+            <div class="popup" id="neckpopup">
+                <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+                <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
+                    <h2>Add new Neck exercise</h2>
+                    <div class="form-group">
+                        <label for="name">Enter Exercise Name :</label><br>
+                        <input type="text" id="name" th:field="*{name}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="type">Enter Exercise type :</label>
+                        <select th:field="*{type}">
+                            <option th:value="isolation" th:text="Isolation">Isolation</option>
+                            <option th:value="compound" th:text="Compound">Compound</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" value="neck" id="muscleGroup" th:field="*{muscleGroup}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Select the appropriate category :</label>
+                        <select th:field="*{category}">
+                            <option th:value="strength" th:text="Strength">Strength</option>
+                            <option th:value="hypertrophy" th:text="Hypertrophy">Hypertrophy</option>
+                        </select>
+                    </div>
+
+                    <button type="submit">Add Exercise</button>
+                </form>
+            </div>
+    
+            <div class="popup" id="shoulderspopup">
+                <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+                <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
+                    <h2>Add new Shoulders exercise</h2>
+                    <div class="form-group">
+                        <label for="name">Enter Exercise Name :</label><br>
+                        <input type="text" id="name" th:field="*{name}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="type">Enter Exercise type :</label>
+                        <select th:field="*{type}">
+                            <option th:value="isolation" th:text="Isolation">Isolation</option>
+                            <option th:value="compound" th:text="Compound">Compound</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" value="shoulders" id="muscleGroup" th:field="*{muscleGroup}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Select the appropriate category :</label>
+                        <select th:field="*{category}">
+                            <option th:value="strength" th:text="Strength">Strength</option>
+                            <option th:value="hypertrophy" th:text="Hypertrophy">Hypertrophy</option>
+                        </select>
+                    </div>
+
+                    <button type="submit">Add Exercise</button>
+                </form>
+            </div>
+    
+            <div class="popup" id="tricepspopup">
+                <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+                <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
+                    <h2>Add new Triceps exercise</h2>
+                    <div class="form-group">
+                        <label for="name">Enter Exercise Name :</label><br>
+                        <input type="text" id="name" th:field="*{name}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="type">Enter Exercise type :</label>
+                        <select th:field="*{type}">
+                            <option th:value="isolation" th:text="Isolation">Isolation</option>
+                            <option th:value="compound" th:text="Compound">Compound</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" value="triceps" id="muscleGroup" th:field="*{muscleGroup}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Select the appropriate category :</label>
+                        <select th:field="*{category}">
+                            <option th:value="strength" th:text="Strength">Strength</option>
+                            <option th:value="hypertrophy" th:text="Hypertrophy">Hypertrophy</option>
+                        </select>
+                    </div>
+
+                    <button type="submit">Add Exercise</button>
+                </form>
+            </div>
+    
+        </div>
 
         <div class="sidenav-content" id="Exercise">
             <div class="content-header">
@@ -57,112 +432,100 @@
             <div class="main-content">
                 <button class="collapsible">Abs</button>
                 <div class="collapsible-content" id="Abs-content">
-                    <ul class="exercise-table">
-                        <li>Add new exercise</li>
-                        <li>abs1</li>
-                        <li>abs2</li>
+                    <ul class="exercise-table" th:each="mgitem: ${muscle_group}">
+                        <li><button class="add-item" onclick="openpopup('abspopup')">Add new exercise</button></li>
+                        <li><span th:if="${mgitem.muscleGroup == 'abs'}" th:text="${mgitem.name}">item name here</span></li>
                     </ul>
                 </div>
 
                 <button class="collapsible">Back</button>
                 <div class="collapsible-content" id="Back-content">
-                    <ul class="exercise-table">
-                        <li>Add new exercise</li>
-                        <li>back1</li>
-                        <li>back2</li>
+                    <ul class="exercise-table" th:each="mgitem: ${muscle_group}">
+                        <li><button class="add-item" onclick="openpopup('backpopup')">Add new exercise</button></li>
+                        <li><span th:if="${mgitem.muscleGroup == 'back'}" th:text="${mgitem.name}">item name here</span></li>
                     </ul>
                 </div>
 
                 <button class="collapsible">Biceps</button>
                 <div class="collapsible-content" id="Biceps-content">
-                    <ul class="exercise-table">
-                        <li>Add new exercise</li>
-                        <li>biceps1</li>
-                        <li>biceps2</li>
+                    <ul class="exercise-table" th:each="mgitem: ${muscle_group}">
+                        <li><button class="add-item" onclick="openpopup('bicepspopup')">Add new exercise</button></li>
+                        <li><span th:if="${mgitem.muscleGroup == 'biceps'}" th:text="${mgitem.name}">item name here</span></li>
                     </ul>
                 </div>
 
                 <button class="collapsible">Cardio</button>
                 <div class="collapsible-content" id="Cardio-content">
-                    <ul class="exercise-table">
-                        <li>Add new exercise</li>
-                        <li>cardio1</li>
-                        <li>cardio2</li>
+                    <ul class="exercise-table" th:each="citem: ${category}">
+                        <li><button class="add-item" onclick="openpopup('cardiopopup')">Add new exercise</button></li>
+                        <li><span th:if="${citem.category == 'cardio'}" th:text="${citem.name}">item name here</span></li>
                     </ul>
                 </div>
 
                 <button class="collapsible">Chest</button>
                 <div class="collapsible-content" id="Chest-content">
-                    <ul class="exercise-table">
-                        <li>Add new exercise</li>
-                        <li>chest1</li>
-                        <li>chest2</li>
+                    <ul class="exercise-table" th:each="mgitem: ${muscle_group}">
+                        <li><button class="add-item" onclick="openpopup('chestpopup')">Add new exercise</button></li>
+                        <li><span th:if="${mgitem.muscleGroup == 'chest'}" th:text="${mgitem.name}">item name here</span></li>
                     </ul>
                 </div>
 
                 <button class="collapsible">Flexibility</button>
                 <div class="collapsible-content" id="Flexibility-content">
-                    <ul class="exercise-table">
-                        <li>Add new exercise</li>
-                        <li>flexibility1</li>
-                        <li>flexibility2</li>
+                    <ul class="exercise-table" th:each="citem: ${category}">
+                        <li><button class="add-item" onclick="openpopup('flexpopup')">Add new exercise</button></li>
+                        <li><span th:if="${citem.category == 'flexibility'}" th:text="${citem.name}">item name here</span></li>
                     </ul>
                 </div>
 
                 <button class="collapsible">Forearms</button>
                 <div class="collapsible-content" id="Forearms-content">
-                    <ul class="exercise-table">
-                        <li>Add new exercise</li>
-                        <li>forearms1</li>
-                        <li>forearms2</li>
+                    <ul class="exercise-table" th:each="mgitem: ${muscle_group}">
+                        <li><button class="add-item" onclick="openpopup('forearmspopup')">Add new exercise</button></li>
+                        <li><span th:if="${mgitem.muscleGroup == 'forearms'}" th:text="${mgitem.name}">item name here</span></li>
                     </ul>
                 </div>
-
+ 
                 <button class="collapsible">Isometrics</button>
                 <div class="collapsible-content" id="Isometrics-content">
-                    <ul class="exercise-table">
-                        <li>Add new exercise</li>
-                        <li>isometrics1</li>
-                        <li>isometrics2</li>
+                    <ul class="exercise-table" th:each="citem: ${category}">
+                        <li><button class="add-item" onclick="openpopup('isopopup')">Add new exercise</button></li>
+                        <li><span th:if="${citem.category == 'isometrics'}" th:text="${citem.name}">item name here</span></li>
                     </ul>
                 </div>
 
                 <button class="collapsible">Legs</button>
                 <div class="collapsible-content" id="Legs-content">
-                    <ul class="exercise-table">
-                        <li>Add new exercise</li>
-                        <li>legs1</li>
-                        <li>legs2</li>
+                    <ul class="exercise-table" th:each="mgitem: ${muscle_group}">
+                        <li><button class="add-item" onclick="openpopup('legspopup')">Add new exercise</button></li>
+                        <li><span th:if="${mgitem.muscleGroup == 'legs'}" th:text="${mgitem.name}">item name here</span></li>
                     </ul>
                 </div>
 
                 <button class="collapsible">Neck</button>
                 <div class="collapsible-content" id="Neck-content">
-                    <ul class="exercise-table">
-                        <li>Add new exercise</li>
-                        <li>neck1</li>
-                        <li>neck2</li>
+                    <ul class="exercise-table" th:each="mgitem: ${muscle_group}">
+                        <li><button class="add-item" onclick="openpopup('neckpopup')">Add new exercise</button></li>
+                        <li><span th:if="${mgitem.muscleGroup == 'neck'}" th:text="${mgitem.name}">item name here</span></li>
                     </ul>
                 </div>
 
                 <button class="collapsible">Shoulders</button>
                 <div class="collapsible-content" id="Shoulders-content">
-                    <ul class="exercise-table">
-                        <li>Add new exercise</li>
-                        <li>shoulders1</li>
-                        <li>shoulders2</li>
+                    <ul class="exercise-table" th:each="mgitem: ${muscle_group}">
+                        <li><button class="add-item" onclick="openpopup('shoulderspopup')">Add new exercise</button></li>
+                        <li><span th:if="${mgitem.muscleGroup == 'shoulder'}" th:text="${mgitem.name}">item name here</span></li>
                     </ul>
                 </div>
 
                 <button class="collapsible">Triceps</button>
                 <div class="collapsible-content" id="Triceps-content">
-                    <ul class="exercise-table">
-                        <li>Add new exercise</li>
-                        <li>triceps1</li>
-                        <li>triceps2</li>
+                    <ul class="exercise-table" th:each="mgitem: ${muscle_group}">
+                        <li><button class="add-item" onclick="openpopup('tricepspopup')">Add new exercise</button></li>
+                        <li><span th:if="${mgitem.muscleGroup == 'triceps'}" th:text="${mgitem.name}">item name here</span></li>
                     </ul>
                 </div>
-
+                
             </div>
         </div>
 
@@ -186,24 +549,7 @@
                 document.getElementById("detailstab").click();
             }
         };
-
-        function opentab(evt, tabName) {
-            var i, tabcontent, tablinks;
-
-            tabcontent = document.getElementsByClassName("table-content");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
-
-            tablinks = document.getElementsByClassName("table-header");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.className += " active";
-            localStorage.setItem('activeTab', evt.currentTarget.id);
-        }*/
+*/
 
         var coll = document.getElementsByClassName("collapsible");
         var i;
@@ -214,8 +560,10 @@
                 var content = this.nextElementSibling;
                 if (content.style.maxHeight) {
                     content.style.maxHeight = null;
+                    content.style.visibility = "hidden";
                 } else {
                     content.style.maxHeight = content.scrollHeight + "px";
+                    content.style.visibility = "visible";
                 }
             });
         }
@@ -226,6 +574,17 @@
 
         function closeNav() {
             document.getElementById("sidenav").classList.remove("open");
+        }
+
+        function openpopup(popupname) {
+            var i, popup, tablinks;
+
+            popup = document.getElementsByClassName("popup");
+            for (i = 0; i < popup.length; i++) {
+                popup[i].style.display = "none";
+            }
+
+            document.getElementById(popupname).style.display = "block";
         }
 
     </script>

@@ -1,5 +1,18 @@
 package com.workout_tracker_app.Controller;
 
+import java.util.List;
+
+import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.workout_tracker_app.Entity.ExerciseList;
+import com.workout_tracker_app.Repository.Exerciserepo;
 import com.workout_tracker_app.Repository.UserRepository;
 import com.workout_tracker_app.Service.authService;
 import com.workout_tracker_app.dto.AuthRequest;
@@ -10,20 +23,6 @@ import jakarta.annotation.Nullable;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.ui.Model;
-
-import java.security.Security;
-
-import org.springframework.http.MediaType;
 
 @Controller
 @RequestMapping("/api")
@@ -31,6 +30,7 @@ import org.springframework.http.MediaType;
 public class mainController {
     private final authService AService;
     private final UserRepository userRepo;
+    private final Exerciserepo exerciserepo;
 
     @GetMapping("/home")
     public String show() {
@@ -116,7 +116,17 @@ public class mainController {
 
     @GetMapping("/Exercise")
     public String showExercise(Model model) {
+        List<ExerciseList> mgResult = exerciserepo.findByAllMuscleGroup();
+        List<ExerciseList> cResult = exerciserepo.findByAllCategory();
+        model.addAttribute("category", cResult);
+        model.addAttribute("muscle_group", mgResult);
         return "Exercise";
+    }
+
+    @PostMapping(path = "/Exercise", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public String showExercisePost (Model model, @ModelAttribute("ExerciseList") ExerciseList exerlist) {
+        exerciserepo.save(exerlist);
+        return "redirect:/Exercise";
     }
 
     @GetMapping("/Analyze")

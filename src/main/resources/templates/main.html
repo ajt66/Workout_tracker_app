@@ -23,6 +23,7 @@
     <header>
         <nav class="navbar">
             <ul class="links-container">
+                <span class="toggle-button" onclick="openNav()">&#9776;</span>
                 <li class="link-item"><a href="home.html" th:href="@{/api/home}">Home</a></li>
                 <li class="link-item"><a href="sign-out.html" th:href="@{/api/sign-out}">Sign out</a></li>
                 <li class="link-item"><a href="#support-div">Support</a></li>
@@ -42,8 +43,6 @@
         </ul>
     </div>
 
-    <span class="toggle-button" onclick="openNav()">&#9776;</span>
-
     <div class="page-content">
 
 
@@ -53,11 +52,21 @@
         <div class="sidenav-content" id="details">
             <div class="content-header">
                 <h2>Details</h2>
-                <p><span th:text="${User.getUserName()}">username</span></p>
-                <p><span th:text="${User.getEmail()}">email</span></p>
-                <p><span th:text="${User.getPassword()}">password</span></p>
-                <p><span th:text="${User.getRole()}">role</span></p>
-                <p><span th:text="${User.getCreatedAt()}">created at</span></p>
+                <div class="columns-container" style="width: 50%;">
+                    <div class="column">
+                        <ul>
+                            <li>username: <span th:text="${User.getUserName()}">username</span></li>
+                            <li>email: <span th:text="${User.getEmail()}">email</span></li>
+                            <li>password: <span th:text="${User.getPassword()}">password</span></li>
+                        </ul>
+                    </div>
+                    <div class="column">
+                        <ul>
+                            <li>role: <span th:text="${User.getRole()}">role</span></li>
+                            <li>created at: <span th:text="${User.getCreatedAt()}">created at</span></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
 
