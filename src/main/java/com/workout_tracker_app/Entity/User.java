@@ -1,14 +1,17 @@
 package com.workout_tracker_app.Entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -29,20 +32,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "Username", nullable = false, unique = true)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
-    @Column(name = "Email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "Password", nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "Role", nullable = false)
+    @Column(name = "role", nullable = false)
     private String role;
-
-    @Column(name = "Created-At")
-    private LocalDate createdAt;
 
     public UserDetails convertToUserDetails() {
         return org.springframework.security.core.userdetails.User.builder()
@@ -52,10 +52,13 @@ public class User {
                 .build();
     }
 
-    @PrePersist
-    protected void onCreate() {
-        if (this.createdAt == null) {
-            this.createdAt = LocalDate.now();
-        }
-    }
+    @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, orphanRemoval = false)
+    private List<ExerciseList> exercise_id;
+
+    @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, orphanRemoval = false)
+    private List<DailyLog> dailylog_id;
+
+    @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, orphanRemoval = false)
+    private List<Program> program_id;
+
 }

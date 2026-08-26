@@ -30,32 +30,37 @@ public class ExerciseList {
     }
 
     public enum Category {
-        cardio, strength, flexibility, hypertrophy, isometrics
+        cardio, strength, flexibility, hypertrophy, isometrics, hypertrophyorstrength
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long exerciseId;
+    private Long exercise_id;
 
     @Column(name = "exercise_name", nullable = false)
-    private String name; // Name of exercise
+    private String exercise_name; // Name of exercise
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = true)
-    private Type type; // Type: compound or isolation
+    private Type exercise_type; // Type: compound or isolation
 
     @Column(name = "muscle_group", nullable = true)
-    private String muscleGroup; // Related muscle group of exercise.
+    private String muscle_group; // Related muscle group of exercise.
 
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
     private Category category; // cardio, strength, flexibility
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dailylog_id", referencedColumnName = "logId", nullable = false)
-    private DailyLog dailyLog;
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    private User users;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "programs_id", referencedColumnName = "programId", nullable = false)
-    private Program programs;
+    @JoinColumn(name = "dailylog_id", referencedColumnName = "log_id", nullable = false)
+    private DailyLog dailylog;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "programlog_id", referencedColumnName = "plog_id", nullable = false)
+    private programLog program_log;
+
 }

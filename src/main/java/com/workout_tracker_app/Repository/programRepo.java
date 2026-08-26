@@ -1,61 +1,39 @@
 package com.workout_tracker_app.Repository;
 
-import com.workout_tracker_app.Entity.Program;
-import com.workout_tracker_app.dto.programDTO;
-
-import org.springframework.stereotype.Repository;
-
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-@Repository
+import com.workout_tracker_app.Entity.Program;
+import com.workout_tracker_app.dto.programDTO;
+
 public interface programRepo extends JpaRepository<Program, Long> {
 
-    // Program Name section
-    @Query(value = "SELECT new programDTO(p.programName, p.day, e.name, e.type, p.status)"
-            + " FROM Program p JOIN ExerciseList e ON p.programId = e.programs.programId"
-            + " WHERE p.programName = :programName")
-    List<programDTO> findByProgramName(@Param("programName") String programName);
+        public static final String TABLESELECT = " FROM Program p INNER JOIN p.users u";
+        public static final String ORDER_BY = " ORDER BY p.program_status ASC";
 
-    @Query(value = "SELECT new programDTO(p.programName, p.day, e.name, e.type, p.sets, p.reps, p.duration, p.tag, p.status)"
-            + " FROM Program p JOIN ExerciseList e ON p.programId = e.programs.programId"
-            + " WHERE p.programName = :programName")
-    List<programDTO> findByProgramNamewithDetails(@Param("programName") String programName);
+        // Program Name section
+        @Query(value = "SELECT new programDTO(p.program_id, p.program_name, p.program_status)"
+                        + TABLESELECT
+                        + " WHERE p.program_name = :program_name AND u.id = :id" + ORDER_BY)
+        List<programDTO> findByProgramName(@Param("program_name") String program_name, @Param("id") String id);
 
-    // Day section
-    @Query(value = "SELECT new programDTO(p.programName, p.day, e.name, e.type, p.status)"
-            + " FROM Program p JOIN ExerciseList e ON p.programId = e.programs.programId"
-            + " WHERE p.day = :day")
-    List<programDTO> findByDay(@Param("day") String day);
+        // Status section
+        @Query(value = "SELECT new programDTO(p.program_id, p.program_name, p.program_status)"
+                        + TABLESELECT
+                        + " WHERE p.program_status = 'active' AND u.id = :id" + ORDER_BY + "LIMIT 1")
+        programDTO findByActiveStatus(@Param("id") String id);
 
-    @Query(value = "SELECT new programDTO(p.programName, p.day, e.name, e.type, p.sets, p.reps, p.duration, p.tag, p.status)"
-            + " FROM Program p JOIN ExerciseList e ON p.programId = e.programs.programId"
-            + " WHERE p.day = :day")
-    List<programDTO> findByDaywithDetails(@Param("day") String day);
+        @Query(value = "SELECT new programDTO(p.program_id, p.program_name, p.program_status)"
+                        + TABLESELECT
+                        + " WHERE p.program_status = 'inactive' AND u.id = :id" + ORDER_BY)
+        List<programDTO> findByInactiveStatus(@Param("id") String id);
 
-    // Exercise Name section
-    @Query(value = "SELECT new programDTO(p.programName, p.day, e.name, e.type, p.status)"
-            + " FROM Program p JOIN ExerciseList e ON p.programId = e.programs.programId"
-            + " WHERE e.name = :exerciseName")
-    List<programDTO> findByExerciseName(@Param("exerciseName") String exerciseName);
-
-    @Query(value = "SELECT new programDTO(p.programName, p.day, e.name, e.type, p.sets,p.reps,p.duration,p.tag,p.status)"
-            + " FROM Program p JOIN ExerciseList e ON p.programId = e.programs.programId"
-            + " WHERE e.name = :exerciseName")
-    List<programDTO> findByExerciseNamewithDetails(@Param("exerciseName") String exerciseName);
-
-    // Status section
-    @Query(value = "SELECT new programDTO(p.programName, p.day, e.name, e.type, p.status)"
-            + " FROM Program p JOIN ExerciseList e ON p.programId = e.programs.programId"
-            + " WHERE p.status = :status")
-    List<programDTO> findByStatus(@Param("status") String status);
-
-    @Query(value = "SELECT new programDTO(p.programName, p.day, e.name, e.type, p.sets,p.reps,p.duration,p.tag,p.status)"
-            + " FROM Program p JOIN ExerciseList e ON p.programId = e.programs.programId"
-            + " WHERE p.status = :status")
-    List<programDTO> findByStatuswithDetails(@Param("status") String status);
+        @Query(value = "SELECT new programDTO(p.program_id)"
+                        + TABLESELECT
+                        + " WHERE p.program_name = :program_name AND u.id = :id" + ORDER_BY)
+        programDTO findProgramId(@Param("program_name") String program_name, @Param("id") String id);
 
 }

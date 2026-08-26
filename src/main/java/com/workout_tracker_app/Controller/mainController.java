@@ -1,6 +1,12 @@
 package com.workout_tracker_app.Controller;
 
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,14 +16,28 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.workout_tracker_app.Entity.ExerciseList;
+import com.workout_tracker_app.Entity.programLog.Tag;
+import com.workout_tracker_app.Entity.Program.Status;
+
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import com.workout_tracker_app.Entity.User;
 import com.workout_tracker_app.Repository.Exerciserepo;
 import com.workout_tracker_app.Repository.UserRepository;
+import com.workout_tracker_app.Repository.programLogRepo;
 import com.workout_tracker_app.Service.authService;
 import com.workout_tracker_app.dto.AuthRequest;
 import com.workout_tracker_app.dto.AuthResponse;
 import com.workout_tracker_app.dto.RegisterRequest;
+import com.workout_tracker_app.dto.programDTO;
+
+import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
+
+import com.workout_tracker_app.Repository.programRepo;
 
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.Cookie;
@@ -31,6 +51,8 @@ public class mainController {
     private final authService AService;
     private final UserRepository userRepo;
     private final Exerciserepo exerciserepo;
+    private final programRepo programrepo;
+    private final programLogRepo pLogRepo;
 
     @GetMapping("/home")
     public String show() {
@@ -101,6 +123,7 @@ public class mainController {
         // Get the authenticated user's username from the security context
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         model.addAttribute("User", userRepo.findByUsername(username));
+        model.addAttribute("User-id", userRepo.findUserId(username));
         return "main";
     }
 
@@ -110,21 +133,62 @@ public class mainController {
     }
 
     @GetMapping("/Programs")
-    public String showPrograms(Model model) {
+    public String showPrograms(@ModelAttribute("User") Optional<User> user, @ModelAttribute("User-id") User userid,
+            Model model) {
+        String id = String.valueOf(userid.getId());
+        programDTO pstat = programrepo.findByActiveStatus(id);
+        List<programDTO> pres = pLogRepo.findByProgramNamewithDetails(pstat.getProgram_name(), id);
+        Map<String, List<programDTO>> groupedData = pres.stream()
+                .collect(Collectors.groupingBy(programDTO::getDay, LinkedHashMap::new, Collectors.toList()));
+        model.addAttribute("currentProgram", groupedData);
+        model.addAttribute("programname", pstat.getProgram_name());
+
+        List<programDTO> itres;
+        Map<String, List<programDTO>> inactiveGroup;
+        List<programDTO> ipstat = programrepo.findByInactiveStatus(id);
+        Iterator<programDTO> iterator = ipstat.iterator();
+        Map<String, Map<String, List<programDTO>>> finalData = new HashMap<>();
+        while (iterator.hasNext()) {
+            String progname = iterator.next().getProgram_name();
+            itres = pLogRepo.findByProgramNamewithDetails(progname, id);
+            inactiveGroup = itres.stream()
+                    .collect(Collectors.groupingBy(programDTO::getDay, LinkedHashMap::new, Collectors.toList()));
+            finalData.put(progname, inactiveGroup);
+        }
+
+        model.addAttribute("tag", Tag.values());
+        model.addAttribute("status", Status.values());
+        model.addAttribute("otherProgram", finalData);
+        model.addAttribute("program", new HashMap<String, List<programDTO>>());
         return "Programs";
+    }
+
+    @HxRequest
+    @GetMapping(value = "/Programs/edit")
+    public String showProgramEdit(@RequestParam("progname") String name,
+            @ModelAttribute("otherProgram") Map<String, Map<String, List<programDTO>>> mapData, Model model) {
+        model.addAttribute("selectedprog", name);
+        model.addAttribute("progedit", mapData.get(name));
+        return "Programs :: Program-edit";
+    }
+
+    @PostMapping(value = "/Programs", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public String showProgramsPost(@ModelAttribute("program") programDTO program, Model model) {
+        return "redirect:/Programs";
     }
 
     @GetMapping("/Exercise")
     public String showExercise(Model model) {
         List<ExerciseList> mgResult = exerciserepo.findByAllMuscleGroup();
         List<ExerciseList> cResult = exerciserepo.findByAllCategory();
+        model.addAttribute("ExerciseList", new ExerciseList());
         model.addAttribute("category", cResult);
         model.addAttribute("muscle_group", mgResult);
         return "Exercise";
     }
 
     @PostMapping(path = "/Exercise", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String showExercisePost (Model model, @ModelAttribute("ExerciseList") ExerciseList exerlist) {
+    public String showExercisePost(Model model, @ModelAttribute("ExerciseList") ExerciseList exerlist) {
         exerciserepo.save(exerlist);
         return "redirect:/Exercise";
     }

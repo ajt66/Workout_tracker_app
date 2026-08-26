@@ -23,6 +23,18 @@ body {
     overflow-x: hidden;
 }
 
+button {
+    margin-bottom: 10px;
+    font-size: 17px;
+    background: #333;
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 10px;
+}
+
 .tab2 {
     display: inline-block;
     margin-left: 20px;
@@ -257,10 +269,6 @@ body {
     text-align: left;
     padding: 10px;
     margin-bottom: 10px;
-    background: #333;
-    font-family: 'Poppins', sans-serif;
-    color: #fff;
-    font-size: 17px;
 }
 
 .active,
@@ -307,12 +315,11 @@ body {
     outline: none;
     cursor: pointer;
     border-style: none;
+    padding: 0;
     width: 100%;
     text-align: left;
     background: #222;
-    font-family: 'Poppins', sans-serif;
-    color: #fff;
-    font-size: 17px;
+    margin-bottom: 0;
 }
 
 .add-item:after {
@@ -338,6 +345,19 @@ body {
     border-radius: 12px;
 }
 
+#programedit,
+#currentprogedit,
+#addprog {
+    transition: 1s ease;
+    margin-top: 20px;
+    width: 90%;
+    height: 90%;
+    margin-left: 20px;
+    overflow-x: hidden;
+    background-color: #222;
+    margin-bottom: 20px;
+}
+
 .popup form {
     box-sizing: border-box;
     padding: 50px;
@@ -346,15 +366,15 @@ body {
 }
 
 .popup form h2 {
-    position:absolute;
+    position: absolute;
     top: 10px;
     left: 120px;
 }
 
 .popup form button {
-    position:absolute;
-    bottom:10px;
-    left:20px;
+    position: absolute;
+    bottom: 10px;
+    left: 20px;
     font-size: 17px;
     background: #222;
     font-family: 'Poppins', sans-serif;
@@ -362,20 +382,21 @@ body {
     padding: 10px;
 }
 
-.programs-list .columns-container {
-    max-height: 0;
-    visibility: hidden;
-    text-align: left;
-    overflow: hidden;
-    transition: max-height 0.2s ease-out;
+.program-button {
+    margin-top: 5px;
+    margin-right: 15px;
 }
 
 .columns-container {
     display: flex;
     flex-wrap: wrap;
     padding: 10px;
-    justify-content: space-between;
+    justify-content: space-around;
     gap: 20px;
+}
+
+.programs-list .collapsible-content {
+    background-color: inherit;
 }
 
 .columns-container .column-card {
@@ -388,6 +409,10 @@ body {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+.column-card ul {
+    list-style: none;
+}
+
 .tab {
     list-style: none;
     display: flex;
@@ -395,7 +420,6 @@ body {
 
 .tab li {
     border: 1px solid #ccc;
-    padding: 10px;
 }
 
 #firstTab {

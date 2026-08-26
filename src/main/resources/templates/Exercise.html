@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -42,10 +42,10 @@
         </ul>
     </div>
 
-    
+
     <div class="page-content">
         <div class="popup-container">
-    
+
             <div class="popup" id="abspopup">
                 <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
                 <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
@@ -78,7 +78,7 @@
                     <button type="submit">Add Exercise</button>
                 </form>
             </div>
-    
+
             <div class="popup" id="backpopup">
                 <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
                 <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
@@ -111,7 +111,7 @@
                     <button type="submit">Add Exercise</button>
                 </form>
             </div>
-    
+
             <div class="popup" id="bicepspopup">
                 <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
                 <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
@@ -144,7 +144,7 @@
                     <button type="submit">Add Exercise</button>
                 </form>
             </div>
-    
+
             <div class="popup" id="cardiopopup">
                 <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
                 <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
@@ -169,7 +169,7 @@
                     <button type="submit">Add Exercise</button>
                 </form>
             </div>
-    
+
             <div class="popup" id="chestpopup">
                 <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
                 <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
@@ -202,7 +202,7 @@
                     <button type="submit">Add Exercise</button>
                 </form>
             </div>
-    
+
             <div class="popup" id="flexpopup">
                 <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
                 <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
@@ -227,7 +227,7 @@
                     <button type="submit">Add Exercise</button>
                 </form>
             </div>
-            
+
             <div class="popup" id="forearmspopup">
                 <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
                 <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
@@ -260,7 +260,7 @@
                     <button type="submit">Add Exercise</button>
                 </form>
             </div>
-    
+
             <div class="popup" id="isopopup">
                 <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
                 <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
@@ -285,7 +285,7 @@
                     <button type="submit">Add Exercise</button>
                 </form>
             </div>
-    
+
             <div class="popup" id="legspopup">
                 <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
                 <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
@@ -318,7 +318,7 @@
                     <button type="submit">Add Exercise</button>
                 </form>
             </div>
-    
+
             <div class="popup" id="neckpopup">
                 <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
                 <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
@@ -351,7 +351,7 @@
                     <button type="submit">Add Exercise</button>
                 </form>
             </div>
-    
+
             <div class="popup" id="shoulderspopup">
                 <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
                 <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
@@ -384,7 +384,7 @@
                     <button type="submit">Add Exercise</button>
                 </form>
             </div>
-    
+
             <div class="popup" id="tricepspopup">
                 <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
                 <form th:action="@{/api/Exercise}" th:object="${ExerciseList}" method="post">
@@ -417,7 +417,7 @@
                     <button type="submit">Add Exercise</button>
                 </form>
             </div>
-    
+
         </div>
 
         <div class="sidenav-content" id="Exercise">
@@ -434,7 +434,8 @@
                 <div class="collapsible-content" id="Abs-content">
                     <ul class="exercise-table" th:each="mgitem: ${muscle_group}">
                         <li><button class="add-item" onclick="openpopup('abspopup')">Add new exercise</button></li>
-                        <li><span th:if="${mgitem.muscleGroup == 'abs'}" th:text="${mgitem.name}">item name here</span></li>
+                        <li><span th:if="${mgitem.muscleGroup == 'abs'}" th:text="${mgitem.name}">item name here</span>
+                        </li>
                     </ul>
                 </div>
 
@@ -442,7 +443,8 @@
                 <div class="collapsible-content" id="Back-content">
                     <ul class="exercise-table" th:each="mgitem: ${muscle_group}">
                         <li><button class="add-item" onclick="openpopup('backpopup')">Add new exercise</button></li>
-                        <li><span th:if="${mgitem.muscleGroup == 'back'}" th:text="${mgitem.name}">item name here</span></li>
+                        <li><span th:if="${mgitem.muscleGroup == 'back'}" th:text="${mgitem.name}">item name here</span>
+                        </li>
                     </ul>
                 </div>
 
@@ -450,7 +452,8 @@
                 <div class="collapsible-content" id="Biceps-content">
                     <ul class="exercise-table" th:each="mgitem: ${muscle_group}">
                         <li><button class="add-item" onclick="openpopup('bicepspopup')">Add new exercise</button></li>
-                        <li><span th:if="${mgitem.muscleGroup == 'biceps'}" th:text="${mgitem.name}">item name here</span></li>
+                        <li><span th:if="${mgitem.muscleGroup == 'biceps'}" th:text="${mgitem.name}">item name
+                                here</span></li>
                     </ul>
                 </div>
 
@@ -458,7 +461,8 @@
                 <div class="collapsible-content" id="Cardio-content">
                     <ul class="exercise-table" th:each="citem: ${category}">
                         <li><button class="add-item" onclick="openpopup('cardiopopup')">Add new exercise</button></li>
-                        <li><span th:if="${citem.category == 'cardio'}" th:text="${citem.name}">item name here</span></li>
+                        <li><span th:if="${citem.category == 'cardio'}" th:text="${citem.name}">item name here</span>
+                        </li>
                     </ul>
                 </div>
 
@@ -466,7 +470,8 @@
                 <div class="collapsible-content" id="Chest-content">
                     <ul class="exercise-table" th:each="mgitem: ${muscle_group}">
                         <li><button class="add-item" onclick="openpopup('chestpopup')">Add new exercise</button></li>
-                        <li><span th:if="${mgitem.muscleGroup == 'chest'}" th:text="${mgitem.name}">item name here</span></li>
+                        <li><span th:if="${mgitem.muscleGroup == 'chest'}" th:text="${mgitem.name}">item name
+                                here</span></li>
                     </ul>
                 </div>
 
@@ -474,7 +479,8 @@
                 <div class="collapsible-content" id="Flexibility-content">
                     <ul class="exercise-table" th:each="citem: ${category}">
                         <li><button class="add-item" onclick="openpopup('flexpopup')">Add new exercise</button></li>
-                        <li><span th:if="${citem.category == 'flexibility'}" th:text="${citem.name}">item name here</span></li>
+                        <li><span th:if="${citem.category == 'flexibility'}" th:text="${citem.name}">item name
+                                here</span></li>
                     </ul>
                 </div>
 
@@ -482,15 +488,17 @@
                 <div class="collapsible-content" id="Forearms-content">
                     <ul class="exercise-table" th:each="mgitem: ${muscle_group}">
                         <li><button class="add-item" onclick="openpopup('forearmspopup')">Add new exercise</button></li>
-                        <li><span th:if="${mgitem.muscleGroup == 'forearms'}" th:text="${mgitem.name}">item name here</span></li>
+                        <li><span th:if="${mgitem.muscleGroup == 'forearms'}" th:text="${mgitem.name}">item name
+                                here</span></li>
                     </ul>
                 </div>
- 
+
                 <button class="collapsible">Isometrics</button>
                 <div class="collapsible-content" id="Isometrics-content">
                     <ul class="exercise-table" th:each="citem: ${category}">
                         <li><button class="add-item" onclick="openpopup('isopopup')">Add new exercise</button></li>
-                        <li><span th:if="${citem.category == 'isometrics'}" th:text="${citem.name}">item name here</span></li>
+                        <li><span th:if="${citem.category == 'isometrics'}" th:text="${citem.name}">item name
+                                here</span></li>
                     </ul>
                 </div>
 
@@ -498,7 +506,8 @@
                 <div class="collapsible-content" id="Legs-content">
                     <ul class="exercise-table" th:each="mgitem: ${muscle_group}">
                         <li><button class="add-item" onclick="openpopup('legspopup')">Add new exercise</button></li>
-                        <li><span th:if="${mgitem.muscleGroup == 'legs'}" th:text="${mgitem.name}">item name here</span></li>
+                        <li><span th:if="${mgitem.muscleGroup == 'legs'}" th:text="${mgitem.name}">item name here</span>
+                        </li>
                     </ul>
                 </div>
 
@@ -506,15 +515,18 @@
                 <div class="collapsible-content" id="Neck-content">
                     <ul class="exercise-table" th:each="mgitem: ${muscle_group}">
                         <li><button class="add-item" onclick="openpopup('neckpopup')">Add new exercise</button></li>
-                        <li><span th:if="${mgitem.muscleGroup == 'neck'}" th:text="${mgitem.name}">item name here</span></li>
+                        <li><span th:if="${mgitem.muscleGroup == 'neck'}" th:text="${mgitem.name}">item name here</span>
+                        </li>
                     </ul>
                 </div>
 
                 <button class="collapsible">Shoulders</button>
                 <div class="collapsible-content" id="Shoulders-content">
                     <ul class="exercise-table" th:each="mgitem: ${muscle_group}">
-                        <li><button class="add-item" onclick="openpopup('shoulderspopup')">Add new exercise</button></li>
-                        <li><span th:if="${mgitem.muscleGroup == 'shoulder'}" th:text="${mgitem.name}">item name here</span></li>
+                        <li><button class="add-item" onclick="openpopup('shoulderspopup')">Add new exercise</button>
+                        </li>
+                        <li><span th:if="${mgitem.muscleGroup == 'shoulder'}" th:text="${mgitem.name}">item name
+                                here</span></li>
                     </ul>
                 </div>
 
@@ -522,10 +534,11 @@
                 <div class="collapsible-content" id="Triceps-content">
                     <ul class="exercise-table" th:each="mgitem: ${muscle_group}">
                         <li><button class="add-item" onclick="openpopup('tricepspopup')">Add new exercise</button></li>
-                        <li><span th:if="${mgitem.muscleGroup == 'triceps'}" th:text="${mgitem.name}">item name here</span></li>
+                        <li><span th:if="${mgitem.muscleGroup == 'triceps'}" th:text="${mgitem.name}">item name
+                                here</span></li>
                     </ul>
                 </div>
-                
+
             </div>
         </div>
 

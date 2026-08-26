@@ -1,8 +1,108 @@
-INSERT INTO exerciselist(name, type, muscle_group, category) 
-VALUES (situps, isolation, abs, hypertrophy);
+INSERT INTO workoutapp.users(username, email, password, role) VALUES
+("abc1", "ABC1@gmail.com", "abc1pass", "user"),
+("abc2", "ABC2@gmail.com", "abc2pass", "user"),
+("abc3", "ABC3@gmail.com", "abc3pass", "user");
 
-INSERT INTO exerciselist(name, type, muscle_group, category) 
-VALUES (pullups, compound, back, hypertrophy);
+INSERT INTO workoutapp.program(program_name, user_id, status) VALUES
+('program1','abc1','active'),
+('program2','abc1','inactive'),
+('program3','abc2','active'),
+('program4','abc2','inactive'),
+('program5','abc3','active'),
+('program6','abc3','inactive');
 
-INSERT INTO exerciselist(name, type, muscle_group, category) 
-VALUES (spidercurls, isolation, biceps, hypertrophy);
+INSERT INTO workoutapp.exercise_list(user_id, exercise_name, type, muscle_group, category)
+SELECT u.id, v.col1, v.col2, v.col3, v.col4
+FROM workoutapp.users u
+CROSS JOIN (
+    VALUES
+        ('Ab-Wheel Rollout', 'isolation', 'abs', 'hypertrophy'),
+        ('Cable Crunch', 'isolation', 'abs', 'hypertrophy'),
+        ('Crunch', 'isolation', 'abs', 'hypertrophy'),
+        ('Decline Crunch', 'isolation', 'abs', 'hypertrophy'),
+        ('Situps', 'isolation', 'abs', 'hypertrophy'),
+        ('Decline Situps', 'isolation', 'abs', 'hypertrophy'),
+        ('Dragon Flag', 'isolation', 'abs', 'hypertrophy'),
+        ('Hanging knee raises', 'isolation', 'abs', 'hypertrophy').
+        ('knee Raises', 'isolation', 'abs', 'hypertrophy'),
+        ('Leg raises', 'isolation', 'abs', 'hypertrophy'),
+        ('Hanging Leg Raises', 'isolation', 'abs', 'hypertrophy'),
+        ('Situps', 'isolation', 'abs', 'hypertrophy'),
+        ('Arched Pullups', 'compound', 'back', 'hypertrophy'),
+        ('Back Extension', 'compound', 'back', 'hypertrophy'),
+        ('Barbell Row', 'compound', 'back', 'hypertrophy'),
+        ('Dumbbell Row', 'compound', 'back', 'hypertrophy'),
+        ('Barbell Shrugs', 'compound', 'back', 'hypertrophy'),
+        ('Pullups', 'compound', 'back', 'hypertrophyorstrength')
+        ('Chinups', 'compound', 'back', 'hypertrophyorstrength'),
+        ('Deadlift', 'compound', 'back', 'Strength'),
+        ('Inverted Row', 'compound', 'back', 'hypertrophy'),
+        ('Wide grip Pullup', 'compound', 'back', 'hypertrophyorstrength'),
+        ('Rack pull', 'compound', 'back', 'hypertrophyorstrength'),
+        ('Lat Pulldown', 'compound', 'back', 'hypertrophy'),
+        ('T-bar Row', 'compound', 'back', 'hypertrophy'),
+        ('Dumbbell Curls', 'isolation', 'biceps', 'hypertrophy'),
+        ('Hammer Curls', 'isolation', 'biceps', 'hypertrophy'),
+        ('BodyWeight Biceps Curls', 'isolation', 'biceps', 'hypertrophy'),
+        ('Barbell Curls', 'isolation', 'biceps', 'hypertrophy'),
+        ('cable Curls', 'isolation', 'biceps', 'hypertrophy'),
+        ('Dumbbell Concentration Curls', 'isolation', 'biceps', 'hypertrophy'),
+        ('Concentration Curls', 'isolation', 'biceps', 'hypertrophy'),
+        ('Preacher Curls', 'isolation', 'biceps', 'hypertrophy'),
+        ('EZ Bar Curls', 'isolation', 'biceps', 'hypertrophy'),
+        ('Incline Curls', 'isolation', 'biceps', 'hypertrophy'),
+        ('PinWheel Curls', 'isolation', 'biceps', 'hypertrophy'),
+        ('Pelican Curls', 'isolation', 'biceps', 'hypertrophy'),
+        ('Running(Outdoor)', null, null, 'cardio'),
+        ('Running(Treadmill)', null, null, 'cardio'),
+        ('Sprinting', null, null, 'cardio'),
+        ('Walking', null, null, 'cardio'),
+        ('Swimming', null, null, 'cardio'),
+        ('Cycling', null, null, 'cardio'),
+        ('Elliptical Trainer', null, null, 'cardio'),
+        ('Barbell Bench Press', 'compound', 'chest', 'hypertrophyorstrength'),
+        ('Dumbbell Bench Press', 'compound', 'chest', 'hypertrophyorstrength'),
+        ('Cable Fly', 'isolation', 'chest', 'hypertrophy'),
+        ('Dumbbell Fly', 'isolation', 'chest', 'hypertrophy'),
+        ('Pushup', 'compound', 'chest', 'hypertrophyorstrength'),
+        ('Incline Pushup', 'compound', 'chest', 'hypertrophy'),
+        ('Decline Pushup', 'compound', 'chest', 'hypertrophy'),
+        ('Ring Pushup', 'compound', 'chest', 'hypertrophyorstrength'),
+        ('Chest Dips', 'compound', 'chest', 'hypertrophyorstrength'),
+        ('Ring Chest Dips', 'compound', 'chest', 'hypertrophyorstrength'),
+        ('DeadHang', 'compound', 'forearms', 'hypertrophyorstrength'),
+        ('False grip DeadHang', 'compound', 'forearms', 'hypertrophyorstrength'),
+        ('Weighted DeadHang', 'compound', 'forearms', 'hypertrophyorstrength'),
+        ('Assisted DeadHang', 'compound', 'forearms', 'hypertrophyorstrength'),
+        ('Romanian Deadlift', 'compound', 'legs', 'hypertrophyorstrength'),
+        ('Calf Raise', 'isolation', 'legs', 'hypertrophy'),
+        ('Front Squat', 'compound', 'legs', 'hypertrophy'),
+        ('Glute Bridge', 'isolation', 'legs', 'hypertrophy'),
+        ('Leg Extension Machine', 'compound', 'legs', 'hypertrophy'),
+        ('Leg Press', 'compound', 'legs', 'hypertrophy'),
+        ('Leg Curl Machine', 'compound', 'legs', 'hypertrophy'),
+        ('Squat', 'compound', 'legs', 'hypertrophyorstrength'),
+        ('Arnold Dumbbell Press', 'isolation', 'shoulders', 'hypertrophy'),
+        ('Beind the neck Barbell Press', 'compound', 'shoulders', 'hypertrophy'),
+        ('Face Pull', 'isolation', 'shoulders', 'hypertrophy'),
+        ('Handstand Pushup', 'compound', 'shoulders', 'hypertrophy'),
+        ('Deficit Handstand Pushup', 'compound', 'shoulders', 'hypertrophy'),
+        ('Pike Pushup', 'compound', 'shoulders', 'hypertrophy'),
+        ('Deficit Pike Pushup', 'compound', 'shoulders', 'hypertrophy'),
+        ('Elevated Pike Pushup', 'compound', 'shoulders', 'hypertrophy'),
+        ('Lateral Raise', 'isolation', 'shoulders', 'hypertrophy'),
+        ('Rear Delt Raise', 'isolation', 'shoulders', 'hypertrophy'),
+        ('Front Delt Raise', 'isolation', 'shoulders', 'hypertrophy'),
+        ('Overhead Press', 'compound', 'shoulders', 'hypertrophy'),
+        ('Ring Triceps Dips', 'compound', 'triceps', 'hypertrophyorstrength'),
+        ('Triceps Dips', 'compound', 'triceps', 'hypertrophyorstrength'),
+        ('Diamond Pushup', 'compound', 'triceps', 'hypertrophyorstrength'),
+        ('Close grip Bench Press', 'compound', 'triceps', 'hypertrophyorstrength'),
+        ('French Press', 'isolation', 'triceps', 'hypertrophy'),
+        ('Rope Push Down', 'compound', 'triceps', 'hypertrophy'),
+        ('Skull Crusher', 'compound', 'triceps', 'hypertrophy'),
+        ('Overhead triceps extension', 'compound', 'triceps', 'hypertrophy'),
+        ('Bodyweight triceps extension', 'compound', 'triceps', 'hypertrophy')
+) AS v(col1, col2, col3, col4);
+
+INSERT INTO 

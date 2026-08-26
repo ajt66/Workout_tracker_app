@@ -31,7 +31,6 @@ public class authService {
                                 .email(request.getEmail())
                                 .password(passwordEncoder.encode(request.getPassword()))
                                 .role("USER")
-                                .createdAt(LocalDate.now())
                                 .build();
 
                 // Save to database

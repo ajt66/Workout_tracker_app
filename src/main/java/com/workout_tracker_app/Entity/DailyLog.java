@@ -11,7 +11,10 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,16 +36,23 @@ public class DailyLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long logId;
+    private Long log_id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "users_id", referencedColumnName = "id", nullable = false)
+    private User users;
 
     @Column(name = "day", nullable = false)
     private String day;
 
     @Column(name = "logging_date", nullable = false)
-    private LocalDate date;
+    private LocalDate logging_date;
+
+    @OneToOne(mappedBy = "dailylog")
+    private programLog pLog;
 
     @OneToMany(mappedBy = "dailylog", fetch = FetchType.LAZY, orphanRemoval = false)
-    private List<ExerciseList> exercises;
+    private List<ExerciseList> exercise_id;
 
     @Column(name = "weights", nullable = true)
     private Integer weights;
@@ -60,6 +70,6 @@ public class DailyLog {
     private String comment;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private Status status;
+    @Column(name = "log_status", nullable = false)
+    private Status log_status;
 }

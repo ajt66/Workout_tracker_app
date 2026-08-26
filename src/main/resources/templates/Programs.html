@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -17,6 +17,10 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
     <link rel="stylesheet" href="../static/css/style.css" th:href="@{/css/style.css}">
+
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"
+        integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V"
+        crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -44,42 +48,181 @@
 
     <div class="page-content">
 
+        <div class="popup-container">
+
+            <div class="popup" id="currentprogedit">
+                <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+                <form class="form-group" th:action="@{/api/Programs}" th:object="${program}" method="post">
+                    <h2>Current Program Edit:</h2>
+                    <p>Click on an item/element you want to change and enter the value</p><br>
+                    <div>
+                        <input type="text" th:value="${programname}" th:text="${programname}" th:field="*{programName}">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="columns-container">
+                            <div class="column-card" th:each="cprogram : ${currentProgram}">
+                                <p>
+                                    <input type="hidden" th:value="${cprogram.value.get(0).getId()}"
+                                        th:field="*{program_id}">
+                                    <span th:text="${cprogram.key}">Day</span> - <select id="program_tag"
+                                        name="program_tag">
+                                        <option th:each="tags : ${tag}" th:value="${tag}" th:text="${tag}"
+                                            th:selected="${cprogram.value.get(0).getTag()}"></option>
+                                    </select><br>
+                                    <hr>
+                                <ul th:each="item : ${cprogram.value}">
+                                    <li><input type="text" th:value="${item.getExerciseName()}"
+                                            th:field="*{exercise_name}">
+                                        <span class="tab2"></span>
+                                        <input type="number" th:if="${item.getDuration() == null}"
+                                            th:value="${item.getDuration()}" th:field="*{duration}">
+                                        <input type="number" th:if="${item.getSets() != null}"
+                                            th:value="${item.getSets()}" th:field="*{sets}">
+                                        <input type="number" th:if="${item.getReps() != null}"
+                                            th:value="${item.getReps()}" th:field="*{reps}">
+                                    </li>
+                                </ul>
+                                </p>
+                            </div>
+                        </div>
+
+                        <button type="submit">Save Program</button>
+                    </div>
+                </form>
+            </div>
+
+            <div th:fragment="Program-edit">
+                <div class="popup" id="programedit">
+                    <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+                    <form class="form-group" th:action="@{/api/Programs}" th:object="${program}" method="post">
+                        <h2>Program Edit :</h2>
+                        <p>Click on an item/element you want to change and enter the value</p>
+                        <div>
+                            <label for="name">Program Name :</label><br>
+                            <input type="text" th:value="${selectedprog}" th:field="*{programName}">
+                        </div>
+
+                        <div class="form-group">
+                            <div class="columns-container">
+                                <div class="column-card" th:each="program : ${progedit}">
+                                    <p>
+                                        <input type="hidden" th:value="${program.value.get(0).getId()}"
+                                            th:field="*{program_id}">
+                                        <span th:text="${program.key}">Day</span> - <select id="program_tag"
+                                            name="program_tag">
+                                            <option th:each="tags : ${tag}" th:value="${tag}" th:text="${tag}"
+                                                th:selected="${program.value.get(0).getTag()}"></option>
+                                        </select><br>
+                                        <hr>
+                                    <ul th:each="item : ${program.value}">
+                                        <li><input type="text" th:value="${item.getExerciseName()}"
+                                                th:field="*{exercise_name}">
+                                            <span class="tab2"></span>
+                                            <input type="number" th:if="${item.getDuration() == null}"
+                                                th:value="${item.getDuration()}" th:field="*{duration}">
+                                            <input type="number" th:if="${item.getSets() != null}"
+                                                th:value="${item.getSets()}" th:field="*{sets}">
+                                            <input type="number" th:if="${item.getReps() != null}"
+                                                th:value="${item.getReps()}" th:field="*{reps}">
+                                        </li>
+                                    </ul>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <button type="submit">Save Program</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="popup" id="addprog">
+                <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+                <form class="form-group" th:action="@{/api/Programs}" th:object="${program}" method="post">
+                    <h2>Current Program Edit:</h2>
+                    <p>Click on an item/element you want to change and enter the value</p><br>
+                    <div>
+                        <label for="progname">Enter program name:</label>
+                        <input type="text" id="progname" th:field="*{programName}">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="columns-container">
+                            <div class="column-card" th:each="cprogram : ${currentProgram}">
+                                <p>
+                                    <span th:text="${cprogram.key}">Day</span> - <select id="program_tag"
+                                        name="program_tag">
+                                        <option th:each="tags : ${tag}" th:value="${tag}" th:text="${tag}"
+                                            th:selected="${cprogram.value.get(0).getTag()}"></option>
+                                    </select><br>
+                                    <hr>
+                                <ul th:each="item : ${cprogram.value}">
+                                    <li><input type="text" th:value="${item.getExerciseName()}"
+                                            th:field="*{exercise_name}">
+                                        <span class="tab2"></span>
+                                        <input type="number" th:if="${item.getDuration() == null}"
+                                            th:value="${item.getDuration()}" th:field="*{duration}">
+                                        <input type="number" th:if="${item.getSets() != null}"
+                                            th:value="${item.getSets()}" th:field="*{sets}">
+                                        <input type="number" th:if="${item.getReps() != null}"
+                                            th:value="${item.getReps()}" th:field="*{reps}">
+                                    </li>
+                                </ul>
+                                </p>
+                            </div>
+                        </div>
+
+                        <button type="submit">Save Program</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
         <div class="sidenav-content" id="programs">
             <div class="content-header">
                 <h2>Workouts and Programs</h2><br>
-                <p>This page allows users to view, create and manage workouts and programs. They can add exercises and
-                    optionally their respective sets and reps/duration on a particular day of the week. Alternatively,
-                    users can choose from Program Presets that can also be modified.
+                <p>This page allows users to view their workouts and programs. They can add exercises
+                    and optionally their respective sets and reps/duration on a particular day of the week.
+                    Alternatively, users can also choose from Program Presets that can also be modified.
                 </p><br>
                 <p>(Note: Current Selected program will by default be displayed here as well as be scheduled in the
                     Schedule tab. Also, programs can only be run in 7 days block.)</p>
             </div>
 
-            <div class="main-content">
+
+            <div th:if="${currentProgram != null and #lists.size(currentProgram) > 0}">
                 <div class="content-header">
-                    <h3>Current Program: <span th:text="${currentProgram.getProgramName()}">program name will appear
-                            here</span>
-                    </h3>
+                    <h3>Current Program: <span th:text="${programname}">program name will appear here</span></h3>
                 </div>
                 <div class="columns-container">
-                    <div class="column-card">
+                    <div class="column-card" th:each="cprogram, Stat: ${currentProgram}">
                         <p>
-                            Monday - <span th:text="${currentProgram.getTag()}">tag</span><br>
+                            <span th:text="${cprogram.key}">Day</span> - <span
+                                th:text="${cprogram.value.get(0).getTag()}">tag</span><br>
                             <hr>
-                            <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
-                            <span class="tab2"></span>
-                            <span th:text="${currentProgram.getSets()}">sets</span> x
-                            <span th:text="${currentProgram.getReps()}">reps</span>
+                        <ul th:each="item : ${cprogram.value}">
+                            <li><span th:text="${item.getExerciseName()}">exercise name</span><span class="tab2"></span>
+                                <span
+                                    th:text="${item.getDuration() != null ? item.getDuration() : (item.getSets() + 'x' + item.getReps())}">duration/setsxreps</span>
+                            </li>
+                        </ul>
                         </p>
                     </div>
-                    <div class="column-card">
+                </div>
+
+                <button class="program-button" hx-get="/Programs/edit" hx-trigger="click" hx-target="#currentprogedit"
+                    hx-swap onclick="openpopup('currentprogedit')">Edit Program</button>
+                <button class="program-button">Switch Program</button>
+            </div>
+            <!--<div class="column-card">
                         <p>
                             Tuesday - <span th:text="${currentProgram.getTag()}">tag</span><br>
                             <hr>
                             <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
                             <span class="tab2"></span>
-                            <span th:text="${currentProgram.getSets()}">sets</span> x
-                            <span th:text="${currentProgram.getReps()}">reps</span>
+                            <span th:if="${currentProgram.duration} ?: '${currentProgram.getSets()}' + 'x' + '${currentProgram.getReps()}'">duration/setsxreps</span>
                         </p>
                     </div>
                     <div class="column-card">
@@ -88,8 +231,7 @@
                             <hr>
                             <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
                             <span class="tab2"></span>
-                            <span th:text="${currentProgram.getSets()}">sets</span> x
-                            <span th:text="${currentProgram.getReps()}">reps</span>
+                            <span th:if="${currentProgram.duration} ?: '${currentProgram.getSets()}' + 'x' + '${currentProgram.getReps()}'">duration/setsxreps</span>
                         </p>
                     </div>
                     <div class="column-card">
@@ -98,8 +240,7 @@
                             <hr>
                             <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
                             <span class="tab2"></span>
-                            <span th:text="${currentProgram.getSets()}">sets</span> x
-                            <span th:text="${currentProgram.getReps()}">reps</span>
+                            <span th:if="${currentProgram.duration} ?: '${currentProgram.getSets()}' + 'x' + '${currentProgram.getReps()}'">duration/setsxreps</span>
                         </p>
                     </div>
                     <div class="column-card">
@@ -108,8 +249,7 @@
                             <hr>
                             <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
                             <span class="tab2"></span>
-                            <span th:text="${currentProgram.getSets()}">sets</span> x
-                            <span th:text="${currentProgram.getReps()}">reps</span>
+                            <span th:if="${currentProgram.duration} ?: '${currentProgram.getSets()}' + 'x' + '${currentProgram.getReps()}'">duration/setsxreps</span>
                         </p>
                     </div>
                     <div class="column-card">
@@ -118,8 +258,7 @@
                             <hr>
                             <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
                             <span class="tab2"></span>
-                            <span th:text="${currentProgram.getSets()}">sets</span> x
-                            <span th:text="${currentProgram.getReps()}">reps</span>
+                            <span th:if="${currentProgram.duration} ?: '${currentProgram.getSets()}' + 'x' + '${currentProgram.getReps()}'">duration/setsxreps</span>
                         </p>
                     </div>
                     <div class="column-card">
@@ -128,129 +267,114 @@
                             <hr>
                             <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
                             <span class="tab2"></span>
-                            <span th:text="${currentProgram.getSets()}">sets</span> x
-                            <span th:text="${currentProgram.getReps()}">reps</span>
+                            <span th:if="${currentProgram.duration} ?: '${currentProgram.getSets()}' + 'x' + '${currentProgram.getReps()}'">duration/setsxreps</span>
                         </p>
-                    </div>
-                </div>
-
-                <div class="content-header">
-                    <h3>Available Programs:</h3>
-                </div>
-                <ul class="programs-list" th:each="program : ${programs}">
-                    <li><button class="collapsible"><span th:text="${program.getProgramName()}">program
-                                name</span></button>
-                        <div class="columns-container">
-                            <div class="column-card">
-                                <p>
-                                    Monday - <span th:text="${currentProgram.getTag()}">tag</span><br>
-                                    <hr>
-                                    <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
-                                    <span class="tab2"></span>
-                                    <span th:text="${currentProgram.getSets()}">sets</span> x
-                                    <span th:text="${currentProgram.getReps()}">reps</span>
-                                </p>
-                            </div>
-                            <div class="column-card">
-                                <p>
-                                    Tuesday - <span th:text="${currentProgram.getTag()}">tag</span><br>
-                                    <hr>
-                                    <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
-                                    <span class="tab2"></span>
-                                    <span th:text="${currentProgram.getSets()}">sets</span> x
-                                    <span th:text="${currentProgram.getReps()}">reps</span>
-                                </p>
-                            </div>
-                            <div class="column-card">
-                                <p>
-                                    Wednesday - <span th:text="${currentProgram.getTag()}">tag</span><br>
-                                    <hr>
-                                    <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
-                                    <span class="tab2"></span>
-                                    <span th:text="${currentProgram.getSets()}">sets</span> x
-                                    <span th:text="${currentProgram.getReps()}">reps</span>
-                                </p>
-                            </div>
-                            <div class="column-card">
-                                <p>
-                                    Thursday - <span th:text="${currentProgram.getTag()}">tag</span><br>
-                                    <hr>
-                                    <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
-                                    <span class="tab2"></span>
-                                    <span th:text="${currentProgram.getSets()}">sets</span> x
-                                    <span th:text="${currentProgram.getReps()}">reps</span>
-                                </p>
-                            </div>
-                            <div class="column-card">
-                                <p>
-                                    Friday - <span th:text="${currentProgram.getTag()}">tag</span><br>
-                                    <hr>
-                                    <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
-                                    <span class="tab2"></span>
-                                    <span th:text="${currentProgram.getSets()}">sets</span> x
-                                    <span th:text="${currentProgram.getReps()}">reps</span>
-                                </p>
-                            </div>
-                            <div class="column-card">
-                                <p>
-                                    Saturday - <span th:text="${currentProgram.getTag()}">tag</span><br>
-                                    <hr>
-                                    <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
-                                    <span class="tab2"></span>
-                                    <span th:text="${currentProgram.getSets()}">sets</span> x
-                                    <span th:text="${currentProgram.getReps()}">reps</span>
-                                </p>
-                            </div>
-                            <div class="column-card">
-                                <p>
-                                    Sunday - <span th:text="${currentProgram.getTag()}">tag</span><br>
-                                    <hr>
-                                    <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
-                                    <span class="tab2"></span>
-                                    <span th:text="${currentProgram.getSets()}">sets</span> x
-                                    <span th:text="${currentProgram.getReps()}">reps</span>
-                                </p>
-                            </div>
-                        </div>
-                        <button class="select-program-btn"
-                            th:onclick="'selectProgram(' + ${program.getProgramId()} + ')'">Select
-                            Program</button>
-                    </li>
-                </ul>
-            </div>
-
-            <!--<button class="collapsible">Abs</button>
-                <div class="collapsible-content" id="Abs-content">
-                    <ul class="exercise-table">
-                        <li>Add new exercise</li>
-                        <li>abs1</li>
-                        <li>abs2</li>
-                    </ul>
-                </div>
-                <button
-                                        class="select-program-btn"
-                                        th:onclick="'selectProgram(' + ${program.getProgramId()} + ')'">Select
-                                        Program</button></li>-->
-
+                    </div-->
 
             <div class="content-header">
-                <h3>Add Programs:</h3>
-                <div class="form-content">
-
-                </div>
-                <button class="add-program-btn">Add Program</button>
+                <h3>Available Programs:</h3>
             </div>
-        </div>
-    </div>
+            <ul class="programs-list" th:each="programlist : ${otherProgram}">
+                <li><button class="collapsible"><span th:text="${programlist.key}">program
+                            name</span></button>
+                    <div class="collapsible-content">
+                        <div class="columns-container">
+                            <div class="column-card" th:each="program, Stat: ${programlist.value}">
+                                <p>
+                                    <span th:text="${program.key}">Day</span> - <span
+                                        th:text="${program.value.get(0).getTag()}">tag</span><br>
+                                    <hr>
+                                <ul th:each="item : ${program.value}">
+                                    <li><span th:text="${item.getExerciseName()}">exercise name</span><span
+                                            class="tab2"></span>
+                                        <span
+                                            th:text="${item.getDuration() != null ? item.getDuration() : (item.getSets() + 'x' + item.getReps())}">duration/setsxreps</span>
+                                    </li>
+                                </ul>
+                                </p>
+                            </div>
+                            <!--<div class="column-card">
+                                    <p>
+                                        Tuesday - <span th:text="${currentProgram.getTag()}">tag</span><br>
+                                        <hr>
+                                        <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
+                                        <span class="tab2"></span>
+                                        <span
+                                            th:if="${currentProgram.duration} ?: '${currentProgram.getSets()}' + 'x' + '${currentProgram.getReps()}'">duration/setsxreps</span>
+                                    </p>
+                                </div>
+                                <div class="column-card">
+                                    <p>
+                                        Wednesday - <span th:text="${currentProgram.getTag()}">tag</span><br>
+                                        <hr>
+                                        <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
+                                        <span class="tab2"></span>
+                                        <span
+                                            th:if="${currentProgram.duration} ?: '${currentProgram.getSets()}' + 'x' + '${currentProgram.getReps()}'">duration/setsxreps</span>
+                                    </p>
+                                </div>
+                                <div class="column-card">
+                                    <p>
+                                        Thursday - <span th:text="${currentProgram.getTag()}">tag</span><br>
+                                        <hr>
+                                        <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
+                                        <span class="tab2"></span>
+                                        <span
+                                            th:if="${currentProgram.duration} ?: '${currentProgram.getSets()}' + 'x' + '${currentProgram.getReps()}'">duration/setsxreps</span>
+                                    </p>
+                                </div>
+                                <div class="column-card">
+                                    <p>
+                                        Friday - <span th:text="${currentProgram.getTag()}">tag</span><br>
+                                        <hr>
+                                        <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
+                                        <span class="tab2"></span>
+                                        <span
+                                            th:if="${currentProgram.duration} ?: '${currentProgram.getSets()}' + 'x' + '${currentProgram.getReps()}'">duration/setsxreps</span>
+                                    </p>
+                                </div>
+                                <div class="column-card">
+                                    <p>
+                                        Saturday - <span th:text="${currentProgram.getTag()}">tag</span><br>
+                                        <hr>
+                                        <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
+                                        <span class="tab2"></span>
+                                        <span
+                                            th:if="${currentProgram.duration} ?: '${currentProgram.getSets()}' + 'x' + '${currentProgram.getReps()}'">duration/setsxreps</span>
+                                    </p>
+                                </div>
+                                <div class="column-card">
+                                    <p>
+                                        Sunday - <span th:text="${currentProgram.getTag()}">tag</span><br>
+                                        <hr>
+                                        <span th:text="${currentProgram.getExerciseName()}">exercise name</span>
+                                        <span class="tab2"></span>
+                                        <span
+                                            th:if="${currentProgram.duration} ?: '${currentProgram.getSets()}' + 'x' + '${currentProgram.getReps()}'">duration/setsxreps</span>
+                                    </p>
+                                </div>-->
+                        </div>
+                        <button class="program-button">Select Program</button>
+                        <button class="program-button" onclick="openpopup('programedit')">Edit Program</button>
+                        <button class="program-button">Delete Program</button>
+                    </div>
+                </li>
+            </ul>
 
-    <section class="footer" id="support-section">
-        <!--<img src="../static/img/logo.png" class="footer-logo" alt="">-->
-        <div class="footer-text">
-            <p>Contact us</p>
-            <p>Email - support@WTA.com</p>
-            <p>Phone - 98 76 556655, 98 76 556644</p>
+            <div class="content-header">
+                <h3>Add Program: </h3>
+            </div>
+            <button class="program-button" onclick="openpopup('addprog')">Open Editor</button>
         </div>
-    </section>
+
+        <section class="footer" id="support-section">
+            <!--<img src="../static/img/logo.png" class="footer-logo" alt="">-->
+            <div class="footer-text">
+                <p>Contact us</p>
+                <p>Email - support@WTA.com</p>
+                <p>Phone - 98 76 556655, 98 76 556644</p>
+            </div>
+        </section>
     </div>
 
     <script>
@@ -264,23 +388,7 @@
             }
         };
 
-        function opentab(evt, tabName) {
-            var i, tabcontent, tablinks;
-
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
-
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.className += " active";
-            localStorage.setItem('activeTab', evt.currentTarget.id);
-        }*/
+            */
 
         var coll = document.getElementsByClassName("collapsible");
         var i;
@@ -305,6 +413,17 @@
 
         function closeNav() {
             document.getElementById("sidenav").classList.remove("open");
+        }
+
+        function openpopup(popupname) {
+            var i, popup, idvalue;
+
+            popup = document.getElementsByClassName("popup");
+            for (i = 0; i < popup.length; i++) {
+                popup[i].style.display = "none";
+            }
+
+            document.getElementById(popupname).style.display = "block";
         }
 
     </script>
