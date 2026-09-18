@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+    <div class="popup" th:fragment="Program-edit">
+        <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+        <form class="form-group" th:action="@{/api/Programs/edit}" th:object="${EntryDTO}" method="post">
+            <h2>Program Edit:</h2>
+            <p>Click on an item/element you want to change and enter the value</p><br>
+            <div>
+                <label for="curProg">Program Name:</label>
+                <input type="text" th:value="${prog-name}" th:field="*{programName}">
+            </div>
+
+            <div class="columns-container">
+                <div class="column-card" th:each="program : ${popup-Program}">
+                    <p>
+                        <input type="hidden" th:value="${program.value.get(0).getId()}" th:field="*{program_id}">
+                        <span th:text="${program.key}">Day</span> - <select id="program_tag" name="program_tag">
+                            <option th:each="tags : ${tag}" th:value="${tag}" th:text="${tag}"
+                                th:selected="${program.value.get(0).getTag()}"></option>
+                        </select><br>
+                        <hr>
+                    </p>
+                    <table id="prog-edit-table" th:each="item : ${program.value}">
+                        <tr>
+                            <th>Name</th>
+                            <th>Sets</th>
+                            <th>Reps</th>
+                            <th>duration</th>
+                        </tr>
+                        <tr>
+                            <td><input type="text" th:value="${item.getExerciseName()}" th:field="*{name}"></td>
+                            <td><input type="number" th:value="${item.getSets()}" th:field="*{sets}"></td>
+                            <td><input type="number" th:value="${item.getReps()}" th:field="*{reps}"></td>
+                            <td><input type="number" th:value="${item.getDuration()}" th:field="*{duration}">
+                            </td>
+                        </tr>
+                    </table>
+                    <button hx-get="/api/Programs/edit" hx-trigger="click" hx-swap="beforeend"
+                        hx-target="#prog-edit-table">Add new Row</button>
+                </div>
+            </div>
+
+            <button type="submit">Save Program</button>
+        </form>
+    </div>
+
+    <!--<div class="popup" th:fragment="Program-edit" id="Program-edit">
+        <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+        <form class="form-group" th:action="@{/api/Programs/O-edit}" th:object="${EntryDTO}" method="post">
+            <h2>Program Edit :</h2>
+            <p>Click on an item/element you want to change and enter the value</p>
+            <div>
+                <label for="name">Program Name :</label><br>
+                <input type="text" th:value="${selectedprog}" th:field="*{programName}">
+            </div>
+
+            <div class="columns-container">
+                <div class="column-card" th:each="program : ${progedit}">
+                    <p>
+                        <input type="hidden" th:value="${program.value.get(0).getId()}" th:field="*{program_id}">
+                        <span th:text="${program.key}">Day</span> - <select id="program_tag" name="program_tag">
+                            <option th:each="tags : ${tag}" th:value="${tag}" th:text="${tag}"
+                                th:selected="${program.value.get(0).getTag()}"></option>
+                        </select><br>
+                        <hr>
+                    </p>
+                    <table id="prog-edit-table" th:each="item : ${program.value}">
+                        <tr>
+                            <th>Name</th>
+                            <th>Sets</th>
+                            <th>Reps</th>
+                            <th>duration</th>
+                        </tr>
+                        <tr>
+                            <td><input type="text" th:value="${item.getExerciseName()}" th:field="*{name}">
+                            </td>
+                            <td><input type="number" th:value="${item.getSets()}" th:field="*{sets}"></td>
+                            <td><input type="number" th:value="${item.getReps()}" th:field="*{reps}"></td>
+                            <td><input type="number" th:value="${item.getDuration()}" th:field="*{duration}"></td>
+                        </tr>
+                    </table>
+                    <button id="add-prog-row-button" hx-get="/api/Programs/edit" hx-trigger="click" hx-swap="beforeend"
+                        hx-target="#prog-edit-table">Add new Row</button>
+                </div>
+            </div>
+
+            <button type="submit">Save Program</button>
+        </form>
+    </div> -->
+
+</body>
+
+</html>

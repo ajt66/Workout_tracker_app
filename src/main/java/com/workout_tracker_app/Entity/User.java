@@ -56,9 +56,6 @@ public class User {
     private List<ExerciseList> exercise_id;
 
     @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, orphanRemoval = false)
-    private List<DailyLog> dailylog_id;
-
-    @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, orphanRemoval = false)
     private List<Program> program_id;
 
 }

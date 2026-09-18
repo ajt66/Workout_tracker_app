@@ -44,11 +44,14 @@ public class Program {
     @JoinColumn(name = "users_id", referencedColumnName = "id", nullable = false)
     private User users;
 
+    @OneToMany(mappedBy = "programDL", fetch = FetchType.LAZY, orphanRemoval = false)
+    private List<DailyLog> daily_log;
+
     @OneToMany(mappedBy = "program", fetch = FetchType.LAZY, orphanRemoval = false)
     private List<programLog> program_log;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "pstatus", nullable = false)
     private Status program_status;
 
 }

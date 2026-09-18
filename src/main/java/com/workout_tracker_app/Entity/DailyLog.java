@@ -23,24 +23,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "dailylog")
+@Table(name = "daily_log")
 @Builder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class DailyLog {
-    public enum Status {
-        PENDING, COMPLETED, CANCELLED
+    public enum logStatus {
+        pending, completed, cancelled
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long log_id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "users_id", referencedColumnName = "id", nullable = false)
-    private User users;
 
     @Column(name = "day", nullable = false)
     private String day;
@@ -48,8 +44,9 @@ public class DailyLog {
     @Column(name = "logging_date", nullable = false)
     private LocalDate logging_date;
 
-    @OneToOne(mappedBy = "dailylog")
-    private programLog pLog;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "program_id", referencedColumnName = "program_id", nullable = false)
+    private Program programDL;
 
     @OneToMany(mappedBy = "dailylog", fetch = FetchType.LAZY, orphanRemoval = false)
     private List<ExerciseList> exercise_id;
@@ -70,6 +67,6 @@ public class DailyLog {
     private String comment;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "log_status", nullable = false)
-    private Status log_status;
+    @Column(name = "dstatus", nullable = false)
+    private logStatus log_status;
 }

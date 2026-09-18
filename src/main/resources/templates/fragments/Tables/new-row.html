@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <tr th:fragment="add-dl-row" id="add-dl-row">
+        <td><input type="text" placeholder="name" th:field="*{name}"></td>
+        <td><input type="number" placeholder="weights" th:field="*{weights}"></td>
+        <td><input type="number" placeholder="sets" th:field="*{sets}"></td>
+        <td><input type="number" placeholder="reps" th:field="*{reps}"></td>
+        <td><input type="text" placeholder="duration" th:field="*{duration}"></td>
+        <td><textarea th:field="*{comment}"></textarea></td>
+        <td><select>
+                <option th:each="status : ${logstatus}" th:value="${status}" th:text="${status}" th:field="*{status}">
+                </option>
+            </select></td>
+    </tr>
+
+    <tr th:fragment="add-prog-row" id="add-prog-row">
+        <td><input type="text" placeholder="name" th:field="*{name}"></td>
+        <td><input type="number" placeholder="sets" th:field="*{sets}"></td>
+        <td><input type="number" placeholder="reps" th:field="*{reps}"></td>
+        <td><input type="text" placeholder="duration" th:field="*{duration}"></td>
+    </tr>
+</body>
+
+</html>

@@ -40,7 +40,7 @@
             <li><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a></li>
             <li class="sidenav-links"><a href="Main.html" th:href="@{/api/Main}">Details</a></li>
             <li class="sidenav-links"><a href="#programs">Programs</a></li>
-            <li class="sidenav-links"><a href="Schedule.html" th:href="@{/api/Schedule}">Schedule</a></li>
+            <li class="sidenav-links"><a href="dailyLog.html" th:href="@{/api/Logs}">Workout Logs</a></li>
             <li class="sidenav-links"><a href="Exercise.html" th:href="@{/api/Exercise}">Exercises</a></li>
             <li class="sidenav-links"><a href="Analyze.html" th:href="@{/api/Analyze}">Analyze</a></li>
         </ul>
@@ -51,130 +51,73 @@
         <div class="popup-container">
 
             <div class="popup" id="currentprogedit">
+            </div>
+
+            <div class="popup" id="Prog-switch">
                 <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
-                <form class="form-group" th:action="@{/api/Programs}" th:object="${program}" method="post">
-                    <h2>Current Program Edit:</h2>
-                    <p>Click on an item/element you want to change and enter the value</p><br>
-                    <div>
-                        <input type="text" th:value="${programname}" th:text="${programname}" th:field="*{programName}">
-                    </div>
-
-                    <div class="form-group">
-                        <div class="columns-container">
-                            <div class="column-card" th:each="cprogram : ${currentProgram}">
-                                <p>
-                                    <input type="hidden" th:value="${cprogram.value.get(0).getId()}"
-                                        th:field="*{program_id}">
-                                    <span th:text="${cprogram.key}">Day</span> - <select id="program_tag"
-                                        name="program_tag">
-                                        <option th:each="tags : ${tag}" th:value="${tag}" th:text="${tag}"
-                                            th:selected="${cprogram.value.get(0).getTag()}"></option>
-                                    </select><br>
-                                    <hr>
-                                <ul th:each="item : ${cprogram.value}">
-                                    <li><input type="text" th:value="${item.getExerciseName()}"
-                                            th:field="*{exercise_name}">
-                                        <span class="tab2"></span>
-                                        <input type="number" th:if="${item.getDuration() == null}"
-                                            th:value="${item.getDuration()}" th:field="*{duration}">
-                                        <input type="number" th:if="${item.getSets() != null}"
-                                            th:value="${item.getSets()}" th:field="*{sets}">
-                                        <input type="number" th:if="${item.getReps() != null}"
-                                            th:value="${item.getReps()}" th:field="*{reps}">
-                                    </li>
-                                </ul>
-                                </p>
-                            </div>
-                        </div>
-
-                        <button type="submit">Save Program</button>
-                    </div>
+                <form class="form-group" th:action="@{/api/Programs/switch}" method="get">
+                    <h2>Program Switch Confirmation:</h2>
+                    <p>Are you sure you want to switch ?</p><br>
+                    <input type="hidden" class="hidden-name" id="switch-id" value="">
+                    <button class="program-button" type="submit" hx-get="/api/Programs/switch" hx-trigger="click"
+                        hx-include="closest .hidden-name" hx-swap="none">Switch</button>
+                    <button class="program-button" onclick="this.parentElement.style.display='none'">Cancel</button>
                 </form>
             </div>
 
-            <div th:fragment="Program-edit">
-                <div class="popup" id="programedit">
-                    <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
-                    <form class="form-group" th:action="@{/api/Programs}" th:object="${program}" method="post">
-                        <h2>Program Edit :</h2>
-                        <p>Click on an item/element you want to change and enter the value</p>
-                        <div>
-                            <label for="name">Program Name :</label><br>
-                            <input type="text" th:value="${selectedprog}" th:field="*{programName}">
-                        </div>
+            <div class="popup" id="Prog-delete">
+                <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+                <form class="form-group" th:action="@{/api/Programs/delete}" method="post">
+                    <h2>Program deletion Confirmation:</h2>
+                    <p>Are you sure you want to delete ?</p><br>
+                    <input type="hidden" class="hidden-name" id="delete-id" value="">
+                    <button class="program-button" type="submit" hx-get="/api/Programs/delete" hx-trigger="click"
+                        hx-include="closest .hidden-name" hx-swap="none">Delete</button>
+                    <button class="program-button" onclick="this.parentElement.style.display='none'">Cancel</button>
+                </form>
+            </div>
 
-                        <div class="form-group">
-                            <div class="columns-container">
-                                <div class="column-card" th:each="program : ${progedit}">
-                                    <p>
-                                        <input type="hidden" th:value="${program.value.get(0).getId()}"
-                                            th:field="*{program_id}">
-                                        <span th:text="${program.key}">Day</span> - <select id="program_tag"
-                                            name="program_tag">
-                                            <option th:each="tags : ${tag}" th:value="${tag}" th:text="${tag}"
-                                                th:selected="${program.value.get(0).getTag()}"></option>
-                                        </select><br>
-                                        <hr>
-                                    <ul th:each="item : ${program.value}">
-                                        <li><input type="text" th:value="${item.getExerciseName()}"
-                                                th:field="*{exercise_name}">
-                                            <span class="tab2"></span>
-                                            <input type="number" th:if="${item.getDuration() == null}"
-                                                th:value="${item.getDuration()}" th:field="*{duration}">
-                                            <input type="number" th:if="${item.getSets() != null}"
-                                                th:value="${item.getSets()}" th:field="*{sets}">
-                                            <input type="number" th:if="${item.getReps() != null}"
-                                                th:value="${item.getReps()}" th:field="*{reps}">
-                                        </li>
-                                    </ul>
-                                    </p>
-                                </div>
-                            </div>
-
-                            <button type="submit">Save Program</button>
-                        </div>
-                    </form>
-                </div>
+            <div class="popup" id="programedit">
             </div>
 
             <div class="popup" id="addprog">
                 <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
-                <form class="form-group" th:action="@{/api/Programs}" th:object="${program}" method="post">
-                    <h2>Current Program Edit:</h2>
-                    <p>Click on an item/element you want to change and enter the value</p><br>
+                <form class="form-group" th:action="@{/api/Programs/Add}" th:object="${EntryDTO}" method="post">
+                    <h2>Add Program:</h2>
                     <div>
                         <label for="progname">Enter program name:</label>
                         <input type="text" id="progname" th:field="*{programName}">
                     </div>
 
-                    <div class="form-group">
-                        <div class="columns-container">
-                            <div class="column-card" th:each="cprogram : ${currentProgram}">
-                                <p>
-                                    <span th:text="${cprogram.key}">Day</span> - <select id="program_tag"
-                                        name="program_tag">
-                                        <option th:each="tags : ${tag}" th:value="${tag}" th:text="${tag}"
-                                            th:selected="${cprogram.value.get(0).getTag()}"></option>
-                                    </select><br>
-                                    <hr>
-                                <ul th:each="item : ${cprogram.value}">
-                                    <li><input type="text" th:value="${item.getExerciseName()}"
-                                            th:field="*{exercise_name}">
-                                        <span class="tab2"></span>
-                                        <input type="number" th:if="${item.getDuration() == null}"
-                                            th:value="${item.getDuration()}" th:field="*{duration}">
-                                        <input type="number" th:if="${item.getSets() != null}"
-                                            th:value="${item.getSets()}" th:field="*{sets}">
-                                        <input type="number" th:if="${item.getReps() != null}"
-                                            th:value="${item.getReps()}" th:field="*{reps}">
-                                    </li>
-                                </ul>
-                                </p>
-                            </div>
+                    <div class="columns-container">
+                        <div class="column-card" th:each="day : ${days}">
+                            <p>
+                                <span th:text="${day}">Day</span> - <select id="program_tag" name="program_tag"
+                                    th:field="*{tag}">
+                                    <option th:each="tags : ${tag}" th:value="${tag}" th:text="${tag}"></option>
+                                </select><br>
+                                <hr>
+                            </p>
+                            <table id="prog-add-table">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Sets</th>
+                                    <th>Reps</th>
+                                    <th>duration</th>
+                                </tr>
+                                <tr>
+                                    <td><input type="text" placeholder="name" th:field="*{name}"></td>
+                                    <td><input type="number" placeholder="sets" th:field="*{sets}"></td>
+                                    <td><input type="number" placeholder="reps" th:field="*{reps}"></td>
+                                    <td><input type="number" placeholder="duration" th:field="*{duration}"></td>
+                                </tr>
+                            </table>
+                            <button id="add-prog-row-button" hx-get="/api/Programs/edit" hx-trigger="click"
+                                hx-swap="beforeend" hx-target="#prog-add-table">Add new Row</button>
                         </div>
-
-                        <button type="submit">Save Program</button>
                     </div>
+
+                    <button type="submit">Save Program</button>
                 </form>
             </div>
 
@@ -202,19 +145,32 @@
                             <span th:text="${cprogram.key}">Day</span> - <span
                                 th:text="${cprogram.value.get(0).getTag()}">tag</span><br>
                             <hr>
-                        <ul th:each="item : ${cprogram.value}">
-                            <li><span th:text="${item.getExerciseName()}">exercise name</span><span class="tab2"></span>
-                                <span
-                                    th:text="${item.getDuration() != null ? item.getDuration() : (item.getSets() + 'x' + item.getReps())}">duration/setsxreps</span>
-                            </li>
-                        </ul>
+                        <table th:each="item : ${cprogram.value}">
+                            <tr>
+                                <th>Name</th>
+                                <th>Sets</th>
+                                <th>Reps</th>
+                                <th>duration</th>
+                            </tr>
+                            <tr>
+                                <td><span th:text="${item.getExerciseName()}">exercise name</span></td>
+                                <td><span th:text="${item.getSets() != null ? item.getSets() : '--'}">sets</span>
+                                </td>
+                                <td><span th:text="${item.getReps() != null ? item.getReps() : '--'}">reps</span>
+                                </td>
+                                <td><span
+                                        th:text="${item.getDuration() != null ? item.getDuration() : '--'}">duration</span>
+                                </td>
+                            </tr>
+                        </table>
                         </p>
                     </div>
                 </div>
 
-                <button class="program-button" hx-get="/Programs/edit" hx-trigger="click" hx-target="#currentprogedit"
-                    hx-swap onclick="openpopup('currentprogedit')">Edit Program</button>
-                <button class="program-button">Switch Program</button>
+                <input type="hidden" class="hidden-name" th:value="${programId}">
+                <button class="program-button" hx-post="/Programs/popup" hx-trigger="click" hx-target="#currentprogedit"
+                    hx-include="closest .hidden-name" hx-swap="innerHTMl" onclick="openpopup('currentprogedit', 0)">Edit
+                    Program</button>
             </div>
             <!--<div class="column-card">
                         <p>
@@ -284,14 +240,29 @@
                                     <span th:text="${program.key}">Day</span> - <span
                                         th:text="${program.value.get(0).getTag()}">tag</span><br>
                                     <hr>
-                                <ul th:each="item : ${program.value}">
-                                    <li><span th:text="${item.getExerciseName()}">exercise name</span><span
-                                            class="tab2"></span>
-                                        <span
-                                            th:text="${item.getDuration() != null ? item.getDuration() : (item.getSets() + 'x' + item.getReps())}">duration/setsxreps</span>
-                                    </li>
-                                </ul>
                                 </p>
+                                <table th:each="item : ${program.value}">
+                                    <tr>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Sets</th>
+                                        <th>Reps</th>
+                                        <th>duration</th>
+                                    </tr>
+                                    <tr>
+                                        <td><span th:text="${item.getExerciseName()}">exercise name</span></td>
+                                        <td><span
+                                                th:text="${item.getSets() != null ? item.getSets() : '--'}">sets</span>
+                                        </td>
+                                        <td><span
+                                                th:text="${item.getReps() != null ? item.getReps() : '--'}">reps</span>
+                                        </td>
+                                        <td><span
+                                                th:text="${item.getDuration() != null ? item.getDuration() : '--'}">duration</span>
+                                        </td>
+                                    </tr>
+                                </table>
+
                             </div>
                             <!--<div class="column-card">
                                     <p>
@@ -354,9 +325,19 @@
                                     </p>
                                 </div>-->
                         </div>
-                        <button class="program-button">Select Program</button>
-                        <button class="program-button" onclick="openpopup('programedit')">Edit Program</button>
-                        <button class="program-button">Delete Program</button>
+                        <div th:with="programid=${program.value.get(0).getProgram_id()}">
+                            <button class="program-button"
+                                th:onclick="openpopup('Prog-switch', [[${programid}]])">Select Program</button>
+
+                            <button class="program-button" hx-get="/Programs/edit" hx-trigger="click"
+                                hx-include="closest .hidden-name" hx-target="#programedit" hx-swap="innerHTMl"
+                                onclick="openpopup('programedit', 0)">Edit Program</button>
+
+                            <input type="hidden" class="hidden-name" th:value="${programid}">
+
+                            <button class="program-button"
+                                th:onclick="openpopup('Prog-delete', [[${programid}]])">Delete Program</button>
+                        </div>
                     </div>
                 </li>
             </ul>
@@ -364,7 +345,7 @@
             <div class="content-header">
                 <h3>Add Program: </h3>
             </div>
-            <button class="program-button" onclick="openpopup('addprog')">Open Editor</button>
+            <button class="program-button" onclick="openpopup('addprog', 0)">Open Editor</button>
         </div>
 
         <section class="footer" id="support-section">
@@ -377,7 +358,7 @@
         </section>
     </div>
 
-    <script>
+    <script th:inline="javascript">
 
         /*window.onload = function () {
             const activeTab = localStorage.getItem('activeTab');
@@ -391,7 +372,8 @@
             */
 
         var coll = document.getElementsByClassName("collapsible");
-        var i;
+        var i, progname;
+        var curProgName = /*[[${programname}]]*/ "default value";
 
         for (i = 0; i < coll.length; i++) {
             coll[i].addEventListener("click", function () {
@@ -415,12 +397,26 @@
             document.getElementById("sidenav").classList.remove("open");
         }
 
-        function openpopup(popupname) {
+        function openpopup(popupname, Progid) {
             var i, popup, idvalue;
 
             popup = document.getElementsByClassName("popup");
             for (i = 0; i < popup.length; i++) {
                 popup[i].style.display = "none";
+            }
+
+            switch (popupname) {
+                case "currentprogedit":
+                case "programedit":
+                case "addprog":
+                    break;
+
+                case "Prog-switch":
+                    document.getElementById("switch-id").value = Progid;
+                    break;
+                case "Prog-delete":
+                    document.getElementById("delete-id").value = Progid;
+                    break;
             }
 
             document.getElementById(popupname).style.display = "block";

@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "exerciselist")
+@Table(name = "exercise_list")
 @Builder
 @Getter
 @Setter
@@ -41,7 +41,7 @@ public class ExerciseList {
     private String exercise_name; // Name of exercise
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = true)
+    @Column(name = "etype", nullable = true)
     private Type exercise_type; // Type: compound or isolation
 
     @Column(name = "muscle_group", nullable = true)

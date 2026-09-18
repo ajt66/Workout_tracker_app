@@ -1,58 +1,79 @@
 package com.workout_tracker_app.dto;
 
-import com.workout_tracker_app.Entity.DailyLog.Status;
+import com.workout_tracker_app.Entity.DailyLog.logStatus;
+import com.workout_tracker_app.Entity.ExerciseList.Category;
+import com.workout_tracker_app.Entity.programLog.Tag;
 
 import java.time.LocalDate;
 
-import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
+import org.springframework.data.annotation.PersistenceCreator;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 public class DLDTO {
 
+    private Long log_id;
     private String day;
-    private LocalDate date;
-    private String exerciseName;
-    private String muscleGroup;
+    private LocalDate logging_date;
+    private String exercise_name;
     private Integer weights;
     private Integer sets;
     private Integer reps;
-    private Integer duration;
-    private Integer comment;
-    private Status status;
+    private String duration;
+    private String comment;
+    private logStatus log_status;
+    private Tag program_tag;
 
-    // For Queries with only day, date, exerciseName, and status
-    public DLDTO(String day, LocalDate date, String exerciseName, Status status) {
-        this.day = day;
-        this.date = date;
-        this.exerciseName = exerciseName;
-        this.status = status;
+    public DLDTO() {
     }
 
-    // For Muscle Group Queries
-    public DLDTO(String day, LocalDate date, String exerciseName, String muscleGroup, Status status) {
+    @PersistenceCreator
+    public DLDTO(Long log_id, String day, LocalDate logging_date, String exercise_name,
+            Integer weights, Integer sets,
+            Integer reps, String duration, String comment, logStatus log_status, Tag program_tag) {
+        this.log_id = log_id;
         this.day = day;
-        this.date = date;
-        this.exerciseName = exerciseName;
-        this.muscleGroup = muscleGroup;
-        this.status = status;
-    }
-
-    // For Queries with all details excluding muscleGroup
-    public DLDTO(String day, LocalDate date, String exerciseName, Integer weights, Integer sets,
-            Integer reps, Integer duration, Integer comment, Status status) {
-        this.day = day;
-        this.date = date;
-        this.exerciseName = exerciseName;
+        this.logging_date = logging_date;
+        this.exercise_name = exercise_name;
         this.weights = weights;
         this.sets = sets;
         this.reps = reps;
         this.duration = duration;
         this.comment = comment;
-        this.status = status;
+        this.log_status = log_status;
+        this.program_tag = program_tag;
+    }
+
+    // For Queries with only day, logging_date, exercise_name, and log_status
+    public DLDTO(String day, LocalDate logging_date, String exercise_name, logStatus log_status) {
+        this.day = day;
+        this.logging_date = logging_date;
+        this.exercise_name = exercise_name;
+        this.log_status = log_status;
+    }
+
+    // For Queries with all details excluding muscle_group
+    public DLDTO(String day, LocalDate logging_date, String exercise_name, Integer weights,
+            Integer sets,
+            Integer reps, String duration, String comment, logStatus log_status, Tag program_tag) {
+        this.day = day;
+        this.logging_date = logging_date;
+        this.exercise_name = exercise_name;
+        this.weights = weights;
+        this.sets = sets;
+        this.reps = reps;
+        this.duration = duration;
+        this.comment = comment;
+        this.log_status = log_status;
+        this.program_tag = program_tag;
+    }
+
+    public DLDTO(Integer weights, Integer sets, Integer reps) {
+        this.weights = weights;
+        this.sets = sets;
+        this.reps = reps;
     }
 }
