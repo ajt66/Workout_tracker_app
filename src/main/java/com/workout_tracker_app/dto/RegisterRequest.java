@@ -15,5 +15,4 @@ public class RegisterRequest {
     private String username;
     private String email;
     private String password;
-    private String action; // New field to indicate the action (register or login)
 }

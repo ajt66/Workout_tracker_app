@@ -1,96 +1,89 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<div class="chart-container" th:fragment="workChartjs">
+    <canvas id="workChart" width="400" height="200"></canvas>
 
-<body>
-    <div class="chart-container" th:fragment="workChartjs">
-        <canvas id="workChart" width="400" height="200"></canvas>
+    <script type="module" th:inline="javascript">
+        import Chart from 'chart.js/auto';
 
-        <script th:inline="javascript">
-            import Chart from 'chart.js/auto';
+        const ctx = document.getElementById('workChart').getContext('2d');
+        var postworklabel = /*[[${postworklabels}]]*/ 'post label';
+        var postworkvolume = /*[[${postworkvolume}]]*/ 'post volume';
+        var postworkweight = /*[[${postworkweight}]]*/ 'post weight';
+        var postworkreps = /*[[${postworkreps}]]*/ 'post reps';
+        var postworksets = /*[[${postworksets}]]*/ 'post sets';
 
-            const ctx = document.getElementById('workChart').getContext('2d');
-            var postworklabel = /*[[${postworklabels}]]*/ 'post label';
-            var postworkvolume = /*[[${postworkvolume}]]*/ 'post volume';
-            var postworkweight = /*[[${postworkweight}]]*/ 'post weight';
-            var postworkreps = /*[[${postworkreps}]]*/ 'post reps';
-            var postworksets = /*[[${postworksets}]]*/ 'post sets';
+        export function createNewWorkChart() {
+            workChart.data.datasets.pop();
+            var filter = document.getElementById('workfilter').value;
+            const newDataset = {
+                label: filter,
+                data: returnData(filter),
+                borderColor: 'rgb(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                fill: true
+            }
+            workChart.data.datasets.push(newDataset);
+            workChart.update();
+        }
 
-            export function createNewWorkChart() {
-                workChart.data.datasets.pop();
-                var filter = document.getElementById('workfilter').value;
-                const newDataset = {
-                    label: filter,
-                    data: returnData(filter),
+        export function updateworkChart(filter) {
+            workChart.data.datasets.pop();
+            const newDataset = {
+                label: filter,
+                data: returnData(filter),
+                borderColor: 'rgb(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                fill: true
+            }
+            workChart.data.datasets.push(newDataset);
+            workChart.update();
+        };
+
+        function returnData(filter) {
+            switch (filter) {
+                case 'Volume':
+                    return postworkvolume == 'post volume' ? preworkvolume : postworkvolume;
+                case 'Weight':
+                    return postworkweight == 'post weight' ? preworkweight : postworkweight;
+                case 'Reps':
+                    return postworkreps == 'post reps' ? preworkreps : postworkreps;
+                case 'Sets':
+                    return postworksets == 'post sets' ? preworksets : postworksets;
+                default:
+                    return [];
+            }
+        }
+
+        var preworklabel = /*[[${preworklabels}]]*/ 'default label';
+        var preworkvolume = /*[[${preworkvolume}]]*/ 'default volume';
+        var preworkweight = /*[[${preworkweight}]]*/ 'default weight';
+        var preworkreps = /*[[${preworkreps}]]*/ 'default reps';
+        var preworksets = /*[[${preworksets}]]*/ 'default sets';
+
+        const predata = {
+            label: preworklabel,
+            datasets: [
+                {
+                    label: 'Volume',
+                    data: preworkvolume,
                     borderColor: 'rgb(54, 162, 235, 1)',
                     backgroundColor: 'rgba(54, 162, 235, 0.5)',
                     fill: true
                 }
-                workChart.data.datasets.push(newDataset);
-                workChart.update();
-            }
+            ]
+        }
 
-            export function updateworkChart(filter) {
-                workChart.data.datasets.pop();
-                const newDataset = {
-                    label: filter,
-                    data: returnData(filter),
-                    borderColor: 'rgb(54, 162, 235, 1)',
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                    fill: true
-                }
-                workChart.data.datasets.push(newDataset);
-                workChart.update();
-            };
-
-            function returnData(filter) {
-                switch (filter) {
-                    case 'Volume':
-                        return postworkvolume == 'post volume' ? preworkvolume : postworkvolume;
-                    case 'Weight':
-                        return postworkweight == 'post weight' ? preworkweight : postworkweight;
-                    case 'Reps':
-                        return postworkreps == 'post reps' ? preworkreps : postworkreps;
-                    case 'Sets':
-                        return postworksets == 'post sets' ? preworksets : postworksets;
-                    default:
-                        return [];
+        var config = {
+            type: 'line',
+            data: predata,
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: 'Chart.js Line Chart'
                 }
             }
+        }
 
-            var preworklabel = /*[[${preworklabels}]]*/ 'default label';
-            var preworkvolume = /*[[${preworkvolume}]]*/ 'default volume';
-            var preworkweight = /*[[${preworkweight}]]*/ 'default weight';
-            var preworkreps = /*[[${preworkreps}]]*/ 'default reps';
-            var preworksets = /*[[${preworksets}]]*/ 'default sets';
-
-            const predata = {
-                label: preworklabel,
-                datasets: [
-                    {
-                        label: 'Volume',
-                        data: preworkvolume,
-                        borderColor: 'rgb(54, 162, 235, 1)',
-                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                        fill: true
-                    }
-                ]
-            }
-
-            var config = {
-                type: 'line',
-                data: predata,
-                options: {
-                    responsive: true,
-                    title: {
-                        display: true,
-                        text: 'Chart.js Line Chart'
-                    }
-                }
-            }
-
-            var workChart = new Chart(ctx, config);
-        </script>
-    </div>
-</body>
-
-</html>
+        var workChart = new Chart(ctx, config);
+    </script>
+</div>

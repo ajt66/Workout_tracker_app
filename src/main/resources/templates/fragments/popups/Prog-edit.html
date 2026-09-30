@@ -1,53 +1,126 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<div class="popup" th:fragment="Program-edit(Program, prog-name, prog-id)">
+    <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+    <form class="form-group" th:action="@{/api/main/Programs/edit}" th:object="${Program}" method="post">
+        <h2>Program Edit:</h2>
+        <p>Click on an item/element you want to change and enter the value</p><br>
+        <div>
+            <label for="curProg">Program Name:</label>
+            <input type="text" th:value="${prog-name}" th:field="*{prog_name}">
+            <input type="hidden" th:value="${prog-id}" th:field="*{prog_id}">
+        </div>
 
-<body>
-
-    <div class="popup" th:fragment="Program-edit">
-        <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
-        <form class="form-group" th:action="@{/api/Programs/edit}" th:object="${EntryDTO}" method="post">
-            <h2>Program Edit:</h2>
-            <p>Click on an item/element you want to change and enter the value</p><br>
-            <div>
-                <label for="curProg">Program Name:</label>
-                <input type="text" th:value="${prog-name}" th:field="*{programName}">
-            </div>
-
-            <div class="columns-container">
-                <div class="column-card" th:each="program : ${popup-Program}">
+        <div class="columns-container">
+            <th:block th:each="program, stat : ${Program.mapdto}">
+                <div class="column-card" th:id="${program.key}">
                     <p>
-                        <input type="hidden" th:value="${program.value.get(0).getId()}" th:field="*{program_id}">
-                        <span th:text="${program.key}">Day</span> - <select id="program_tag" name="program_tag">
+                        <span th:text="${program.key}">Day</span> - <select class="prog-edit-change" th:id="*{tag}"
+                            th:name="*{tag}" th:data-day="${program.key}">
                             <option th:each="tags : ${tag}" th:value="${tag}" th:text="${tag}"
                                 th:selected="${program.value.get(0).getTag()}"></option>
                         </select><br>
                         <hr>
                     </p>
-                    <table id="prog-edit-table" th:each="item : ${program.value}">
-                        <tr>
-                            <th>Name</th>
-                            <th>Sets</th>
-                            <th>Reps</th>
-                            <th>duration</th>
-                        </tr>
-                        <tr>
-                            <td><input type="text" th:value="${item.getExerciseName()}" th:field="*{name}"></td>
-                            <td><input type="number" th:value="${item.getSets()}" th:field="*{sets}"></td>
-                            <td><input type="number" th:value="${item.getReps()}" th:field="*{reps}"></td>
-                            <td><input type="number" th:value="${item.getDuration()}" th:field="*{duration}">
-                            </td>
-                        </tr>
-                    </table>
-                    <button hx-get="/api/Programs/edit" hx-trigger="click" hx-swap="beforeend"
-                        hx-target="#prog-edit-table">Add new Row</button>
+                    <input type="hidden" class="modified" th:id="${program.key} + '-bool'"
+                        th:name="|daypair[${Program.key}]|" value="false">
+                    <th:block th:each="item, istat : ${program.value}">
+                        <table id="prog-edit-table">
+                            <tr>
+                                <th>No.</th>
+                                <th>Name</th>
+                                <th>Sets</th>
+                                <th>Reps</th>
+                                <th>duration</th>
+                            </tr>
+                            <tr>
+                                <input class="prog-edit-change" type="hidden" th:value="${item.getPlog_id()}"
+                                    th:name="|mapdto[${program.key}][${istat.index}].plog_id|"
+                                    th:data-day="${program.key}">
+                                <td><span th:text="${istat.count}">No.</td>
+                                <td><input class="prog-edit-change" type="text" th:value="${item.getExerciseName()}"
+                                        th:name="|mapdto[${program.key}][${istat.index}].exercise_name|"
+                                        th:data-day="${program.key}">
+                                </td>
+                                <td><input class="prog-edit-change" type="number" th:value="${item.getSets()}"
+                                        th:name="|mapdto[${program.key}][${istat.index}].sets|"
+                                        th:data-day="${program.key}"></td>
+                                <td><input class="prog-edit-change" type="number" th:value="${item.getReps()}"
+                                        th:name="|mapdto[${program.key}][${istat.index}].reps|"
+                                        th:data-day="${program.key}"></td>
+                                <td><input class="prog-edit-change" type="number" th:vale="${item.getDuration()}"
+                                        th:name="|mapdto[${program.key}][${istat.index}].duration|"
+                                        th:data-day="${program.key}">
+                                </td>
+                            </tr>
+                        </table>
+                    </th:block>
+                    <button hx-get="/api/main/Programs/edit-row"
+                        th:hx-vals='|{"day":"${program.key}","index":"${program.value.size()}"}|' hx-trigger="click"
+                        hx-swap="beforeend" hx-target="#prog-edit-table">Add new Row</button>
                 </div>
+            </th:block>
+        </div>
+
+        <button type="submit">Save Program</button>
+    </form>
+
+    <script th:inline="javascript">
+        document.querySelectorAll(".prog-edit-change").forEach(el => el.addEventListener("change", function () {
+            const day = el.dataset.day;
+            const flag = document.getElementById(day + "-bool");
+            if (flag) flag.value = "true";
+        }));
+    </script>
+</div>
+
+<div class="popup" th:fragment="Add-Prog(dto)">
+    <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+    <form class="form-group" th:action="@{/api/main/Programs/Add}" th:object="${dto}" method="post">
+        <h2>Add Program:</h2>
+        <div>
+            <label for="progname">Enter program name:</label>
+            <input type="text" id="progname" th:field="*{prog_name}">
+        </div>
+
+        <div class="columns-container">
+            <div class="column-card" th:each="day, stat : ${dto.mapdto}">
+                <p>
+                    <span th:text="${day.key}">Day</span> -
+                    <select th:id="${day.key} + 'tag'" th:field="*{tag}">
+                        <option th:each="tags : ${tag}" th:value="${tag}" th:text="${tag}"></option>
+                    </select><br>
+                    <hr>
+                </p>
+                <table id="prog-add-table">
+                    <tr>
+                        <th>No.</th>
+                        <th>Name</th>
+                        <th>Sets</th>
+                        <th>Reps</th>
+                        <th>duration</th>
+                    </tr>
+                    <tr th:each="item, istat : ${day.value}">
+                        <td><span th:text="${istat.count}">No.</span></td>
+                        <td><input type="text" placeholder="name"
+                                th:field="*{mapdto[__${day.key}__][__${istat.index}__].exercise_name}"></td>
+                        <td><input type="number" placeholder="sets"
+                                th:field="*{mapdto[__${day.key}__][__${istat.index}__].sets}"></td>
+                        <td><input type="number" placeholder="reps"
+                                th:field="*{mapdto[__${day.key}__][__${istat.index}__].reps}"></td>
+                        <td><input type="number" placeholder="duration"
+                                th:field="*{mapdto[__${day.key}__][__${istat.index}__].duration}"></td>
+                    </tr>
+                </table>
+                <button hx-get="/api/main/Programs/add-row" hx-trigger="click"
+                    th:hx-vals='|{"day":"${day.key}","index":"${program.value.size()}"}|' hx-swap="beforeend"
+                    hx-target="#prog-add-table">Add new Row</button>
             </div>
+        </div>
 
-            <button type="submit">Save Program</button>
-        </form>
-    </div>
+        <button type="submit">Save Program</button>
+    </form>
+</div>
 
-    <!--<div class="popup" th:fragment="Program-edit" id="Program-edit">
+<!--<div class="popup" th:fragment="Program-edit" id="Program-edit">
         <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
         <form class="form-group" th:action="@{/api/Programs/O-edit}" th:object="${EntryDTO}" method="post">
             <h2>Program Edit :</h2>
@@ -90,7 +163,3 @@
             <button type="submit">Save Program</button>
         </form>
     </div> -->
-
-</body>
-
-</html>

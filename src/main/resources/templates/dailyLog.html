@@ -35,10 +35,10 @@
         <ul class="sidenav-container">
             <li><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a></li>
             <li class="sidenav-links"><a href="Main.html" th:href="@{/api/Main}">Details</a></li>
-            <li class="sidenav-links"><a href="Programs.html" th:href="@{/api/Programs}">Programs</a></li>
+            <li class="sidenav-links"><a href="Programs.html" th:href="@{/api/main/Programs}">Programs</a></li>
             <li class="sidenav-links"><a href="#Log">Schedule</a></li>
-            <li class="sidenav-links"><a href="Exercise.html" th:href="@{/api/Exercise}">Exercises</a></li>
-            <li class="sidenav-links"><a href="Analyze.html" th:href="@{/api/Analyze}">Analyze</a></li>
+            <li class="sidenav-links"><a href="Exercise.html" th:href="@{/api/main/Exercise}">Exercises</a></li>
+            <li class="sidenav-links"><a href="Analyze.html" th:href="@{/api/main/Analyze}">Analyze</a></li>
         </ul>
     </div>
 
@@ -47,56 +47,6 @@
         <div class="popup-container">
 
             <div class="popup" id="dlp-edit">
-                <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
-                <form class="form-group" th:action="@{/api/Logs/edit}" th:object="${EntryDTO}" method="post">
-                    <h2>Current Program Edit:</h2>
-                    <p>Click on an item/element you want to change and enter the value</p><br>
-
-                    <div class="columns-container">
-                        <div class="column-card" th:each="cprogram : ${curProgram}">
-                            <p>
-                                <span th:text="${#temporals.format(curdate, 'dd MMMM yyyy')}">Date</span> - <span
-                                    th:text="${#temporals.day(curdate)}">Day</span><br>
-                                <hr>
-                            </p>
-                            <table class="cc-table" id="dl-popup-table">
-                                <tr>
-                                    <th>Exercise</th>
-                                    <th>Weights</th>
-                                    <th>Sets</th>
-                                    <th>Reps</th>
-                                    <th>Duration</th>
-                                    <th scope="row">Comment</th>
-                                    <th>Status</th>
-                                </tr>
-                                <tr th:each="item : ${curProgram}">
-                                    <td>
-                                        <input type="text" th:value="${item.getExerciseName()}" th:field="*{name}">
-                                    </td>
-                                    <td><input type="number" th:value="${item.getWeights()}" th:field="*{weights}"></td>
-                                    <td><input type="number" th:value="${item.getSets()}" th:field="*{sets}">
-                                    </td>
-                                    <td><input type="number" th:value="${item.getReps()}" th:field="*{reps}">
-                                    </td>
-                                    <td><input type="number" th:value="${item.getDuration()}" th:field="*{duration}">
-                                    </td>
-                                    <td scope="row"><textarea th:value="${item.getComment()}"
-                                            th:field="*{comment}"></textarea>
-                                    </td>
-                                    <td><select id="status" name="status">
-                                            <option th:each="status : ${logstatus}" th:value="${status}"
-                                                th:text="${status}" th:selected="${item.getLog_status()}"></option>
-                                        </select>
-                                    </td>
-                                </tr>
-                            </table>
-                            <button id="add-row-button" hx-get="/api/Logs/edit" hx-trigger="click" hx-swap="beforeend"
-                                hx-target="#dl-popup-table">Add new row</buton>
-                        </div>
-                    </div>
-
-                    <button type="submit">Save Program</button>
-                </form>
             </div>
 
         </div>
@@ -114,8 +64,8 @@
             <div th:if="${currentProgram != null and #lists.size(currentProgram) > 0}">
                 <div class="content-header" id="prog-header">
                     <h3>Current Program: <span th:text="${dlp-name}">program name</span></h3>
-                    <p>Date:<input id="date-select" hx-get="/api/Logs/date" hx-trigger="change" hx-swap="outerHTML"
-                            hx-target="#dlcol-card" type="date"></p>
+                    <p>Date:<input id="date-select" hx-get="/api/main/Logs/date" hx-trigger="change" hx-swap="innerHTML"
+                            hx-target="#dlcol-card" th:hx-vals='|{"date":"curdate"}|' type="date"></p>
                 </div>
                 <div class="columns-container">
                     <div class="column-card" id="dlcol-card">
@@ -126,6 +76,7 @@
                         </p>
                         <table class="cc-table">
                             <tr>
+                                <th>No.</th>
                                 <th>Exercise</th>
                                 <th>Weights</th>
                                 <th>Sets</th>
@@ -134,7 +85,8 @@
                                 <th scope="row">Comment</th>
                                 <th>Status</th>
                             </tr>
-                            <tr th:each="item : ${curProgram}">
+                            <tr th:each="item, stat : ${curProgram}">
+                                <td><span th:text="${stat.count}"></span></td>
                                 <td><span th:text="${item.getExerciseName()}">exercise name</span></td>
                                 <td><span
                                         th:text="${items.getWeights() != null ? item.getWeights() : '--'}">weights</span>
@@ -152,44 +104,12 @@
                                 <td><span th:text="${item.getLog_status()}">Status</span></td>
                             </tr>
                         </table>
-                    </div>
 
-                    <div class="column-card" th:fragment="new-date">
-                        <p>
-                            <span th:text="${#temporals.format(date, 'dd MMMM yyyy')}">Date</span> - <span
-                                th:text="${#temporals.day(date)}">Day</span><br>
-                            <hr>
-                        </p>
-                        <table class="cc-table">
-                            <tr>
-                                <th>Exercise</th>
-                                <th>Weights</th>
-                                <th>Sets</th>
-                                <th>Reps</th>
-                                <th>Duration</th>
-                                <th scope="row">Comment</th>
-                                <th>Status</th>
-                            </tr>
-                            <tr th:each="item : ${Program}">
-                                <td><span th:text="${item.getExerciseName()}">exercise name</span></td>
-                                <td th:text="${item.getWeights() != null ? item.getWeights() : '--'}">weights</td>
-                                <td><span th:text="${item.getSets() != null ? item.getSets() : '--'}">sets</span>
-                                </td>
-                                <td><span th:text="${item.getReps() != null ? item.getReps() : '--'}">reps</span>
-                                </td>
-                                <td><span
-                                        th:text="${item.getDuration() != null ? item.getDuration() : '--'}">duration</span>
-                                </td>
-                                <td scope="row"><textarea
-                                        th:text="${item.getComment() != null ? item.getComment() : '--'}"></textarea>
-                                </td>
-                                <td><span th:text="${item.getLog_status()}">Status</span></td>
-                            </tr>
-                        </table>
                     </div>
                 </div>
-
-                <button class="program-button" onclick="openpopup('dlp-edit')">Edit Workout</button>
+                <button class="program-button" hx-get="/api/main/Logs/edit" hx-trigger="click" hx-swap="innerHTML"
+                    hx-target="#dlp-edit" th:hx-vals='|{"date":"curdate"}|' onclick="openpopup('dlp-edit')">Edit
+                    Workout</button>
             </div>
         </div>
 
@@ -203,60 +123,7 @@
         </section>
     </div>
 
-    <script>
-
-        window.onload = function () {
-            const activeTab = localStorage.getItem('activeTab');
-            if (activeTab) {
-                document.getElementById(activeTab).click();
-            } else {
-                document.getElementById("detailstab").click();
-            }
-        };
-
-        document.querySelector("#date-select").valueAsDate = new Date();
-
-        function opentab(evt, tabName) {
-            var i, tabcontent, tablinks;
-
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
-
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.className += " active";
-            localStorage.setItem('activeTab', evt.currentTarget.id);
-        }
-
-        function openNav() {
-            document.getElementById("sidenav").classList.add("open");
-        }
-
-        function closeNav() {
-            document.getElementById("sidenav").classList.remove("open");
-        }
-
-        function openpopup(popupname) {
-            var i, popup, idvalue;
-
-            popup = document.getElementsByClassName("popup");
-            for (i = 0; i < popup.length; i++) {
-                popup[i].style.display = "none";
-            }
-
-            document.getElementById(popupname).style.display = "block";
-        }
-
-        function hideCard() {
-            document.getElementById("dlcol-card").style.display = "none";
-        }
-
+    <script src="../static/js/post-verify.js" th:src="@{/js/post-verify.js}">
     </script>
 
 </body>

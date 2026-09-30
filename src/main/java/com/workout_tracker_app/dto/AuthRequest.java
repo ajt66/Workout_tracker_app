@@ -14,5 +14,4 @@ import lombok.Setter;
 public class AuthRequest {
     private String username;
     private String password;
-    private String action; // New field to indicate the action (register or login)
 }

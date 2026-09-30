@@ -1,26 +1,44 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<tr th:fragment="dl-edit-row(index)" th:id="'dl-edit-row:' + ${count}">
+    <input type="hidden" value="0" th:name="|logs[${index}].log_id|">
+    <td><span th:text="${count}"></span></td>
+    <td>
+        <input type="text" placeholder="name" th:name="|logs[${index}].exercise_name|">
+    </td>
+    <td><input type="number" placeholder="weights" th:name="|logs[${index}].weights|"></td>
+    <td><input type="number" placeholder="sets" th:name="|logs[${index}].sets|">
+    </td>
+    <td><input type="number" placeholder="reps" th:name="|logs[${index}].reps|">
+    </td>
+    <td><input type="number" placeholder="duration" th:name="|logs[${index}].duration|">
+    </td>
+    <td scope="row"><textarea placeholder="comment" th:name="|logs[${index}].comment|"></textarea>
+    </td>
+    <td><select th:id="|logs[${stat.index}].log_status|" th:name="|logs[${index}].log_status|">
+            <option th:each="status : ${logstatus}" th:value="${status}" th:text="${status}"></option>
+        </select>
+    </td>
+    <td><button class="closebtn" hx-get="/api/main/Logs/delete" hx-target="#edit-dl-row:${count}" hx-trigger="click"
+            hx-swap="outerHTML">&times</button></td>
+</tr>
 
-<body>
-    <tr th:fragment="add-dl-row" id="add-dl-row">
-        <td><input type="text" placeholder="name" th:field="*{name}"></td>
-        <td><input type="number" placeholder="weights" th:field="*{weights}"></td>
-        <td><input type="number" placeholder="sets" th:field="*{sets}"></td>
-        <td><input type="number" placeholder="reps" th:field="*{reps}"></td>
-        <td><input type="text" placeholder="duration" th:field="*{duration}"></td>
-        <td><textarea th:field="*{comment}"></textarea></td>
-        <td><select>
-                <option th:each="status : ${logstatus}" th:value="${status}" th:text="${status}" th:field="*{status}">
-                </option>
-            </select></td>
-    </tr>
+<tr th:fragment="prog-edit-row(day, index)" id="'prog-edit-row:' + ${count}">
+    <input type="hidden" th:name="|mapdto[${day}][${index}].plog_id|" value="0">
+    <td><span th:text="${count}"></span></td>
+    <td><input type="text" placeholder="name" th:name="|mapdto[${day}][${index}].exercise_name|"></td>
+    <td><input type="number" placeholder="sets" th:name="|mapdto[${day}][${index}].sets|"></td>
+    <td><input type="number" placeholder="reps" th:name="|mapdto[${day}][${index}].reps|"></td>
+    <td><input type="number" placeholder="duration" th:name="|mapdto[${day}][${index}].duration|"></td>
+    <td><button class="closebtn" hx-get="/api/main/Logs/delete-row" hx-target="#prog-edit-row:${count}"
+            hx-trigger="click" hx-swap="outerHTML">&times</button></td>
+</tr>
 
-    <tr th:fragment="add-prog-row" id="add-prog-row">
-        <td><input type="text" placeholder="name" th:field="*{name}"></td>
-        <td><input type="number" placeholder="sets" th:field="*{sets}"></td>
-        <td><input type="number" placeholder="reps" th:field="*{reps}"></td>
-        <td><input type="text" placeholder="duration" th:field="*{duration}"></td>
-    </tr>
-</body>
-
-</html>
+<tr th:fragment="prog-add-row(day, index)" id="'prog-add-row:' + ${count}">
+    <input type="hidden" th:name="|mapdto[${day}][${index}].plog_id|" value="0">
+    <td><span th:text="${count}"></span></td>
+    <td><input type="text" placeholder="name" th:name="|mapdto[${day}][${index}].exercise_name|"></td>
+    <td><input type="number" placeholder="sets" th:name="|mapdto[${day}][${index}].sets|"></td>
+    <td><input type="number" placeholder="reps" th:name="|mapdto[${day}][${index}].reps|"></td>
+    <td><input type="number" placeholder="duration" th:name="|mapdto[${day}][${index}].duration|"></td>
+    <td><button class="closebtn" hx-get="/api/main/Logs/delete-row" hx-target="#prog-add-row:${count}"
+            hx-trigger="click" hx-swap="outerHTML">&times</button></td>
+</tr>

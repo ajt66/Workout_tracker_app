@@ -1,0 +1,64 @@
+<div class="popup" th:fragment="dlp-edit(date, day, Program)">
+    <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+    <form class="form-group" th:action="@{/api/main/Logs/edit}" th:object="${Program}" method="post">
+        <h2>Current Program Edit:</h2>
+        <p>Click on an item/element you want to change and enter the value</p><br>
+
+        <div class="columns-container">
+            <div class="column-card">
+                <p>
+                    <input type="hidden" th:value="${date}" th:field="*{date}">
+                    <input type="hidden" th:value="${day}" th:field="*{day}">
+                    <span th:text="${#temporals.format(curdate, 'dd MMMM yyyy')}">Date</span> - <span
+                        th:text="${#temporals.day(curdate)}">Day</span><br>
+                    <hr>
+                </p>
+                <th:block>
+                    <table class="cc-table" id="dl-popup-table">
+                        <tr>
+                            <th>No.</th>
+                            <th>Exercise</th>
+                            <th>Weights</th>
+                            <th>Sets</th>
+                            <th>Reps</th>
+                            <th>Duration</th>
+                            <th scope="row">Comment</th>
+                            <th>Status</th>
+                        </tr>
+                        <tr th:each="item, stat : ${Program}">
+                            <input type="hidden" th:value="${item.getLog_id()}" th:name="|logs[${stat.index}].log_id|">
+                            <td><span th:text="${stat.count}"></span></td>
+                            <td>
+                                <input type="text" th:value="${item.getExerciseName()}"
+                                    th:name="|logs[${stat.index}].exercise_name|">
+                            </td>
+                            <td><input type="number" th:value="${item.getWeights()}"
+                                    th:name="|logs[${stat.index}].weights|"></td>
+                            <td><input type="number" th:value="${item.getSets()}" th:name="|logs[${stat.index}].sets|">
+                            </td>
+                            <td><input type="number" th:value="${item.getReps()}" th:name="|logs[${stat.index}].reps|">
+                            </td>
+                            <td><input type="number" th:value="${item.getDuration()}"
+                                    th:name="|logs[${stat.index}].duration|">
+                            </td>
+                            <td scope="row"><textarea th:value="${item.getComment()}"
+                                    th:name="|logs[${stat.index}].comment|"></textarea>
+                            </td>
+                            <td><select th:id="|logs[${stat.index}].log_status|"
+                                    th:name="|logs[${stat.index}].log_status|">
+                                    <option th:each="status : ${logstatus}" th:value="${status}" th:text="${status}"
+                                        th:selected="${item.getLog_status()}"></option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                    <button id="add-row-button" hx-get="/api/main/Logs/add" hx-trigger="click" hx-swap="beforeend"
+                        hx-target="#dl-popup-table" th:hx-vals='|{"index":"${Program.size()}"}|'>Add
+                        new row</buton>
+                </th:block>
+            </div>
+        </div>
+
+        <button type="submit">Save Program</button>
+    </form>
+</div>

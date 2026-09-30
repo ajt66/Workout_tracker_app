@@ -1,18 +1,17 @@
 INSERT INTO workoutapp.users(username, email, password, role) VALUES
-('abc1', 'ABC1@gmail.com', 'abc1pass', 'user'),
-('abc2', 'ABC2@gmail.com', 'abc2pass', 'user'),
-('abc3', 'ABC3@gmail.com', 'abc3pass', 'user');
+('abc1', 'ABC1@gmail.com', '$2a$10$qTRXN5DkhRVYBNkraEVaHeqVs3daeya/IzLk7mRKWh6aXyJNpSnRy', 'user'),
+('abc2', 'ABC2@gmail.com', '$2a$10$n0/./pY0JM64Jd1g9DLC7u6cnldzg.nbVriB9Tlk4lPcgwduCIxte', 'user'),
+('abc3', 'ABC3@gmail.com', '$2a$10$70zMDUAlkwbsoxFo5aPbNebQVix1PEcfwud.yBwId/01dJygsTupu', 'user')
+ON CONFLICT DO NOTHING;
 
-INSERT INTO workoutapp.programs(program_name, user_id, status) VALUES
+INSERT INTO workoutapp.programs(program_name, user_id, pstatus) VALUES
 ('program1', 1, 'active'),
 ('program2', 1, 'inactive'),
 ('program3', 2, 'active'),
 ('program4', 2, 'inactive'),
 ('program5', 3, 'active'),
-('program6', 3, 'inactive');
-
-ALTER TABLE workoutapp.exercise_list 
-ALTER COLUMN exercise_id RESTART WITH 1;
+('program6', 3, 'inactive')
+ON CONFLICT DO NOTHING;
 
 INSERT INTO workoutapp.exercise_list(user_id, exercise_name, etype, muscle_group, category)
 SELECT u.id, v.col1, CAST(v.col2 AS exercise_type), v.col3, CAST(v.col4 AS category_type)
@@ -107,10 +106,8 @@ CROSS JOIN (
         ('Skull Crusher', 'compound', 'triceps', 'hypertrophy'),
         ('Overhead triceps extension', 'compound', 'triceps', 'hypertrophy'),
         ('Bodyweight triceps extension', 'compound', 'triceps', 'hypertrophy')
-) AS v(col1, col2, col3, col4);
-
-ALTER TABLE workoutapp.program_log
-ALTER COLUMN plog_id RESTART WITH 1;
+) AS v(col1, col2, col3, col4)
+ON CONFLICT DO NOTHING;
 
 INSERT INTO workoutapp.program_log (program_id, exercise_id, day, sets, reps, duration, tag) VALUES
 /*User 1 - Program 1, Program 2*/
@@ -205,10 +202,15 @@ INSERT INTO workoutapp.program_log (program_id, exercise_id, day, sets, reps, du
 (6, 180, 'Friday', 3, 12, null, 'lower'),
 (6, 183, 'Friday', 3, 12, null, 'lower'),
 (6, 3, 'Saturday', null, null, null, 'rest'),
-(6, 3, 'Sunday', null, null, null, 'rest');
+(6, 3, 'Sunday', null, null, null, 'rest')
+ON CONFLICT DO NOTHING;
 
-ALTER TABLE workoutapp.daily_log
-ALTER COLUMN log_id RESTART WITH 1;
+SELECT setval(
+    pg_get_serial_sequence('workoutapp.daily_log', 'log_id'),
+    COALESCE(MAX(log_id), 1),
+    MAX(log_id) IS NOT NULL
+)
+FROM workoutapp.daily_log;
 
 INSERT INTO workoutapp.daily_log (program_id, day, logging_date, exercise_id, weights, sets, reps, duration, comment, dstatus) VALUES
 /*Program 1 - User 1*/
@@ -387,23 +389,8 @@ INSERT INTO workoutapp.daily_log (program_id, day, logging_date, exercise_id, we
 (5, 'Tuesday', '2026-08-30', 57, 37.00, 3, 8, null, null, 'completed'),
 (5, 'Tuesday', '2026-08-30', 66, 42.00, 3, 8, null, null, 'completed'),
 (5, 'Wednesday', '2026-08-31', 201, 152.00, 3, 8, null, null, 'completed'),
-(5, 'Wednesday', '2026-08-31', 180, 122.00, 3, 8, null, null, 'completed');
-
-CREATE OR REPLACE PROCEDURE copy_program_data(u_id BIGINT)
-LANGUAGE plpgsql
-AS $$
-    DECLARE 
-        p_id BIGINT;
-        W_day TEXT;
-    BEGIN
-        W_day = TO_CHAR(CURRENT_DATE, 'FMDay');
-        SELECT program_id INTO p_id FROM workoutapp.programs WHERE user_id = u_id AND pstatus = 'active' LIMIT 1;
-
-        INSERT INTO workoutapp.daily_log (program_id, day, logging_date, exercise_id, sets, reps, duration, dstatus)
-        SELECT p.program_id, p.day, CURRENT_DATE, p.exercise_id, p.sets, p.reps, p.duration, 'pending'
-        FROM workoutapp.program_log p WHERE p.program_id = p_id AND p.day = W_Day;       
-    END;
-$$;
+(5, 'Wednesday', '2026-08-31', 180, 122.00, 3, 8, null, null, 'completed')
+ON CONFLICT DO NOTHING;
 
 /*
 SELECT p.id, v.col1, v.col2, v.col3, v.col4, v.col5, CAST(v.col6 AS program_tag)

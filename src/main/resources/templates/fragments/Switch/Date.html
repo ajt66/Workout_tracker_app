@@ -1,0 +1,34 @@
+<div class="column-card" th:fragment="new-date(date, Program)">
+    <p>
+        <span th:text="${#temporals.format(date, 'dd MMMM yyyy')}">Date</span> - <span
+            th:text="${#temporals.day(date)}">Day</span><br>
+        <hr>
+    </p>
+    <table class="cc-table">
+        <tr>
+            <th>Exercise</th>
+            <th>Weights</th>
+            <th>Sets</th>
+            <th>Reps</th>
+            <th>Duration</th>
+            <th scope="row">Comment</th>
+            <th>Status</th>
+        </tr>
+        <tr th:each="item : ${Program}">
+            <td><span th:text="${item.getExerciseName()}">exercise name</span></td>
+            <td th:text="${item.getWeights() != null ? item.getWeights() : '--'}">weights</td>
+            <td><span th:text="${item.getSets() != null ? item.getSets() : '--'}">sets</span>
+            </td>
+            <td><span th:text="${item.getReps() != null ? item.getReps() : '--'}">reps</span>
+            </td>
+            <td><span th:text="${item.getDuration() != null ? item.getDuration() : '--'}">duration</span>
+            </td>
+            <td scope="row"><textarea th:text="${item.getComment() != null ? item.getComment() : '--'}"></textarea>
+            </td>
+            <td><span th:text="${item.getLog_status()}">Status</span></td>
+        </tr>
+    </table>
+    <button class="program-button" hx-get="/api/main/Logs/edit" hx-trigger="click" hx-swap="innerHTML"
+        hx-target="#dlp-edit" th:hx-vals='|{"date":"${date}"}|' onclick="openpopup('dlp-edit')">Edit
+        Workout</button>
+</div>

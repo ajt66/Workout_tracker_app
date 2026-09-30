@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import com.workout_tracker_app.Entity.Program;
 import com.workout_tracker_app.Entity.programLog;
 import com.workout_tracker_app.dto.programDTO;
+import com.workout_tracker_app.Entity.DailyLog.logStatus;
 import com.workout_tracker_app.Entity.ExerciseList.Type;
 import com.workout_tracker_app.Entity.programLog.Tag;
 
@@ -40,7 +41,7 @@ public interface programLogRepo extends JpaRepository<programLog, Long> {
          * ;
          */
 
-        @Query(value = "SELECT new com.workout_tracker_app.dto.programDTO(p.program_id, p.program_name, plog.day, e.exercise_name, e.exercise_type, plog.sets, plog.reps, plog.duration, plog.program_tag)"
+        @Query(value = "SELECT new com.workout_tracker_app.dto.programDTO(p.program_id, p.program_name, plog.plog_id, plog.day, e.exercise_name, e.exercise_type, plog.sets, plog.reps, plog.duration, plog.program_tag, p.program_status)"
                         + TABLESELECT
                         + " WHERE p.program_name = :program_name AND u.id = :id" + ORDER_BY)
         List<programDTO> findByProgramNamewithDetails(@Param("program_name") String program_name,
@@ -51,14 +52,13 @@ public interface programLogRepo extends JpaRepository<programLog, Long> {
         @Modifying
         @Query(value = """
                         UPDATE workoutapp.program_log pl
-                        SET pl.exercise_id = :exercise_id, pl.day = :day, pl.sets = :sets,
-                        pl.reps = :reps, pl.duration = :duration
+                        SET exercise_id = :exercise_id, day = :day, sets = :sets,
+                        reps = :reps, duration = :duration
                         FROM workoutapp.programs p INNER JOIN workoutapp.users u ON p.user_id = u.id
-                        WHERE p.program_id = :program_id AND u.id = :id""", nativeQuery = true)
-        int updateProgramLog(@Param("program_id") Long program_id, @Param("exercise_id") Long exercise_id,
-                        @Param("day") String day,
-                        @Param("sets") Integer sets, @Param("reps") Integer reps, @Param("duration") String duration,
-                        @Param("id") Long id);
+                        WHERE p.program_id = :program_id AND u.id = :id AND pl.plog_id = :plog_id""", nativeQuery = true)
+        int updateProgramLog(@Param("id") Long id, @Param("program_id") Long program_id, @Param("plog_id") Long plog_id,
+                        @Param("exercise_id") Long exercise_id, @Param("day") String day,
+                        @Param("sets") Integer sets, @Param("reps") Integer reps, @Param("duration") String duration);
 
         @Modifying
         @Query(value = """
@@ -66,9 +66,17 @@ public interface programLogRepo extends JpaRepository<programLog, Long> {
                         SELECT p.program_id, :exercise_id, :day, :sets, :reps, :duration, :tag
                         FROM workoutapp.programs p INNER JOIN workoutapp.users u ON p.user_id = u.id
                         WHERE p.program_id = :program_id AND u.id = :id""", nativeQuery = true)
-        void insertProgramLog(@Param("program_id") Long program_id, @Param("exercise_id") Long exercise_id,
+        void insertProgramLog(@Param("id") Long id, @Param("program_id") Long program_id,
+                        @Param("exercise_id") Long exercise_id,
                         @Param("day") String day,
                         @Param("sets") Integer sets, @Param("reps") Integer reps, @Param("duration") String duration,
-                        @Param("tag") Tag tag, @Param("id") Long id);
+                        @Param("tag") Tag tag);
+
+        @Query(value = """
+                        SELECT COALESCE(SUM(*),0)
+                        FROM (SELECT DISTINCT d.logging_date FROM workoutapp.program_log pl
+                        JOIN workoutapp.programs p ON pl.program_id = p.program_id JOIN workoutapp.users u ON p.user_id = u.id
+                        WHERE p.program_id = :program_id AND u.id = :user_id)""", nativeQuery = true)
+        Long countByCurrentProgram(@Param("user_id") Long user_id, @Param("program_id") Long program_id);
 
 }

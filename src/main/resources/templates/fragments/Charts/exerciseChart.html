@@ -1,98 +1,91 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<div class="chart-container" th:fragment="exerciseChartjs">
+    <canvas id="exercisesChart" width="400" height="200"></canvas>
 
-<body>
-    <div class="chart-container" th:fragment="exerciseChartjs">
-        <canvas id="exercisesChart" width="400" height="200"></canvas>
+    <script type="module" th:inline="javascript">
+        import Chart from 'chart.js/auto';
 
-        <script th:inline="javascript">
-            import Chart from 'chart.js/auto';
+        const ctx = document.getElementById('exercisesChart').getContext('2d');
+        var exerciseDates = /*[[${exerciseDates}]]*/ 'default label';
+        var exerciseVolume = /*[[${exerciseVolume}]]*/ 'default volume';
+        var exerciseWeights = /*[[${exerciseWeights}]]*/ 'default weight';
+        var exerciseReps = /*[[${exerciseReps}]]*/ 'default reps';
+        var exerciseSets = /*[[${exerciseSets}]]*/ 'default sets';
 
-            const ctx = document.getElementById('exercisesChart').getContext('2d');
-            var exerciseDates = /*[[${exerciseDates}]]*/ 'default label';
-            var exerciseVolume = /*[[${exerciseVolume}]]*/ 'default volume';
-            var exerciseWeights = /*[[${exerciseWeights}]]*/ 'default weight';
-            var exerciseReps = /*[[${exerciseReps}]]*/ 'default reps';
-            var exerciseSets = /*[[${exerciseSets}]]*/ 'default sets';
-
-            export function createNewExerciseChart() {
-                exerciseChart.data.datasets.pop();
-                var filter = document.getElementById('workfilter').value;
-                const datasets = [
-                    {
-                        label: filter,
-                        data: returnData(filter),
-                        borderColor: 'rgb(54, 162, 235, 1)',
-                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                        fill: true
-                    }
-                ]
-                exerciseChart.data.datasets.push(newDataset);
-                exerciseChart.update();
-                document.getElementById("exercisesChart").style.display = "block";
-            }
-
-            export function updateexerciseChart(filter) {
-                exerciseChart.data.datasets.pop();
-                const newDataset = {
+        export function createNewExerciseChart() {
+            exerciseChart.data.datasets.pop();
+            var filter = document.getElementById('workfilter').value;
+            const datasets = [
+                {
                     label: filter,
                     data: returnData(filter),
                     borderColor: 'rgb(54, 162, 235, 1)',
                     backgroundColor: 'rgba(54, 162, 235, 0.5)',
                     fill: true
                 }
-                exerciseChart.data.datasets.push(newDataset);
-                exerciseChart.update();
-            };
+            ]
+            exerciseChart.data.datasets.push(newDataset);
+            exerciseChart.update();
+            document.getElementById("exercisesChart").style.display = "block";
+        }
 
-            function returnData(filter) {
-                switch (filter) {
-                    case 'Volume':
-                        return exerciseVolume;
-                    case 'Weight':
-                        return exerciseWeights;
-                    case 'Reps':
-                        return exerciseReps;
-                    case 'Sets':
-                        return exerciseSets;
-                    default:
-                        return [];
+        export function updateexerciseChart(filter) {
+            exerciseChart.data.datasets.pop();
+            const newDataset = {
+                label: filter,
+                data: returnData(filter),
+                borderColor: 'rgb(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                fill: true
+            }
+            exerciseChart.data.datasets.push(newDataset);
+            exerciseChart.update();
+        };
+
+        function returnData(filter) {
+            switch (filter) {
+                case 'Volume':
+                    return exerciseVolume;
+                case 'Weight':
+                    return exerciseWeights;
+                case 'Reps':
+                    return exerciseReps;
+                case 'Sets':
+                    return exerciseSets;
+                default:
+                    return [];
+            }
+        }
+
+        var filter = document.getElementById('workfilter').value;
+
+        const data = {
+            label: exerciseDates,
+            datasets: [
+                {
+                    label: 'filler value',
+                    data: [],
+                    borderColor: 'rgb(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    fill: true
+                }
+            ]
+
+        }
+
+        var config = {
+            type: 'line',
+            data: data,
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: 'Chart.js Line Chart'
                 }
             }
+        }
 
-            var filter = document.getElementById('workfilter').value;
+        var exerciseChart = new Chart(ctx, config);
+        document.getElementById("exercisesChart").style.display = "none";
 
-            const data = {
-                label: exerciseDates,
-                datasets: [
-                    {
-                        label: 'filler value',
-                        data: [],
-                        borderColor: 'rgb(54, 162, 235, 1)',
-                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                        fill: true
-                    }
-                ]
-
-            }
-
-            var config = {
-                type: 'line',
-                data: data,
-                options: {
-                    responsive: true,
-                    title: {
-                        display: true,
-                        text: 'Chart.js Line Chart'
-                    }
-                }
-            }
-
-            var exerciseChart = new Chart(ctx, config);
-            document.getElementById("exercisesChart").style.display = "none";
-
-        </script>
-    </div>
-</body>
-
-</html>
+    </script>
+</div>

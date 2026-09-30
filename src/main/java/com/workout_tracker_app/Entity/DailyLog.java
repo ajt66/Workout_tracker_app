@@ -1,8 +1,6 @@
 package com.workout_tracker_app.Entity;
 
 import java.time.LocalDate;
-import java.util.List;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,9 +11,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,8 +46,9 @@ public class DailyLog {
     @JoinColumn(name = "program_id", referencedColumnName = "program_id", nullable = false)
     private Program programDL;
 
-    @OneToMany(mappedBy = "dailylog", fetch = FetchType.LAZY, orphanRemoval = false)
-    private List<ExerciseList> exercise_id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exercise_id", referencedColumnName = "exercise_id")
+    private ExerciseList exercise_id;
 
     @Column(name = "weights", nullable = true)
     private Integer weights;
@@ -67,6 +66,7 @@ public class DailyLog {
     private String comment;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "dstatus", nullable = false)
     private logStatus log_status;
 }

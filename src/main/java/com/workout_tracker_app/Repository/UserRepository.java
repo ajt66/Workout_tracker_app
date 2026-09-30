@@ -13,6 +13,6 @@ import com.workout_tracker_app.Entity.User;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
 
-    @Query(value="SELECT u.id FROM User u WHERE u.username = :username")
-    User findUserId(@Param("username") String username);
+    @Query("SELECT u.id FROM User u WHERE u.username = :username")
+    Long findUserId(@Param("username") String username);
 }

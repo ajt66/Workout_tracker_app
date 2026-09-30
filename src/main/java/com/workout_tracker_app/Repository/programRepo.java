@@ -17,9 +17,10 @@ public interface programRepo extends JpaRepository<Program, Long> {
         public static final String ORDER_BY = " ORDER BY p.program_status ASC";
 
         // Program Name section
-        @Query(value = "SELECT new com.workout_tracker_app.dto.programDTO(p.program_id, p.program_name, p.program_status)"
-                        + TABLESELECT
-                        + " WHERE p.program_name = :program_name AND u.id = :id" + ORDER_BY)
+        @Query(value = """
+                        SELECT p.program_id, p.program_name, p.program_status
+                        FROM workoutapp.programs p INNER JOIN workoutapp.users u ON p.user_id = u.id
+                        WHERE p.program_name = :program_name AND u.id = :id""", nativeQuery = true)
         List<programDTO> findByProgramName(@Param("program_name") String program_name, @Param("id") Long id);
 
         // Status section
@@ -42,17 +43,18 @@ public interface programRepo extends JpaRepository<Program, Long> {
         // ---------------------------------------------------------------------------------------------------------------------------------------------------
         @Modifying
         @Query(value = """
-                        UPDATE p SET p.program_name = :program_name
-                        FROM workoutapp.programs p INNER JOIN workoutapp.users u ON p.user_id = u.id
-                        WHERE program_id = :p_id AND u.id = :id""", nativeQuery = true)
+                        UPDATE workoutapp.programs p SET program_name = :program_name
+                        FROM workoutapp.users u
+                        WHERE p.user_id = u.id AND p.program_id = :p_id AND u.id = :id""", nativeQuery = true)
         Long updateProgramName(@Param("program_name") String program_name, @Param("p_id") Long p_id,
                         @Param("id") Long id);
 
         @Modifying
         @Query(value = """
-                        UPDATE workoutapp.programs SET p.pstatus =:pstatus
-                        FROM workoutapp.programs p INNER JOIN workoutapp.users u ON p.user_id = u.id
-                        WHERE program_id = :p_id AND u.id = :id""", nativeQuery = true)
+                        UPDATE workoutapp.programs p
+                        SET pstatus = :pstatus
+                        FROM workoutapp.users u
+                        WHERE p.user_id = u.id AND p.program_id = :p_id AND u.id = :id""", nativeQuery = true)
         Long updateProgramStatus(@Param("pstatus") Status pstatus, @Param("p_id") Long p_id, @Param("id") Long id);
 
         @Modifying
@@ -60,7 +62,8 @@ public interface programRepo extends JpaRepository<Program, Long> {
                         INSERT INTO workoutapp.programs (program_name, user_id, pstatus)
                         SELECT :program_name, u.id, 'inactive'
                         FROM workoutapp.users u
-                        WHERE u.id = :id""", nativeQuery = true)
-        void insertProgram(@Param("program_name") String program_name, @Param("id") Long id);
+                        WHERE u.id = :userid
+                        RETURNING workoutapp.programs.program_id AS id""", nativeQuery = true)
+        Long insertProgram(@Param("program_name") String program_name, @Param("userid") Long userid);
 
 }

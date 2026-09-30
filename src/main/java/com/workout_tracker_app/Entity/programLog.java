@@ -1,7 +1,5 @@
 package com.workout_tracker_app.Entity;
 
-import java.util.List;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,9 +11,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,12 +42,9 @@ public class programLog {
     @JoinColumn(name = "program_id", referencedColumnName = "program_id", nullable = false)
     private Program program;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "dailylog_id", referencedColumnName = "log_id")
-    private DailyLog dailylog;
-
-    @OneToMany(mappedBy = "program_log", fetch = FetchType.LAZY, orphanRemoval = false)
-    private List<ExerciseList> exercise_id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exercise_id", referencedColumnName = "exercise_id", nullable = false)
+    private ExerciseList exercise_id;
 
     @Column(name = "day", nullable = false)
     private String day;
@@ -61,9 +56,10 @@ public class programLog {
     private Integer reps;
 
     @Column(name = "duration", nullable = true)
-    private Integer duration;
+    private String duration;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "tag", nullable = false)
     private Tag program_tag;
 }

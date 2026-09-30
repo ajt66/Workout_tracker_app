@@ -45,23 +45,56 @@
         </main>
     </header>
 
-    <!-- footer -->
-    <footer class="footer" id="support-section">
-        <!--<img src="../static/img/logo.png" class="footer-logo" alt="">-->
-        <div class="footer-text">
-            <p>Contact us</p>
-            <p>Email - support@WTA.com</p>
-            <p>Phone - 98 76 556655, 98 76 556644</p>
-        </div>
-    </footer>
+    <div class="page-content" id="homepage">
+
+        <section class="center-content" id="home-main">
+            <h1 data-aos="fade-up">About</h1>
+            <p data-aos="fade-up">A simple and intiutive website designed to provide users a way to log and track their
+                workouts and
+                fitness progress.</p>
+        </section>
+
+        <section class="leftside" id="">
+            <h1 data-aos="fade-up">Program Manager</h1>
+            <p data-aos="fade-up">Create your own programs or run a selection of programs readily available to you.
+                Programs can be easily
+                customised, deleted and switched for
+                other programs.
+            </p>
+        </section>
+
+        <section class="rightside" id="">
+            <h1 data-aos="fade-up">Workouts Log</h1>
+            <p data-aos="fade-up">Log your daily workouts based on the programs you are currently using.</p>
+        </section>
+
+        <section class="leftside" id="">
+            <h1 data-aos="fade-up">Progress Tracker</h1>
+            <p data-aos="fade-up">Track your fitness progress through our Analysis tab designed to display the user's
+                performance metrics
+                and data.</p>
+        </section>
+
+        <!-- footer -->
+        <footer class="footer" id="support-section">
+            <!--<img src="../static/img/logo.png" class="footer-logo" alt="">-->
+            <div class="footer-text">
+                <p>Contact us</p>
+                <p>Email - support@WTA.com</p>
+                <p>Phone - 98 76 556655, 98 76 556644</p>
+            </div>
+        </footer>
+
+    </div>
 
     <!-- animate on scoll JS CDN -->
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script th:src="@{https://unpkg.com/aos@2.3.1/dist/aos.js}"></script>
 
     <!-- Local JS File(s) -->
 
-    <script src="app.js"></script>
+    <script src="../static/js/pre-verify.js" th:src="@{/js/pre-verify.js}">
+    </script>
 </body>
 
 </html>

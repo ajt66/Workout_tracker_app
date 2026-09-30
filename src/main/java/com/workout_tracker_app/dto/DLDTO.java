@@ -1,7 +1,6 @@
 package com.workout_tracker_app.dto;
 
 import com.workout_tracker_app.Entity.DailyLog.logStatus;
-import com.workout_tracker_app.Entity.ExerciseList.Category;
 import com.workout_tracker_app.Entity.programLog.Tag;
 
 import java.time.LocalDate;
@@ -47,18 +46,9 @@ public class DLDTO {
         this.program_tag = program_tag;
     }
 
-    // For Queries with only day, logging_date, exercise_name, and log_status
-    public DLDTO(String day, LocalDate logging_date, String exercise_name, logStatus log_status) {
-        this.day = day;
-        this.logging_date = logging_date;
-        this.exercise_name = exercise_name;
-        this.log_status = log_status;
-    }
-
-    // For Queries with all details excluding muscle_group
-    public DLDTO(String day, LocalDate logging_date, String exercise_name, Integer weights,
-            Integer sets,
-            Integer reps, String duration, String comment, logStatus log_status, Tag program_tag) {
+    public DLDTO(String day, LocalDate logging_date, String exercise_name,
+            Integer weights, Integer sets,
+            Integer reps, String duration, String comment, logStatus log_status) {
         this.day = day;
         this.logging_date = logging_date;
         this.exercise_name = exercise_name;
@@ -68,12 +58,21 @@ public class DLDTO {
         this.duration = duration;
         this.comment = comment;
         this.log_status = log_status;
-        this.program_tag = program_tag;
     }
 
-    public DLDTO(Integer weights, Integer sets, Integer reps) {
-        this.weights = weights;
-        this.sets = sets;
-        this.reps = reps;
+    public DLDTO(Long log_id, String day, LocalDate logging_date, String exercise_name, logStatus log_status) {
+        this.log_id = log_id;
+        this.day = day;
+        this.logging_date = logging_date;
+        this.exercise_name = exercise_name;
+        this.log_status = log_status;
     }
+
+    public DLDTO(String day, LocalDate logging_date, String exercise_name, logStatus log_status) {
+        this.day = day;
+        this.logging_date = logging_date;
+        this.exercise_name = exercise_name;
+        this.log_status = log_status;
+    }
+
 }

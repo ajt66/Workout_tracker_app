@@ -52,14 +52,6 @@
                     track their progress over time.</p>
             </div>
 
-            <!-- hx-get="/Analyze/workouts" hx-trigger="click" hx-target="#workoutsTab"
-                            hx-swap="innerHTML"
-    hx-get="/Analyze/breakdown" hx-trigger="click" hx-target="#breakdownTab"
-                            hx-swap="innerHTML"                         
-    hx-get="/Analyze/exercise" hx-trigger="click"
-                            hx-target="#exercisesTab" hx-swap="innerHTML"  
-                        -->
-
             <div class="main-content">
                 <ul class="tab">
                     <li id="firstTab"><button class="tablink" onclick="opentab(event, 'metricsTab')" id="metrics">Key
@@ -81,26 +73,28 @@
                         <div class="column">
                             <ul>
                                 <li>Total exercises completed:<span class="tab1"></span><span
-                                        th:text="${exercisesum.getTotal()}">exercise_no</span></li>
+                                        th:text="${exercisesum}">exercise_no</span></li>
                                 <li>Completed sessions:<span class="tab1"></span><span
-                                        th:text="${SCsum.getTotal()}">completed_sessions</span>
+                                        th:text="${SCsum}">completed_sessions</span>
                                 </li>
                                 <li>Pending sessions:<span class="tab1"></span><span
-                                        th:text="${SPsum.getTotal()}">pending_sessions</span></li>
+                                        th:text="${SPsum}">pending_sessions</span></li>
                                 <li>Cancelled sessions:<span class="tab1"></span><span
-                                        th:text="${SIsum.getTotal()}">cancelled_sessions</span>
+                                        th:text="${SIsum}">cancelled_sessions</span>
                                 </li>
                             </ul>
                         </div>
                         <div class="column">
                             <ul>
-                                <li>Total volume:<span class="tab1"></span><span
-                                        th:text="${volumesum.getTotal()}">volume</span></li>
-                                <li>Total weights:<span class="tab1"></span><span
-                                        th:text="${WSRsum.getWeights()}">weights</span></li>
-                                <li>Total sets:<span class="tab1"></span><span th:text="${WSRsum.getSets()}">sets</span>
+                                <li>Total volume:<span class="tab1"></span><span th:text="${volumesum}">volume</span>
                                 </li>
-                                <li>Total reps:<span class="tab1"></span><span th:text="${WSRsum.getReps()}">reps</span>
+                                <li>Total weights:<span class="tab1"></span><span
+                                        th:text="${WSRsum.getTotal_weight()}">weights</span></li>
+                                <li>Total sets:<span class="tab1"></span><span
+                                        th:text="${WSRsum.getTotal_sets()}">sets</span>
+                                </li>
+                                <li>Total reps:<span class="tab1"></span><span
+                                        th:text="${WSRsum.getTotal_reps()}">reps</span>
                                 </li>
                             </ul>
                         </div>
@@ -113,8 +107,8 @@
 
                     <div class="Analyze-options">
                         <label for="workcategory">category :</label><span class="tab1"></span>
-                        <select id="workcategory" onchange="createNewWorkChart()" hx-post="/api/Analyze/workouts"
-                            hx-trigger="change" hx-target="workChartdiv" hx-swap="none" name="workcategory">
+                        <select id="workcategory" onchange="createNewWorkChart()" hx-post="/api/main/Analyze/workouts"
+                            hx-trigger="change" hx-target="#workChartdiv" hx-swap="none" name="workcategory">
                             <option value="none">None</option>
                             <option value="abs">Abs</option>
                             <option value="back">Back</option>
@@ -138,12 +132,15 @@
                     </div>
 
 
-                    <form id="workform" hx-get="/api/Analyze/workouts" hx-trigger="load" hx-swap="none"
-                        hx-target="workChart">
+                    <form id="workform" hx-get="/api/main/Analyze/workouts" hx-trigger="revealed" hx-swap="innerHTML"
+                        hx-target="#workChartdiv" hx-indicator="#workindicator">
                         <input type="hidden" name="category" id="preworkcategory" value="none">
                     </form>
 
-                    <div th:replace="fragments/workChart :: workChartjs" id="workChartdiv"></div>
+                    <div id="workChartdiv">
+                        <img id="workindicator" class="htmx-indicator" src="../static/svg-loaders/oval.svg"
+                            alt="loading">
+                    </div>
 
                 </div>
 
@@ -162,12 +159,15 @@
                         </select>
                     </div>
 
-                    <form id="breakform" hx-get="/api/Analyze/breakdown" hx-trigger="load" hx-swap="none"
-                        hx-target="breakChart">
+                    <form id="breakform" hx-get="/api/main/Analyze/breakdown" hx-trigger="revealed" hx-swap="innerHTML"
+                        hx-target="#breakChartdiv" hx-indicator="#breakindicator">
                         <input type="hidden" name="filter" id="prebreakfilter" value="volume">
                     </form>
 
-                    <div th:replace="fragments/breakChart :: breakChartjs" id="breakChartdiv"></div>
+                    <div id="#breakChartdiv">
+                        <img id="breakindicator" class="htmx-indicator" src="../static/svg-loaders/oval.svg"
+                            alt="loading">
+                    </div>
                 </div>
 
                 <div class="tab-content" id="exercisesTab">
@@ -175,8 +175,8 @@
 
                     <div class="Analyze-options">
                         <label for="name">Exercise Name :</label><span class="tab1"></span>
-                        <input type="text" id="exercise" name="exercise" hx-post="/api/Analyze/exercise"
-                            hx-trigger="change" hx-target="exercisesChart" hx-swap="none"
+                        <input type="text" id="exercise" name="exercise" hx-post="/api/main/Analyze/exercise"
+                            hx-trigger="change" hx-target="#exercisesChartdiv" hx-swap="none"
                             placeholder="Enter exercise name">
                         <label for="workfilter">Filter :</label><span class="tab1"></span>
                         <select id="workfilter" name="workfilter" onchange="updateexerciseChart(this.value)">
@@ -187,61 +187,27 @@
                         </select>
                     </div>
 
-                    <button style="display:none;" type="hidden" id="exerciseButton" hx-get="/api/Analyze/exercise"
-                        hx-trigger="load" hx-target="exercisesChartdiv" hx-swap="none"></button>
-
-                    <div th:replace="fragments/exerciseChart :: exerciseChartjs" id="exerciseChartdiv"></div>
+                    <div type="hidden" id="exerciseButton" hx-get="/api/main/Analyze/exercise" hx-trigger="revealed"
+                        hx-target="this" hx-swap="innerHTML" id="exerciseChartdiv">
+                        <img class="htmx-indicator" src="../static/svg-loaders/oval.svg" alt="loading">
+                    </div>
                 </div>
             </div>
-
-            <section class="footer" id="support-section">
-                <!--<img src="../static/img/logo.png" class="footer-logo" alt="">-->
-                <div class="footer-text">
-                    <p>Contact us</p>
-                    <p>Email - support@WTA.com</p>
-                    <p>Phone - 98 76 556655, 98 76 556644</p>
-                </div>
-            </section>
         </div>
 
-        <script>
+        <section class="footer" id="support-section">
+            <!--<img src="../static/img/logo.png" class="footer-logo" alt="">-->
+            <div class="footer-text">
+                <p>Contact us</p>
+                <p>Email - support@WTA.com</p>
+                <p>Phone - 98 76 556655, 98 76 556644</p>
+            </div>
+        </section>
+    </div>
 
-            window.onload = function () {
-                const activeTab = localStorage.getItem('activeTab');
-                if (activeTab) {
-                    document.getElementById(activeTab).click();
-                } else {
-                    document.getElementById("metrics").click();
-                }
-            };
 
-            function opentab(evt, tabName) {
-                var i, tabcontent, tablinks;
-
-                tabcontent = document.getElementsByClassName("tab-content");
-                for (i = 0; i < tabcontent.length; i++) {
-                    tabcontent[i].style.display = "none";
-                }
-
-                tablinks = document.getElementsByClassName("tablink");
-                for (i = 0; i < tablinks.length; i++) {
-                    tablinks[i].className = tablinks[i].className.replace(" selected", "");
-                }
-
-                document.getElementById(tabName).style.display = "block";
-                evt.currentTarget.className += " selected";
-                localStorage.setItem('activeTab', evt.currentTarget.id);
-            }
-
-            function openNav() {
-                document.getElementById("sidenav").classList.add("open");
-            }
-
-            function closeNav() {
-                document.getElementById("sidenav").classList.remove("open");
-            }
-
-        </script>
+    <script src="../static/js/post-verify.js" th:src="@{/js/post-verify.js}">
+    </script>
 
 </body>
 

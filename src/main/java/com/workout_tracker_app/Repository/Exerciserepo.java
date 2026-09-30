@@ -29,8 +29,8 @@ public interface Exerciserepo extends JpaRepository<ExerciseList, Long> {
     @Query("SELECT e FROM ExerciseList e WHERE e.exercise_name = :exerciseName")
     List<ExerciseList> findByName(@Param("exerciseName") String exerciseName);
 
-    @Query("SELECT e FROM ExerciseList e JOIN e.users u WHERE e.exercise_name = :exerciseName AND u.id = :user_id")
-    List<ExerciseList> findByNameWithUser(@Param("exerciseName") String exerciseName, @Param("user_id") Long user_id);
+    @Query(value = "SELECT e FROM ExerciseList e JOIN e.users u WHERE e.exercise_name = :exerciseName AND u.id = :user_id")
+    ExerciseList findByNameWithUser(@Param("exerciseName") String exerciseName, @Param("user_id") Long user_id);
 
     // Type section
     @Query("SELECT e FROM ExerciseList e WHERE e.exercise_type = :exerciseType")

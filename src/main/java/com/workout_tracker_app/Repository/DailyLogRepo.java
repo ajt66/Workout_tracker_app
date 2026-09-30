@@ -7,6 +7,8 @@ import com.workout_tracker_app.Entity.ExerciseList.Category;
 import com.workout_tracker_app.Entity.DailyLog.logStatus;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,7 +25,7 @@ public interface DailyLogRepo extends JpaRepository<DailyLog, Long> {
                         + " JOIN d.programDL p" + " JOIN p.users u";
 
         // LogId section
-        @Query(value = "SELECT new com.workout_tracker_app.dto.DLDTO(d.day, d.logging_date, e.exercise_name, d.log_status)"
+        @Query(value = "SELECT new com.workout_tracker_app.dto.DLDTO(d.log_id, d.day, d.logging_date, e.exercise_name, d.log_status)"
                         + TABLESELECT
                         + " WHERE d.log_id = :log_id AND u.id = :user_id")
         List<DLDTO> findByLogId(@Param("log_id") Long log_id, @Param("user_id") Long user_id);
@@ -40,41 +42,57 @@ public interface DailyLogRepo extends JpaRepository<DailyLog, Long> {
         List<DLDTO> findByStatus(@Param("log_status") logStatus log_status, @Param("user_id") Long user_id);
 
         // Procedure section
-        @Query(value = "CALL copy_program_data(:userId);", nativeQuery = true)
+        // --------------------------------------------------------------------------------------------------------------------------------------------------
+        @Modifying
+        @Transactional
+        @Query(value = "CALL copy_program_data(:userId)", nativeQuery = true)
         void copyProgramDataForToday(@Param("userId") Long userId);
 
-        @Query(value = "SELECT d.logging_date, d.day, e.exercise_name AS Exercise, d.weights, d.sets,"
-                        + " d.reps, d.duration, d.comment, d.dstatus"
-                        + " FROM workoutapp.daily_log d JOIN workoutapp.exercise_list e ON d.exercise_id = e.exercise_id"
-                        + " JOIN workoutapp.programs p ON d.program_id = p.program_id JOIN workoutapp.users u ON p.user_id = u.id"
-                        + " WHERE EXTRACT(MONTH FROM d.logging_date) = :month AND u.id = :user_id AND e.exercise_name IS NOT NULL", nativeQuery = true)
-        List<DLDTO> findCurrentProgramByMonth(@Param("month") int month, @Param("user_id") Long user_id);
+        @Modifying
+        @Transactional
+        @Query(value = "CALL change_status(:userid)", nativeQuery = true)
+        void changeStatus(@Param("userid") Long userid);
 
-        @Query(value = "SELECT d.logging_date, d.day, e.exercise_name AS Exercise, d.weights, d.sets,"
+        // Native Query
+        // --------------------------------------------------------------------------------------------------------------------------------------------------------
+        @Query(value = "SELECT d.log_id, d.logging_date, d.day, e.exercise_name AS Exercise, d.weights, d.sets,"
                         + " d.reps, d.duration, d.comment, d.dstatus"
                         + " FROM workoutapp.daily_log d JOIN workoutapp.exercise_list e ON d.exercise_id = e.exercise_id"
                         + " JOIN workoutapp.programs p ON d.program_id = p.program_id JOIN workoutapp.users u ON p.user_id = u.id"
-                        + " WHERE u.id = :user_id AND e.exercise_name IS NOT NULL AND d.logging_date = CURRENT_DATE", nativeQuery = true)
-        List<DLDTO> findByCurrentDate(@Param("user_id") Long user_id);
+                        + " WHERE EXTRACT(MONTH FROM d.logging_date) = :month AND p.program_id = :program_id AND u.id = :user_id AND e.exercise_name IS NOT NULL", nativeQuery = true)
+        List<DLDTO> findCurrentProgramByMonth(@Param("month") int month, @Param("user_id") Long user_id,
+                        @Param("program_id") Long program_id);
 
-        @Query(value = "SELECT d.logging_date, d.day, e.exercise_name AS Exercise, d.weights, d.sets,"
-                        + " d.reps, d.duration, d.comment, d.dstatus"
-                        + " FROM workoutapp.daily_log d JOIN workoutapp.exercise_list e ON d.exercise_id = e.exercise_id"
-                        + " JOIN workoutapp.programs p ON d.program_id = p.program_id JOIN workoutapp.users u ON p.user_id = u.id"
-                        + " WHERE u.id = :user_id AND e.exercise_name IS NOT NULL AND d.logging_date = :date", nativeQuery = true)
-        List<DLDTO> findByDate(@Param("user_id") Long user_id, @Param("date") LocalDate date);
+        @Query(value = """
+                        SELECT d.log_id, d.logging_date, d.day, e.exercise_name AS Exercise, d.weights, d.sets,
+                        d.reps, d.duration, d.comment, d.dstatus
+                        FROM workoutapp.daily_log d JOIN workoutapp.exercise_list e ON d.exercise_id = e.exercise_id
+                        JOIN workoutapp.programs p ON d.program_id = p.program_id JOIN workoutapp.users u ON p.user_id = u.id
+                        WHERE u.id = :user_id AND p.program_id = :program_id AND e.exercise_name IS NOT NULL AND d.logging_date = CURRENT_DATE""", nativeQuery = true)
+        List<DLDTO> findByCurrentDate(@Param("user_id") Long user_id, @Param("program_id") Long program_id);
+
+        @Query(value = """
+                        SELECT d.log_id, d.logging_date, d.day, e.exercise_name AS Exercise, d.weights, d.sets,
+                        d.reps, d.duration, d.comment, d.dstatus
+                        FROM workoutapp.daily_log d JOIN workoutapp.exercise_list e ON d.exercise_id = e.exercise_id
+                        JOIN workoutapp.programs p ON d.program_id = p.program_id JOIN workoutapp.users u ON p.user_id = u.id
+                        WHERE u.id = :user_id AND p.program_id = :program_id AND e.exercise_name IS NOT NULL AND d.logging_date = :date""", nativeQuery = true)
+        List<DLDTO> findByDate(@Param("user_id") Long user_id, @Param("date") LocalDate date,
+                        @Param("program_id") Long program_id);
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
         // Updating repository
         @Modifying
         @Query(value = """
                         UPDATE workoutapp.daily_log d
-                        SET d.exercise_id = :exercise_id, d.day = :day, d.sets = :sets,
-                        d.reps = :reps, d.duration = :duration, d.comment = :comment, d.dstatus = :status
+                        SET exercise_id = :exercise_id, day = :day, weights=:weights, sets = :sets,
+                        reps = :reps, duration = :duration, comment = :comment, dstatus = :status
                         FROM workoutapp.programs p INNER JOIN workoutapp.users u ON p.user_id = u.id
-                        WHERE p.program_id = :program_id AND u.id = :user_id AND d.logging_date = :date""", nativeQuery = true)
+                        WHERE p.program_id = :program_id AND u.id = :user_id AND d.log_id = :log_id AND d.logging_date = :date""", nativeQuery = true)
         int updateDailyLog(@Param("user_id") Long user_id, @Param("program_id") Long program_id,
+                        @Param("log_id") Long log_id,
                         @Param("exercise_id") Long exercise_id, @Param("day") String day,
+                        @Param("weights") Integer weights,
                         @Param("sets") Integer sets, @Param("reps") Integer reps, @Param("duration") String duration,
                         @Param("comment") String comment, @Param("dstatus") logStatus dstatus,
                         @Param("date") LocalDate date);
@@ -88,6 +106,7 @@ public interface DailyLogRepo extends JpaRepository<DailyLog, Long> {
                         WHERE p.program_id = :program_id AND u.id = :user_id AND d.logging_date = :date""", nativeQuery = true)
         void insertDailyLog(@Param("user_id") Long user_id, @Param("program_id") Long program_id,
                         @Param("exercise_id") Long exercise_id, @Param("day") String day,
+                        @Param("weights") Integer weights,
                         @Param("sets") Integer sets, @Param("reps") Integer reps, @Param("duration") String duration,
                         @Param("comment") String comment, @Param("dstatus") logStatus dstatus,
                         @Param("date") LocalDate date);
@@ -112,9 +131,10 @@ public interface DailyLogRepo extends JpaRepository<DailyLog, Long> {
                         + " WHERE d.dstatus = 'completed' AND u.id = :user_id AND d.weights IS NOT NULL AND d.sets IS NOT NULL AND d.reps IS NOT NULL", nativeQuery = true)
         Long sumByVolume(@Param("user_id") Long user_id);
 
-        @Query(value = "SELECT new com.workout_tracker_app.dto.DLDTO(COALESCE(SUM(d.weights), 0), COALESCE(SUM(d.sets), 0), COALESCE(SUM(d.reps), 0))"
-                        + TABLESELECT
-                        + " WHERE d.dstatus = 'completed' AND u.id = :user_id AND d.weights IS NOT NULL AND d.sets IS NOT NULL AND d.reps IS NOT NULL")
+        @Query(value = """
+                        SELECT COALESCE(SUM(d.weights), 0) AS Total_Weights, COALESCE(SUM(d.sets), 0) AS Total_Sets, COALESCE(SUM(d.reps), 0) AS Total_Reps FROM workoutapp.daily_log d
+                        JOIN workoutapp.programs p ON d.program_id = p.program_id JOIN workoutapp.users u ON p.user_id = u.id
+                        WHERE d.dstatus = 'completed' AND u.id = :user_id AND d.weights IS NOT NULL AND d.sets IS NOT NULL AND d.reps IS NOT NULL""", nativeQuery = true)
         AnalyzeDTO TotalWSR(@Param("user_id") Long user_id);
 
         // For workout page

@@ -55,15 +55,8 @@
                 <div class="columns-container" style="width: 50%;">
                     <div class="column">
                         <ul>
-                            <li>username: <span th:text="${User.getUserName()}">username</span></li>
+                            <li>username: <span th:text="${User.getUsername()}">username</span></li>
                             <li>email: <span th:text="${User.getEmail()}">email</span></li>
-                            <li>password: <span th:text="${User.getPassword()}">password</span></li>
-                        </ul>
-                    </div>
-                    <div class="column">
-                        <ul>
-                            <li>role: <span th:text="${User.getRole()}">role</span></li>
-                            <li>created at: <span th:text="${User.getCreatedAt()}">created at</span></li>
                         </ul>
                     </div>
                 </div>
@@ -80,43 +73,7 @@
         </section>
     </div>
 
-    <script>
-
-        window.onload = function () {
-            const activeTab = localStorage.getItem('activeTab');
-            if (activeTab) {
-                document.getElementById(activeTab).click();
-            } else {
-                document.getElementById("detailstab").click();
-            }
-        };
-
-        function opentab(evt, tabName) {
-            var i, tabcontent, tablinks;
-
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
-
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.className += " active";
-            localStorage.setItem('activeTab', evt.currentTarget.id);
-        }
-
-        function openNav() {
-            document.getElementById("sidenav").classList.add("open");
-        }
-
-        function closeNav() {
-            document.getElementById("sidenav").classList.remove("open");
-        }
-
+    <script src="../static/js/post-verify.js" th:src="@{/js/post-verify.js}">
     </script>
 
 </body>

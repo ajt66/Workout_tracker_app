@@ -15,12 +15,13 @@ public class programDTO {
 
     private Long program_id;
     private String program_name;
+    private Long plog_id;
     private String day;
     private String exercise_name;
     private Integer sets;
     private Integer reps;
     private Type exercise_type;
-    private Integer duration;
+    private String duration;
     private Tag program_tag;
     private Status program_status;
 
@@ -28,10 +29,12 @@ public class programDTO {
     }
 
     @PersistenceCreator
-    public programDTO(Long program_id, String program_name, String day, String exercise_name, Integer sets,
-            Integer reps, Type exercise_type, Integer duration, Tag program_tag, Status program_status) {
+    public programDTO(Long program_id, String program_name, Long plog_id, String day, String exercise_name,
+            Type exercise_type, Integer sets,
+            Integer reps, String duration, Tag program_tag, Status program_status) {
         this.program_id = program_id;
         this.program_name = program_name;
+        this.plog_id = plog_id;
         this.day = day;
         this.exercise_name = exercise_name;
         this.sets = sets;
@@ -71,7 +74,7 @@ public class programDTO {
     public programDTO(Long program_id, String program_name, String day, String exercise_name, Type exercise_type,
             Integer sets,
             Integer reps,
-            Integer duration, Tag program_tag) {
+            String duration, Tag program_tag) {
         this.program_id = program_id;
         this.program_name = program_name;
         this.day = day;
@@ -86,7 +89,7 @@ public class programDTO {
     public programDTO(Long program_id, String program_name, String day, String exercise_name, Type exercise_type,
             Integer sets,
             Integer reps,
-            Integer duration) {
+            String duration) {
         this.program_name = program_name;
         this.day = day;
         this.exercise_name = exercise_name;
