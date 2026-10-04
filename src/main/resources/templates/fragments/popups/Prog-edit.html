@@ -1,12 +1,12 @@
-<div class="popup" th:fragment="Program-edit(Program, prog-name, prog-id)">
+<div class="popup" th:fragment="Program_edit(Program, prog_name, prog_id)">
     <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
     <form class="form-group" th:action="@{/api/main/Programs/edit}" th:object="${Program}" method="post">
         <h2>Program Edit:</h2>
         <p>Click on an item/element you want to change and enter the value</p><br>
         <div>
             <label for="curProg">Program Name:</label>
-            <input type="text" th:value="${prog-name}" th:field="*{prog_name}">
-            <input type="hidden" th:value="${prog-id}" th:field="*{prog_id}">
+            <input type="text" th:value="${prog_name}" th:field="*{prog_name}">
+            <input type="hidden" th:value="${prog_id}" th:field="*{prog_id}">
         </div>
 
         <div class="columns-container">
@@ -14,29 +14,29 @@
                 <div class="column-card" th:id="${program.key}">
                     <p>
                         <span th:text="${program.key}">Day</span> - <select class="prog-edit-change" th:id="*{tag}"
-                            th:name="*{tag}" th:data-day="${program.key}">
+                            th:name="|tagmap[${program.key}]|" th:data-day="${program.key}">
                             <option th:each="tags : ${tag}" th:value="${tag}" th:text="${tag}"
-                                th:selected="${program.value.get(0).getTag()}"></option>
+                                th:selected="${program.value.get(0).getProgram_tag()}"></option>
                         </select><br>
                         <hr>
                     </p>
                     <input type="hidden" class="modified" th:id="${program.key} + '-bool'"
                         th:name="|daypair[${Program.key}]|" value="false">
-                    <th:block th:each="item, istat : ${program.value}">
-                        <table id="prog-edit-table">
-                            <tr>
-                                <th>No.</th>
-                                <th>Name</th>
-                                <th>Sets</th>
-                                <th>Reps</th>
-                                <th>duration</th>
-                            </tr>
+                    <table id="prog-edit-table">
+                        <tr>
+                            <th>No.</th>
+                            <th>Name</th>
+                            <th>Sets</th>
+                            <th>Reps</th>
+                            <th>duration</th>
+                        </tr>
+                        <th:block th:each="item, istat : ${program.value}">
                             <tr>
                                 <input class="prog-edit-change" type="hidden" th:value="${item.getPlog_id()}"
                                     th:name="|mapdto[${program.key}][${istat.index}].plog_id|"
                                     th:data-day="${program.key}">
                                 <td><span th:text="${istat.count}">No.</td>
-                                <td><input class="prog-edit-change" type="text" th:value="${item.getExerciseName()}"
+                                <td><input class="prog-edit-change" type="text" th:value="${item.getExercise_name()}"
                                         th:name="|mapdto[${program.key}][${istat.index}].exercise_name|"
                                         th:data-day="${program.key}">
                                 </td>
@@ -46,13 +46,13 @@
                                 <td><input class="prog-edit-change" type="number" th:value="${item.getReps()}"
                                         th:name="|mapdto[${program.key}][${istat.index}].reps|"
                                         th:data-day="${program.key}"></td>
-                                <td><input class="prog-edit-change" type="number" th:vale="${item.getDuration()}"
+                                <td><input class="prog-edit-change" type="number" th:value="${item.getDuration()}"
                                         th:name="|mapdto[${program.key}][${istat.index}].duration|"
                                         th:data-day="${program.key}">
                                 </td>
                             </tr>
-                        </table>
-                    </th:block>
+                        </th:block>
+                    </table>
                     <button hx-get="/api/main/Programs/edit-row"
                         th:hx-vals='|{"day":"${program.key}","index":"${program.value.size()}"}|' hx-trigger="click"
                         hx-swap="beforeend" hx-target="#prog-edit-table">Add new Row</button>
@@ -72,7 +72,7 @@
     </script>
 </div>
 
-<div class="popup" th:fragment="Add-Prog(dto)">
+<div class="popup" th:fragment="Add_Prog(dto)">
     <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
     <form class="form-group" th:action="@{/api/main/Programs/Add}" th:object="${dto}" method="post">
         <h2>Add Program:</h2>
@@ -85,7 +85,7 @@
             <div class="column-card" th:each="day, stat : ${dto.mapdto}">
                 <p>
                     <span th:text="${day.key}">Day</span> -
-                    <select th:id="${day.key} + 'tag'" th:field="*{tag}">
+                    <select th:id="${day.key} + 'tag'" th:field="*{tagmap[__${program.key}__]}">
                         <option th:each="tags : ${tag}" th:value="${tag}" th:text="${tag}"></option>
                     </select><br>
                     <hr>
@@ -98,17 +98,19 @@
                         <th>Reps</th>
                         <th>duration</th>
                     </tr>
-                    <tr th:each="item, istat : ${day.value}">
-                        <td><span th:text="${istat.count}">No.</span></td>
-                        <td><input type="text" placeholder="name"
-                                th:field="*{mapdto[__${day.key}__][__${istat.index}__].exercise_name}"></td>
-                        <td><input type="number" placeholder="sets"
-                                th:field="*{mapdto[__${day.key}__][__${istat.index}__].sets}"></td>
-                        <td><input type="number" placeholder="reps"
-                                th:field="*{mapdto[__${day.key}__][__${istat.index}__].reps}"></td>
-                        <td><input type="number" placeholder="duration"
-                                th:field="*{mapdto[__${day.key}__][__${istat.index}__].duration}"></td>
-                    </tr>
+                    <th:block th:each="item, istat : ${day.value}">
+                        <tr>
+                            <td><span th:text="${istat.count}">No.</span></td>
+                            <td><input type="text" placeholder="name"
+                                    th:field="*{mapdto[__${day.key}__][__${istat.index}__].exercise_name}"></td>
+                            <td><input type="number" placeholder="sets"
+                                    th:field="*{mapdto[__${day.key}__][__${istat.index}__].sets}"></td>
+                            <td><input type="number" placeholder="reps"
+                                    th:field="*{mapdto[__${day.key}__][__${istat.index}__].reps}"></td>
+                            <td><input type="number" placeholder="duration"
+                                    th:field="*{mapdto[__${day.key}__][__${istat.index}__].duration}"></td>
+                        </tr>
+                    </th:block>
                 </table>
                 <button hx-get="/api/main/Programs/add-row" hx-trigger="click"
                     th:hx-vals='|{"day":"${day.key}","index":"${program.value.size()}"}|' hx-swap="beforeend"

@@ -43,7 +43,7 @@ public class homeController {
             AuthResponse service = AService.register(request);
             Cookie cookie = new Cookie("jwt", service.getToken());
             cookie.setHttpOnly(true);
-            cookie.setPath("/");
+            cookie.setPath("/api/main");
             cookie.setMaxAge(3600);
             cookie.setSecure(true); // Ensure the cookie is sent over HTTPS
             response.addCookie(cookie);
@@ -70,7 +70,7 @@ public class homeController {
             AuthResponse service = AService.authenticate(Request);
             Cookie cookie = new Cookie("jwt", service.getToken());
             cookie.setHttpOnly(true);
-            cookie.setPath("/");
+            cookie.setPath("/api/main");
             cookie.setMaxAge(3600);
             cookie.setSecure(true);
             response.addCookie(cookie);
@@ -84,15 +84,8 @@ public class homeController {
     }
 
     @GetMapping("/sign-out")
-    public String showSignOut(HttpServletResponse response) {
+    public String showSignOut() {
         // Clear the JWT cookie
-        Cookie cookie = new Cookie("jwt", null);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0); // Expire the cookie immediately
-        cookie.setSecure(true);
-        response.addCookie(cookie);
-
         return "sign-out"; // Redirect to login page after sign-out
     }
 }

@@ -14,7 +14,7 @@ public class mapDTO {
     private Map<String, List<programDTO>> mapdto;
     private String prog_name;
     private Long prog_id;
-    private Tag tag;
+    private Map<String, Tag> tagmap;
     private Map<String, Boolean> daypair;
 
     public void setMapDto(Map<String, List<programDTO>> mapdto) {

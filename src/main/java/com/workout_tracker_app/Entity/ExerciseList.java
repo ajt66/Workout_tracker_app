@@ -32,7 +32,7 @@ public class ExerciseList {
     }
 
     public enum Category {
-        cardio, strength, flexibility, hypertrophy, isometrics, hypertrophyorstrength
+        cardio, strength, flexibility, hypertrophy, isometrics, hypertrophyorstrength, none
     }
 
     @Id

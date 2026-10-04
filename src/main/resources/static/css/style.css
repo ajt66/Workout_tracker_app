@@ -131,6 +131,7 @@ section {
     display: flex;
     align-items: center;
     justify-content: center;
+    align-content: center;
     list-style: none;
     width: 100%;
 }
@@ -484,10 +485,18 @@ section {
     text-align: center;
 }
 
-#Prog-switch {
+#Prog-switch,
+#Prog-delete,
+#signout {
     width: 45%;
     height: 35%;
     margin-top: 100px;
+}
+
+.signout-button {
+    border-style: none;
+    background: inherit;
+    font-size: 17px;
 }
 
 #programedit,

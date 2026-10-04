@@ -17,6 +17,10 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
     <link rel="stylesheet" href="../static/css/style.css" th:href="@{/css/style.css}">
+
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"
+        integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V"
+        crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -24,8 +28,10 @@
         <nav class="navbar">
             <ul class="links-container">
                 <span class="toggle-button" onclick="openNav()">&#9776;</span>
-                <li class="link-item"><a href="home.html" th:href="@{/api/home}">Home</a></li>
-                <li class="link-item"><a href="sign-out.html" th:href="@{/api/sign-out}">Sign out</a></li>
+                <li class="link-item"><a onclick="openpopup('signout')" hx-get="/api/main/sign-out" hx-trigger="click"
+                        hx-target="#signout" hx-vals='{"Origin": "main"}' hx-swap="innerHTML">Home</a></li>
+                <li class="link-item"><a onclick="openpopup('signout')" hx-get="/api/main/sign-out" hx-trigger="click"
+                        hx-target="#signout" hx-vals='{"Origin": "signout"}' hx-swap="innerHTML">Sign out</a></li>
                 <li class="link-item"><a href="#support-div">Support</a></li>
             </ul>
         </nav>
@@ -35,18 +41,24 @@
         <ul class="sidenav-container">
             <li><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a></li>
             <li class="sidenav-links"><a href="#details">Details</a></li>
-            <li class="sidenav-links"><a href="Programs.html" th:href="@{/api/Programs}">Programs</a></li>
-            <li class="sidenav-links"><a href="dailyLog.html" th:href="@{/api/Logs}">Workout Logs</a></li>
-            <li class="sidenav-links"><a href="Exercise.html" th:href="@{/api/Exercise}">Exercises</a>
+            <li class="sidenav-links"><a href="Programs.html" th:href="@{/api/main/Programs}">Programs</a></li>
+            <li class="sidenav-links"><a href="dailyLog.html" th:href="@{/api/main/Logs}">Workout Logs</a></li>
+            <li class="sidenav-links"><a href="Exercise.html" th:href="@{/api/main/Exercise}">Exercises</a>
             </li>
-            <li class="sidenav-links"><a href="Analyze.html" th:href="@{/api/Analyze}">Analyze</a></li>
+            <li class="sidenav-links"><a href="Analyze.html" th:href="@{/api/main/Analyze}">Analyze</a></li>
         </ul>
     </div>
 
     <div class="page-content">
 
+        <div class="popup-container">
 
-        <h1 class="welcome-heading">Welcome, <span th:text="${User.getUserName()}"></span>
+            <div class="popup" id="signout">
+            </div>
+
+        </div>
+
+        <h1 class="welcome-heading">Welcome, <span th:text="${User_name}"></span>
         </h1>
 
         <div class="sidenav-content" id="details">
@@ -55,8 +67,8 @@
                 <div class="columns-container" style="width: 50%;">
                     <div class="column">
                         <ul>
-                            <li>username: <span th:text="${User.getUsername()}">username</span></li>
-                            <li>email: <span th:text="${User.getEmail()}">email</span></li>
+                            <li>username: <span th:text="${User_name}">username</span></li>
+                            <li>email: <span th:text="${User_email}">email</span></li>
                         </ul>
                     </div>
                 </div>

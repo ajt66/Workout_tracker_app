@@ -24,8 +24,10 @@
         <nav class="navbar">
             <ul class="links-container">
                 <span class="toggle-button" onclick="openNav()">&#9776;</span>
-                <li class="link-item"><a href="home.html" th:href="@{/api/home}">Home</a></li>
-                <li class="link-item"><a href="sign-out.html" th:href="@{/api/sign-out}">Sign out</a></li>
+                <li class="link-item"><a onclick="openpopup('signout')" hx-get="/api/main/sign-out" hx-trigger="click"
+                        hx-target="#signout" hx-vals='{"Origin": "main"}' hx-swap="innerHTML">Home</a></li>
+                <li class="link-item"><a onclick="openpopup('signout')" hx-get="/api/main/sign-out" hx-trigger="click"
+                        hx-target="#signout" hx-vals='{"Origin": "signout"}' hx-swap="innerHTML">Sign out</a></li>
                 <li class="link-item"><a href="#support-div">Support</a></li>
             </ul>
         </nav>
@@ -34,7 +36,7 @@
     <div class="sidenav-bar" id="sidenav">
         <ul class="sidenav-container">
             <li><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a></li>
-            <li class="sidenav-links"><a href="Main.html" th:href="@{/api/Main}">Details</a></li>
+            <li class="sidenav-links"><a href="Main.html" th:href="@{/api/main}">Details</a></li>
             <li class="sidenav-links"><a href="Programs.html" th:href="@{/api/main/Programs}">Programs</a></li>
             <li class="sidenav-links"><a href="#Log">Schedule</a></li>
             <li class="sidenav-links"><a href="Exercise.html" th:href="@{/api/main/Exercise}">Exercises</a></li>
@@ -45,6 +47,9 @@
     <div class="page-content">
 
         <div class="popup-container">
+
+            <div class="popup" id="signout">
+            </div>
 
             <div class="popup" id="dlp-edit">
             </div>
@@ -63,7 +68,7 @@
 
             <div th:if="${currentProgram != null and #lists.size(currentProgram) > 0}">
                 <div class="content-header" id="prog-header">
-                    <h3>Current Program: <span th:text="${dlp-name}">program name</span></h3>
+                    <h3>Current Program: <span th:text="${dlp_name}">program name</span></h3>
                     <p>Date:<input id="date-select" hx-get="/api/main/Logs/date" hx-trigger="change" hx-swap="innerHTML"
                             hx-target="#dlcol-card" th:hx-vals='|{"date":"curdate"}|' type="date"></p>
                 </div>

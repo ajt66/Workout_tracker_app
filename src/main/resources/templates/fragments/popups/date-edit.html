@@ -1,4 +1,4 @@
-<div class="popup" th:fragment="dlp-edit(date, day, Program)">
+<div class="popup" th:fragment="dlp_edit(date, day, Program)">
     <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
     <form class="form-group" th:action="@{/api/main/Logs/edit}" th:object="${Program}" method="post">
         <h2>Current Program Edit:</h2>

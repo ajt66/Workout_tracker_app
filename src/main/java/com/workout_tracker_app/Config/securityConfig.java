@@ -52,7 +52,7 @@ public class securityConfig {
                                 "/favicon.ico")
                         .permitAll()
                         // Everything else requires authentication
-                        .anyRequest().authenticated())
+                        .requestMatchers("/api/main", "/api/main/**").authenticated())
 
                 // Stateless session - no server-side session storage
                 .sessionManagement(session -> session

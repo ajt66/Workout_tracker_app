@@ -1,4 +1,4 @@
-<div class="popup" th:fragment="switch">
+<div class="popup" th:fragment="switch(switchId)">
     <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
     <form class="form-group" th:action="@{/api/main/Programs/switch}" method="post">
         <h2>Program Switch Confirmation:</h2>
@@ -9,7 +9,7 @@
     </form>
 </div>
 
-<div class="popup" th:fragment="delete">
+<div class="popup" th:fragment="delete(deleteId)">
     <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
     <form class="form-group" th:action="@{/api/main/Programs/delete}" method="post">
         <h2>Program deletion Confirmation:</h2>

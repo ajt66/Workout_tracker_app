@@ -1,4 +1,4 @@
-<div class="column-card" th:fragment="new-date(date, Program)">
+<div class="column-card" th:fragment="new_date(date, Program)">
     <p>
         <span th:text="${#temporals.format(date, 'dd MMMM yyyy')}">Date</span> - <span
             th:text="${#temporals.day(date)}">Day</span><br>
