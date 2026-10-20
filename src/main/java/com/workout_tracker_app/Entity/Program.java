@@ -14,8 +14,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,7 +29,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Program {
 
-    public enum Status {
+    public enum program_status {
         active, inactive
     }
 
@@ -52,9 +50,7 @@ public class Program {
     @OneToMany(mappedBy = "program", fetch = FetchType.LAZY, orphanRemoval = false)
     private List<programLog> program_log;
 
-    @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "pstatus", nullable = false)
-    private Status program_status;
+    private String program_status;
 
 }

@@ -3,8 +3,6 @@ package com.workout_tracker_app.dto;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.workout_tracker_app.Entity.programLog.Tag;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +11,7 @@ import lombok.Setter;
 public class EntryDTO {
     private LocalDate date;
     private String day;
-    private Tag tag;
+    private String tag;
     private List<DLDTO> logs;
 
     public void setValues() {

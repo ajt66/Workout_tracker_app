@@ -2,6 +2,7 @@ package com.workout_tracker_app.Repository;
 
 import java.util.List;
 
+import org.antlr.v4.runtime.atn.SemanticContext.AND;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -9,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.workout_tracker_app.Entity.Program;
 import com.workout_tracker_app.dto.programDTO;
-import com.workout_tracker_app.Entity.Program.Status;
+import com.workout_tracker_app.Entity.Program.program_status;
 
 public interface programRepo extends JpaRepository<Program, Long> {
 
@@ -28,12 +29,13 @@ public interface programRepo extends JpaRepository<Program, Long> {
                         + TABLESELECT
                         + " WHERE p.program_status = :status AND u.id = :id" + ORDER_BY
                         + " LIMIT 1")
-        programDTO findByActiveStatus(@Param("status") Status status, @Param("id") Long id);
+        programDTO findByActiveStatus(@Param("status") String status, @Param("id") Long id);
 
-        @Query(value = "SELECT new com.workout_tracker_app.dto.programDTO(p.program_id, p.program_name, p.program_status)"
-                        + TABLESELECT
-                        + " WHERE p.program_status = :status AND u.id = :id" + ORDER_BY)
-        List<programDTO> findByInactiveStatus(@Param("status") Status status, @Param("id") Long id);
+        @Query(value = """
+                        SELECT p.program_id, p.program_name, p.pstatus FROM workoutapp.programs p
+                        INNER JOIN workoutapp.users u ON p.user_id = u.id
+                        WHERE p.pstatus = :status AND u.id = :id""", nativeQuery = true)
+        List<programDTO> findByInactiveStatus(@Param("status") String status, @Param("id") Long id);
 
         @Query(value = "SELECT new com.workout_tracker_app.dto.programDTO(p.program_id)"
                         + TABLESELECT
@@ -55,7 +57,7 @@ public interface programRepo extends JpaRepository<Program, Long> {
                         SET pstatus = :pstatus
                         FROM workoutapp.users u
                         WHERE p.user_id = u.id AND p.program_id = :p_id AND u.id = :id""", nativeQuery = true)
-        Long updateProgramStatus(@Param("pstatus") Status pstatus, @Param("p_id") Long p_id, @Param("id") Long id);
+        Long updateProgramStatus(@Param("pstatus") String pstatus, @Param("p_id") Long p_id, @Param("id") Long id);
 
         @Modifying
         @Query(value = """

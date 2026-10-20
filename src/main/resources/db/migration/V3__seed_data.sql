@@ -18,7 +18,7 @@ SELECT u.id, v.col1, CAST(v.col2 AS exercise_type), v.col3, CAST(v.col4 AS categ
 FROM workoutapp.users u
 CROSS JOIN (
     VALUES
-        ('Rest And Recovery', 'none', null, 'none'),
+        ('Rest And Recovery', 'none', 'none', 'none'),
         ('Ab-Wheel Rollout', 'isolation', 'abs', 'hypertrophy'),
         ('Cable Crunch', 'isolation', 'abs', 'hypertrophy'),
         ('Crunch', 'isolation', 'abs', 'hypertrophy'),
@@ -56,13 +56,13 @@ CROSS JOIN (
         ('Incline Curls', 'isolation', 'biceps', 'hypertrophy'),
         ('PinWheel Curls', 'isolation', 'biceps', 'hypertrophy'),
         ('Pelican Curls', 'isolation', 'biceps', 'hypertrophy'),
-        ('Running(Outdoor)', 'none', null, 'cardio'),
-        ('Running(Treadmill)', 'none', null, 'cardio'),
-        ('Sprinting', 'none', null, 'cardio'),
-        ('Walking', 'none', null, 'cardio'),
-        ('Swimming', 'none', null, 'cardio'),
-        ('Cycling', 'none', null, 'cardio'),
-        ('Elliptical Trainer', null, null, 'cardio'),
+        ('Running(Outdoor)', 'none', 'none', 'cardio'),
+        ('Running(Treadmill)', 'none', 'none', 'cardio'),
+        ('Sprinting', 'none', 'none', 'cardio'),
+        ('Walking', 'none', 'none', 'cardio'),
+        ('Swimming', 'none', 'none', 'cardio'),
+        ('Cycling', 'none', 'none', 'cardio'),
+        ('Elliptical Trainer', 'none', 'none', 'cardio'),
         ('Barbell Bench Press', 'compound', 'chest', 'hypertrophyorstrength'),
         ('Dumbbell Bench Press', 'compound', 'chest', 'hypertrophyorstrength'),
         ('Cable Fly', 'isolation', 'chest', 'hypertrophy'),
@@ -110,7 +110,7 @@ CROSS JOIN (
 ON CONFLICT DO NOTHING;
 
 INSERT INTO workoutapp.program_log (program_id, exercise_id, day, sets, reps, duration, tag) VALUES
-/*User 1 - Program 1, Program 2*/
+/*User 1 - Program 1*/
 (1, 160, 'Monday', 3, 8, null, 'push'),
 (1, 148, 'Monday', 3, 12, null, 'push'),
 (1, 55, 'Tuesday', 3, 12, null, 'pull'),
@@ -124,6 +124,7 @@ INSERT INTO workoutapp.program_log (program_id, exercise_id, day, sets, reps, du
 (1, 199, 'Saturday', 3, 12, null, 'legs'),
 (1, 178, 'Saturday', 3, 12, null, 'legs'),
 (1, 1, 'Sunday', null, null, null, 'rest'),
+/*User 1 - Program 2*/
 (2, 160, 'Monday', 3, 8, null, 'upper'),
 (2, 148, 'Monday', 3, 12, null, 'upper'),
 (2, 55, 'Monday', 3, 12, null, 'upper'),
@@ -141,7 +142,7 @@ INSERT INTO workoutapp.program_log (program_id, exercise_id, day, sets, reps, du
 (2, 181, 'Friday', 3, 12, null, 'lower'),
 (2, 1, 'Saturday', null, null, null, 'rest'),
 (2, 1, 'Sunday', null, null, null, 'rest'),
-/*User 2 - Program 3, Program 4*/
+/*User 2 - Program 3*/
 (3, 161, 'Monday', 3, 8, null, 'push'),
 (3, 149, 'Monday', 3, 12, null, 'push'),
 (3, 56, 'Tuesday', 3, 12, null, 'pull'),
@@ -155,6 +156,7 @@ INSERT INTO workoutapp.program_log (program_id, exercise_id, day, sets, reps, du
 (3, 200, 'Saturday', 3, 12, null, 'legs'),
 (3, 179, 'Saturday', 3, 12, null, 'legs'),
 (3, 2, 'Sunday', null, null, null, 'rest'),
+/*User 2 - Program 4*/
 (4, 161, 'Monday', 3, 8, null, 'upper'),
 (4, 149, 'Monday', 3, 12, null, 'upper'),
 (4, 56, 'Monday', 3, 12, null, 'upper'),
@@ -172,7 +174,7 @@ INSERT INTO workoutapp.program_log (program_id, exercise_id, day, sets, reps, du
 (4, 182, 'Friday', 3, 12, null, 'lower'),
 (4, 2, 'Saturday', null, null, null, 'rest'),
 (4, 2, 'Sunday', null, null, null, 'rest'),
-/*User 3 - Program 5, Program 6*/
+/*User 3 - Program 5*/
 (5, 162, 'Monday', 3, 8, null, 'push'),
 (5, 150, 'Monday', 3, 12, null, 'push'),
 (5, 57, 'Tuesday', 3, 12, null, 'pull'),
@@ -186,6 +188,7 @@ INSERT INTO workoutapp.program_log (program_id, exercise_id, day, sets, reps, du
 (5, 201, 'Saturday', 3, 12, null, 'legs'),
 (5, 180, 'Saturday', 3, 12, null, 'legs'),
 (5, 3, 'Sunday', null, null, null, 'rest'),
+/*User 3 - Program 6*/
 (6, 162, 'Monday', 3, 8, null, 'upper'),
 (6, 150, 'Monday', 3, 12, null, 'upper'),
 (6, 57, 'Monday', 3, 12, null, 'upper'),
@@ -391,14 +394,3 @@ INSERT INTO workoutapp.daily_log (program_id, day, logging_date, exercise_id, we
 (5, 'Wednesday', '2026-08-31', 201, 152.00, 3, 8, null, null, 'completed'),
 (5, 'Wednesday', '2026-08-31', 180, 122.00, 3, 8, null, null, 'completed')
 ON CONFLICT DO NOTHING;
-
-/*
-SELECT p.id, v.col1, v.col2, v.col3, v.col4, v.col5, CAST(v.col6 AS program_tag)
-FROM workoutapp.program p
-CROSS JOIN (
-    VALUES
-        (),
-        (),
-        (),       
-) AS v(col1, col2, col3, col4, col5, col6)
-*/

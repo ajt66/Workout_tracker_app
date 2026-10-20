@@ -1,4 +1,4 @@
-<div class="popup" th:fragment="signout(Origin)">
+<th:block th:fragment="signout(Origin)">
     <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
     <form class="form-group" th:action="@{/api/main/sign-out}" method="post">
         <h2>Sign Out Confirmation:</h2>
@@ -7,4 +7,4 @@
         <button class="program-button" type="submit">Sign Out</button>
         <button class="program-button" onclick="this.parentElement.style.display='none'">Cancel</button>
     </form>
-</div>
+</th:block>

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.workout_tracker_app.Entity.programLog.Tag;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +13,7 @@ public class mapDTO {
     private Map<String, List<programDTO>> mapdto;
     private String prog_name;
     private Long prog_id;
-    private Map<String, Tag> tagmap;
+    private Map<String, String> tagmap;
     private Map<String, Boolean> daypair;
 
     public void setMapDto(Map<String, List<programDTO>> mapdto) {
@@ -29,5 +28,9 @@ public class mapDTO {
         mapdto.put("Friday", new ArrayList<programDTO>(5));
         mapdto.put("Saturday", new ArrayList<programDTO>(5));
         mapdto.put("Sunday", new ArrayList<programDTO>(5));
+    }
+
+    public void setTag(Map<String, String> tagmap) {
+        this.tagmap = tagmap;
     }
 }

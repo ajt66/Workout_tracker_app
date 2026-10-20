@@ -1,4 +1,4 @@
-<tr th:fragment="dl_edit_row(index)" th:id="'dl_edit_row:' + ${count}">
+<tr th:fragment="dl_edit_row(index)" th:id="'dl_edit_row:' + ${count}">//th:id="'dl_edit_row:' + ${count}"
     <input type="hidden" value="0" th:name="|logs[${index}].log_id|">
     <td><span th:text="${count}"></span></td>
     <td>
@@ -17,8 +17,8 @@
             <option th:each="status : ${logstatus}" th:value="${status}" th:text="${status}"></option>
         </select>
     </td>
-    <td><button class="closebtn" hx-get="/api/main/Logs/delete" hx-target="#dl_edit_row:${count}" hx-trigger="click"
-            hx-swap="outerHTML">&times</button></td>
+    <td><button class="closebtn" hx-delete="/api/main/Logs/delete" hx-target="closest tr" hx-trigger="click"
+            hx-swap="outerHTML">&times</button></td>//hx-target="#dl_edit_row:${count}"
 </tr>
 
 <tr th:fragment="prog_edit_row(day, index)" id="'prog_edit_row:' + ${count}">
@@ -28,8 +28,8 @@
     <td><input type="number" placeholder="sets" th:name="|mapdto[${day}][${index}].sets|"></td>
     <td><input type="number" placeholder="reps" th:name="|mapdto[${day}][${index}].reps|"></td>
     <td><input type="number" placeholder="duration" th:name="|mapdto[${day}][${index}].duration|"></td>
-    <td><button class="closebtn" hx-get="/api/main/Logs/delete-row" hx-target="#prog_edit_row:${count}"
-            hx-trigger="click" hx-swap="outerHTML">&times</button></td>
+    <td><button class="closebtn" hx-delete="/api/main/Programs/delete-row" hx-target="closest tr" hx-trigger="click"
+            hx-swap="outerHTML">&times</button></td>//hx-target="#prog_edit_row:${count}"
 </tr>
 
 <tr th:fragment="prog_add_row(day, index)" id="'prog_add_row:' + ${count}">
@@ -39,6 +39,6 @@
     <td><input type="number" placeholder="sets" th:name="|mapdto[${day}][${index}].sets|"></td>
     <td><input type="number" placeholder="reps" th:name="|mapdto[${day}][${index}].reps|"></td>
     <td><input type="number" placeholder="duration" th:name="|mapdto[${day}][${index}].duration|"></td>
-    <td><button class="closebtn" hx-get="/api/main/Logs/delete-row" hx-target="#prog_add_row:${count}"
-            hx-trigger="click" hx-swap="outerHTML">&times</button></td>
+    <td><button class="closebtn" hx-delete="/api/main/Programs/delete-row" hx-target="closest tr" hx-trigger="click"
+            hx-swap="outerHTML">&times</button></td>//hx-target="#prog_add_row:${count}"
 </tr>

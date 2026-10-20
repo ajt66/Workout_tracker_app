@@ -18,6 +18,10 @@
 
     <link rel="stylesheet" href="../static/css/style.css" th:href="@{/css/style.css}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"
+        integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V"
+        crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -116,8 +120,8 @@
 
                     <div class="Analyze-options">
                         <label for="workcategory">category :</label><span class="tab1"></span>
-                        <select id="workcategory" onchange="createNewWorkChart()" hx-post="/api/main/Analyze/workouts"
-                            hx-trigger="change" hx-target="#workChartdiv" hx-swap="none" name="workcategory">
+                        <select id="workcategory" hx-post="/api/main/Analyze/workouts" hx-trigger="change"
+                            hx-target="#workjs" hx-swap="none" name="workcategory">
                             <option value="none">None</option>
                             <option value="abs">Abs</option>
                             <option value="back">Back</option>
@@ -132,7 +136,8 @@
                             <option value="triceps">Triceps</option>
                         </select>
                         <label for="workfilter">Filter :</label><span class="tab1"></span>
-                        <select id="workfilter" name="workfilter" onchange="updateworkChart(this.value)">
+                        <select id="workfilter" name="workfilter"
+                            onchange="updateworkChart(Chart.getChart('workChart'), this.value)">
                             <option value="volume">Total volume</option>
                             <option value="weights">Total Weights</option>
                             <option value="sets">Total sets</option>
@@ -140,16 +145,18 @@
                         </select>
                     </div>
 
-
-                    <form id="workform" hx-get="/api/main/Analyze/workouts" hx-trigger="revealed" hx-swap="innerHTML"
-                        hx-target="#workChartdiv" hx-indicator="#workindicator">
+                    <form id="workform" hx-get="/api/main/Analyze/workouts" hx-trigger="revealed once"
+                        hx-swap="innerHTML" hx-target="#workjs" hx-indicator="#workindicator">
                         <input type="hidden" name="category" id="preworkcategory" value="none">
                     </form>
 
                     <div id="workChartdiv">
                         <img id="workindicator" class="htmx-indicator" src="../static/svg-loaders/oval.svg"
                             alt="loading">
+                        <canvas id="workChart" width="400" height="200"></canvas>
                     </div>
+
+                    <div id="workjs"></div>
 
                 </div>
 
@@ -160,7 +167,8 @@
 
                     <div class="Analyze-options">
                         <label for="breakfilter">Filter :</label><span class="tab1"></span>
-                        <select id="breakfilter" name="breakfilter" onchange="updatebreakChart(this.value)">
+                        <select id="breakfilter" name="breakfilter"
+                            onchange="updatebreakChart(Chart.getChart('breakChart'), this.value)">
                             <option value="volume">Total volume</option>
                             <option value="weights">Total Weights</option>
                             <option value="sets">Total sets</option>
@@ -168,15 +176,18 @@
                         </select>
                     </div>
 
-                    <form id="breakform" hx-get="/api/main/Analyze/breakdown" hx-trigger="revealed" hx-swap="innerHTML"
-                        hx-target="#breakChartdiv" hx-indicator="#breakindicator">
+                    <form id="breakform" hx-get="/api/main/Analyze/breakdown" hx-trigger="revealed once"
+                        hx-swap="innerHTML" hx-target="#breakjs" hx-indicator="#breakindicator">
                         <input type="hidden" name="filter" id="prebreakfilter" value="volume">
                     </form>
 
-                    <div id="#breakChartdiv">
+                    <div id="breakChartdiv">
                         <img id="breakindicator" class="htmx-indicator" src="../static/svg-loaders/oval.svg"
                             alt="loading">
+                        <canvas id="breakChart" width="400" height="200"></canvas>
                     </div>
+
+                    <div id="breakjs"></div>
                 </div>
 
                 <div class="tab-content" id="exercisesTab">
@@ -185,10 +196,11 @@
                     <div class="Analyze-options">
                         <label for="name">Exercise Name :</label><span class="tab1"></span>
                         <input type="text" id="exercise" name="exercise" hx-post="/api/main/Analyze/exercise"
-                            hx-trigger="change" hx-target="#exercisesChartdiv" hx-swap="none"
+                            hx-trigger="change" hx-target="#exercisejs" hx-swap="innerHTML"
                             placeholder="Enter exercise name">
-                        <label for="workfilter">Filter :</label><span class="tab1"></span>
-                        <select id="workfilter" name="workfilter" onchange="updateexerciseChart(this.value)">
+                        <label for="exercisefilter">Filter :</label><span class="tab1"></span>
+                        <select id="exercisefilter" name="exercisefilter"
+                            onchange="updateexerciseChart(Chart.getChart('exerciseChart'), this.value)">
                             <option value="volume">Total volume</option>
                             <option value="weights">Total Weights</option>
                             <option value="sets">Total sets</option>
@@ -196,10 +208,12 @@
                         </select>
                     </div>
 
-                    <div type="hidden" id="exerciseButton" hx-get="/api/main/Analyze/exercise" hx-trigger="revealed"
-                        hx-target="this" hx-swap="innerHTML" id="exerciseChartdiv">
+                    <div id="exerciseChartdiv">
                         <img class="htmx-indicator" src="../static/svg-loaders/oval.svg" alt="loading">
+                        <canvas id="exerciseChart" width="400" height="200"></canvas>
                     </div>
+
+                    <div id="exercisejs"></div>
                 </div>
             </div>
         </div>
@@ -214,6 +228,14 @@
         </section>
     </div>
 
+    <script type="module" id="workjs">
+    </script>
+
+    <script type="module" id="workjs">
+    </script>
+
+    <script type="module" id="workjs">
+    </script>
 
     <script src="../static/js/post-verify.js" th:src="@{/js/post-verify.js}">
     </script>

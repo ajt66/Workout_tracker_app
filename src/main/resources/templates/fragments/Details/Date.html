@@ -1,4 +1,4 @@
-<div class="column-card" th:fragment="new_date(date, Program)">
+<th:block th:fragment="new_date(date, Program)">
     <p>
         <span th:text="${#temporals.format(date, 'dd MMMM yyyy')}">Date</span> - <span
             th:text="${#temporals.day(date)}">Day</span><br>
@@ -15,7 +15,7 @@
             <th>Status</th>
         </tr>
         <tr th:each="item : ${Program}">
-            <td><span th:text="${item.getExerciseName()}">exercise name</span></td>
+            <td><span th:text="${item.getExercise_name()}">exercise name</span></td>
             <td th:text="${item.getWeights() != null ? item.getWeights() : '--'}">weights</td>
             <td><span th:text="${item.getSets() != null ? item.getSets() : '--'}">sets</span>
             </td>
@@ -31,4 +31,4 @@
     <button class="program-button" hx-get="/api/main/Logs/edit" hx-trigger="click" hx-swap="innerHTML"
         hx-target="#dlp-edit" th:hx-vals='|{"date":"${date}"}|' onclick="openpopup('dlp-edit')">Edit
         Workout</button>
-</div>
+</th:block>

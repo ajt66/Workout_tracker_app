@@ -12,8 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,7 +27,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class programLog {
 
-    public enum Tag {
+    public enum program_tag {
         push, pull, legs, full_body, upper, lower, bro_split, rest, chest, arms, back, shoulders,
         cardio, core, stretching, none
     }
@@ -58,8 +56,6 @@ public class programLog {
     @Column(name = "duration", nullable = true)
     private String duration;
 
-    @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "tag", nullable = false)
-    private Tag program_tag;
+    private String program_tag;
 }

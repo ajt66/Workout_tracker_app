@@ -12,8 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +26,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DailyLog {
-    public enum logStatus {
+    public enum log_status {
         pending, completed, cancelled
     }
 
@@ -65,8 +63,6 @@ public class DailyLog {
     @Column(name = "comment", nullable = true)
     private String comment;
 
-    @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "dstatus", nullable = false)
-    private logStatus log_status;
+    private String log_status;
 }

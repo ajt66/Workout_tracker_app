@@ -1,6 +1,6 @@
-<div class="popup" th:fragment="Program_edit(Program, prog_name, prog_id)">
+<th:block th:fragment="Program_edit(Program, prog_name, prog_id)">
     <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
-    <form class="form-group" th:action="@{/api/main/Programs/edit}" th:object="${Program}" method="post">
+    <form class="form-group" th:action="@{/api/main/Programs/edit}" th:object="${Program}" method="put">
         <h2>Program Edit:</h2>
         <p>Click on an item/element you want to change and enter the value</p><br>
         <div>
@@ -13,8 +13,9 @@
             <th:block th:each="program, stat : ${Program.mapdto}">
                 <div class="column-card" th:id="${program.key}">
                     <p>
-                        <span th:text="${program.key}">Day</span> - <select class="prog-edit-change" th:id="*{tag}"
-                            th:name="|tagmap[${program.key}]|" th:data-day="${program.key}">
+                        <span th:text="${program.key}">Day</span> - <select class="prog-edit-change"
+                            th:id="|tagmap[${program.key}]|" th:name="|tagmap[${program.key}]|"
+                            th:data-day="${program.key}">
                             <option th:each="tags : ${tag}" th:value="${tag}" th:text="${tag}"
                                 th:selected="${program.value.get(0).getProgram_tag()}"></option>
                         </select><br>
@@ -70,9 +71,9 @@
             if (flag) flag.value = "true";
         }));
     </script>
-</div>
+</th:block>
 
-<div class="popup" th:fragment="Add_Prog(dto)">
+<th:block th:fragment="Add_Prog(dto)">
     <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
     <form class="form-group" th:action="@{/api/main/Programs/Add}" th:object="${dto}" method="post">
         <h2>Add Program:</h2>
@@ -120,7 +121,7 @@
 
         <button type="submit">Save Program</button>
     </form>
-</div>
+</th:block>
 
 <!--<div class="popup" th:fragment="Program-edit" id="Program-edit">
         <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>

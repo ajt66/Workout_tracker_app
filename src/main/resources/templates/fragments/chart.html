@@ -1,0 +1,17 @@
+<div th:fragment="chart">
+    <script>
+        const chart = Chart.getChart('Chart');
+
+        chart.data.datasets.pop();
+        const newDataset = {
+            label: 'aad',
+            data: [2, -1, 2, 3, 4],
+            borderColor: 'rgb(54, 162, 235, 1)',
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            fill: true
+        };
+        chart.data.datasets.push(newDataset);
+        chart.update();
+
+    </script>
+</div>

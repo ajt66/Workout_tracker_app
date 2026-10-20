@@ -18,6 +18,7 @@
 
     <link rel="stylesheet" href="../static/css/style.css" th:href="@{/css/style.css}">
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"
         integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V"
         crossorigin="anonymous"></script>
@@ -31,7 +32,8 @@
                 <li class="link-item"><a onclick="openpopup('signout')" hx-get="/api/main/sign-out" hx-trigger="click"
                         hx-target="#signout" hx-vals='{"Origin": "main"}' hx-swap="innerHTML">Home</a></li>
                 <li class="link-item"><a onclick="openpopup('signout')" hx-get="/api/main/sign-out" hx-trigger="click"
-                        hx-target="#signout" hx-vals='{"Origin": "signout"}' hx-swap="innerHTML">Sign out</a></li>
+                        hx-target="#signout" hx-vals='{"Origin": "signout"}' hx-swap="innerHTML">Sign
+                        out</a></li>
                 <li class="link-item"><a href="#support-div">Support</a></li>
             </ul>
         </nav>
@@ -54,6 +56,7 @@
         <div class="popup-container">
 
             <div class="popup" id="signout">
+                <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
             </div>
 
         </div>
@@ -73,6 +76,58 @@
                     </div>
                 </div>
             </div>
+
+            <div>
+                <button class="program-button" hx-get="/api/main/content" hx-trigger="click" hx-target="this"
+                    th:hx-vals='|{"Name":"${User_name}", "Email":"${User_email}"}|' hx-swap="innerHTML">Edit
+                    Content</button>
+            </div>
+
+            <div>
+                <canvas id="Chart" width="400" height="200"></canvas>
+                <button class="program-button" hx-get="/api/main/chart" hx-trigger="click" hx-target="#chartjs"
+                    hx-swap="innerHTML">Edit Chart Content</button>
+            </div>
+
+            <script th:inline="javascript">
+                const ctx = document.getElementById('Chart').getContext('2d');
+
+                var Labels = /*[[${label}]]*/['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+                var Data = /*[[${data}]]*/[2, 3, 4, 5, 6];
+
+                const data = {
+                    labels: Labels,
+                    datasets: [
+                        {
+                            label: 'filler value',
+                            data: Data,
+                            borderColor: 'rgb(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            fill: true
+                        }
+                    ]
+
+                }
+
+                const config = {
+                    type: 'line',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Workout activity'
+                            }
+                        }
+                    }
+                }
+
+                new Chart(ctx, config);
+            </script>
+
+            <div id="chartjs"></div>
+
         </div>
 
         <section class="footer" id="support-section">

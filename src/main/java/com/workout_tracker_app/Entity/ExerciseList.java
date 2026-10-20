@@ -11,8 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,11 +25,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExerciseList {
-    public enum Type {
+    public enum exercise_type {
         isolation, compound, none
     }
 
-    public enum Category {
+    public enum exercise_category {
         cardio, strength, flexibility, hypertrophy, isometrics, hypertrophyorstrength, none
     }
 
@@ -42,18 +40,14 @@ public class ExerciseList {
     @Column(name = "exercise_name", nullable = false)
     private String exercise_name; // Name of exercise
 
-    @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "etype", nullable = true)
-    private Type exercise_type; // Type: compound or isolation
+    private String exercise_type; // Type: compound or isolation
 
     @Column(name = "muscle_group", nullable = true)
     private String muscle_group; // Related muscle group of exercise.
 
-    @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "category", nullable = false)
-    private Category category; // cardio, strength, flexibility
+    private String category; // cardio, strength, flexibility
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)

@@ -1,20 +1,49 @@
-<div class="chart-container" th:fragment="breakChartjs">
-    <canvas id="breakChart" width="400" height="200"></canvas>
-    <script type="module" th:inline="javascript">
-        import Chart from 'chart.js/auto';
+<script th:inline="javascript" th:fragment="breakChart" defer>
 
-        const ctx = document.getElementById('breakChart').getContext('2d');
-        var breakmuscle = /*[[${breakmuscle}]]*/ 'default label';
-        var breakvolume = /*[[${breakVolume}]]*/ 'default volume';
-        var breakWeights = /*[[${breakWeights}]]*/ 'default weight';
-        var breakReps = /*[[${breakReps}]]*/ 'default reps';
-        var breakSets = /*[[${breakSets}]]*/ 'default sets';
+    const ctx = document.getElementById('breakChart').getContext('2d');
+    var breakmuscle = /*[[${breakmuscle}]]*/ 'default label';
+    var breakvolume = /*[[${breakVolume}]]*/ 'default volume';
+    var breakWeights = /*[[${breakWeights}]]*/ 'default weight';
+    var breakReps = /*[[${breakReps}]]*/ 'default reps';
+    var breakSets = /*[[${breakSets}]]*/ 'default sets';
 
-        export function updatebreakChart(filter) {
-            breakChart.data.datasets.pop();
-            const newDataset = {
-                label: filter,
-                data: returnData(filter),
+    function updatebreakChart(chart, filter) {
+        chart.data.datasets.pop();
+        const newDataset = {
+            label: filter,
+            data: breakFilter(filter),
+            backgroundColor: [
+                'rgb(255, 99, 132)',
+                'rgb(54, 162, 235)',
+                'rgb(255, 205, 86)'
+            ],
+            hoverOffset: 4
+        }
+        chart.data.datasets.push(newDataset);
+        chart.update();
+    };
+
+    function breakFilter(filter) {
+        switch (filter) {
+            case 'Volume':
+                return breakVolume;
+            case 'Weight':
+                return breakWeights;
+            case 'Reps':
+                return breakReps;
+            case 'Sets':
+                return breakSets;
+            default:
+                return [];
+        }
+    }
+
+    const data = {
+        labels: breakmuscle,
+        datasets: [
+            {
+                label: 'TotalVolume:',
+                data: breakvolume,
                 backgroundColor: [
                     'rgb(255, 99, 132)',
                     'rgb(54, 162, 235)',
@@ -22,53 +51,23 @@
                 ],
                 hoverOffset: 4
             }
-            breakChart.data.datasets.push(newDataset);
-            breakChart.update();
-        };
+        ]
+    }
 
-        function returnData(filter) {
-            switch (filter) {
-                case 'Volume':
-                    return breakVolume;
-                case 'Weight':
-                    return breakWeights;
-                case 'Reps':
-                    return breakReps;
-                case 'Sets':
-                    return breakSets;
-                default:
-                    return [];
-            }
-        }
-
-        const data = {
-            label: breakmuscle,
-            datasets: [
-                {
-                    label: 'TotalVolume:',
-                    data: breakvolume,
-                    backgroundColor: [
-                        'rgb(255, 99, 132)',
-                        'rgb(54, 162, 235)',
-                        'rgb(255, 205, 86)'
-                    ],
-                    hoverOffset: 4
-                }
-            ]
-        }
-
-        var config = {
-            type: 'pie',
-            data: data,
-            options: {
-                responsive: true,
+    var config = {
+        type: 'pie',
+        data: data,
+        options: {
+            responsive: true,
+            plugins: {
                 title: {
                     display: true,
-                    text: 'Chart.js Line Chart'
+                    text: 'BreakDown Chart'
                 }
             }
         }
+    }
 
-        var breakChart = new Chart(ctx, config);
-    </script>
+    var breakChart = new Chart(ctx, config);
+</script>
 </div>

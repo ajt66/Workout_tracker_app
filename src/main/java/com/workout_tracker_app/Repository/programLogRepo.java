@@ -2,17 +2,14 @@ package com.workout_tracker_app.Repository;
 
 import java.util.List;
 
+import org.antlr.v4.runtime.atn.SemanticContext.AND;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.workout_tracker_app.Entity.Program;
 import com.workout_tracker_app.Entity.programLog;
 import com.workout_tracker_app.dto.programDTO;
-import com.workout_tracker_app.Entity.DailyLog.logStatus;
-import com.workout_tracker_app.Entity.ExerciseList.Type;
-import com.workout_tracker_app.Entity.programLog.Tag;
 
 public interface programLogRepo extends JpaRepository<programLog, Long> {
 
@@ -41,9 +38,12 @@ public interface programLogRepo extends JpaRepository<programLog, Long> {
          * ;
          */
 
-        @Query(value = "SELECT new com.workout_tracker_app.dto.programDTO(p.program_id, p.program_name, plog.plog_id, plog.day, e.exercise_name, e.exercise_type, plog.sets, plog.reps, plog.duration, plog.program_tag, p.program_status)"
-                        + TABLESELECT
-                        + " WHERE p.program_name = :program_name AND u.id = :id" + ORDER_BY)
+        @Query(value = """
+                        SELECT p.program_id, p.program_name, pl.day, e.exercise_name, e.etype,
+                        pl.sets, pl.reps, pl.duration, pl.tag, p.pstatus
+                        FROM workoutapp.program_log pl INNER JOIN workoutapp.programs p ON p.program_id = pl.program_id
+                        INNER JOIN workoutapp.exercise_list e ON pl.exercise_id = e.exercise_id
+                        WHERE p.program_name = :program_name AND p.user_id = :id""", nativeQuery = true)
         List<programDTO> findByProgramNamewithDetails(@Param("program_name") String program_name,
                         @Param("id") Long id);
 
@@ -53,12 +53,13 @@ public interface programLogRepo extends JpaRepository<programLog, Long> {
         @Query(value = """
                         UPDATE workoutapp.program_log pl
                         SET exercise_id = :exercise_id, day = :day, sets = :sets,
-                        reps = :reps, duration = :duration
+                        reps = :reps, duration = :duration, tag = :tag
                         FROM workoutapp.programs p INNER JOIN workoutapp.users u ON p.user_id = u.id
                         WHERE p.program_id = :program_id AND u.id = :id AND pl.plog_id = :plog_id""", nativeQuery = true)
         int updateProgramLog(@Param("id") Long id, @Param("program_id") Long program_id, @Param("plog_id") Long plog_id,
                         @Param("exercise_id") Long exercise_id, @Param("day") String day,
-                        @Param("sets") Integer sets, @Param("reps") Integer reps, @Param("duration") String duration);
+                        @Param("sets") Integer sets, @Param("reps") Integer reps, @Param("duration") String duration,
+                        @Param("tag") String tag);
 
         @Modifying
         @Query(value = """
@@ -70,7 +71,7 @@ public interface programLogRepo extends JpaRepository<programLog, Long> {
                         @Param("exercise_id") Long exercise_id,
                         @Param("day") String day,
                         @Param("sets") Integer sets, @Param("reps") Integer reps, @Param("duration") String duration,
-                        @Param("tag") Tag tag);
+                        @Param("tag") String tag);
 
         @Query(value = """
                         SELECT COALESCE(SUM(*),0)

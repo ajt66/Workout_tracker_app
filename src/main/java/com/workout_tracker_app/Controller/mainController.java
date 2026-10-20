@@ -5,16 +5,21 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -22,11 +27,11 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.FragmentsRendering;
 
 import com.workout_tracker_app.Entity.ExerciseList;
-import com.workout_tracker_app.Entity.programLog.Tag;
-import com.workout_tracker_app.Entity.Program.Status;
+import com.workout_tracker_app.Entity.programLog.program_tag;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.workout_tracker_app.Entity.User;
 import com.workout_tracker_app.Repository.DailyLogRepo;
@@ -37,7 +42,8 @@ import com.workout_tracker_app.dto.AnalyzeDTO;
 import com.workout_tracker_app.dto.EntryDTO;
 import com.workout_tracker_app.dto.mapDTO;
 import com.workout_tracker_app.dto.programDTO;
-import com.workout_tracker_app.Entity.DailyLog.logStatus;
+import com.workout_tracker_app.Entity.DailyLog.log_status;
+import com.workout_tracker_app.Entity.Program.program_status;
 
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import jakarta.servlet.http.HttpSession;
@@ -75,7 +81,7 @@ public class mainController {
 
     @SuppressWarnings("null")
     public void setActiveProgram(Long userid) {
-        programDTO pstat = programrepo.findByActiveStatus(Status.valueOf("active"), userid);
+        programDTO pstat = programrepo.findByActiveStatus(program_status.valueOf("active").toString(), userid);
         List<programDTO> pres = pLogRepo.findByProgramNamewithDetails(pstat.getProgram_name(), userid);
         Map<String, List<programDTO>> currentProgram = pres.stream()
                 .collect(Collectors.groupingBy(programDTO::getDay, LinkedHashMap::new, Collectors.toList()));
@@ -94,9 +100,8 @@ public class mainController {
         return (Map<String, List<programDTO>>) session.getAttribute("Program");
     }
 
-    @SuppressWarnings("null")
     public void setActiveProgramID(Long userid) {
-        programDTO pstat = programrepo.findByActiveStatus(Status.valueOf("active"), userid);
+        programDTO pstat = programrepo.findByActiveStatus(program_status.valueOf("active").toString(), userid);
 
         if (session.getAttribute("ProgramID") == null) {
             session.setAttribute("ProgramID",
@@ -113,9 +118,8 @@ public class mainController {
         return (Long) session.getAttribute("ProgramID");
     }
 
-    @SuppressWarnings("null")
     public void setActiveProgramName(Long userid) {
-        programDTO pstat = programrepo.findByActiveStatus(Status.valueOf("active"), userid);
+        programDTO pstat = programrepo.findByActiveStatus(program_status.valueOf("active").toString(), userid);
 
         if (session.getAttribute("ProgramName") == null) {
             session.setAttribute("ProgramName", pstat.getProgram_name());
@@ -162,17 +166,20 @@ public class mainController {
         setActiveProgramID(userId);
         setActiveProgramName(userId);
 
-        dLogRepo.copyProgramDataForToday(userId);
+        String today = LocalDate.now().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+        dLogRepo.copyProgramDataForToday(userId, today);
         dLogRepo.changeStatus(userId);
         model.addAttribute("User_email", getUser().get().getEmail());
         model.addAttribute("User_name", username);
         model.addAttribute("User_id", userId);
+        model.addAttribute("label", List.of("d1", "d2", "d3", "d4", "d5", "d6"));
+        model.addAttribute("data", List.of(1, 2, 3, 4, 5, 6));
         return "main";
     }
 
     @GetMapping("/Logs")
     public String showDailyLog(@ModelAttribute("User_id") Long userid, Model model) {
-        model.addAttribute("logstatus", logStatus.values());
+        model.addAttribute("logstatus", log_status.values());
         model.addAttribute("curProgram", dLogRepo.findByCurrentDate(userid, getActiveProgramID()));
         model.addAttribute("curdate", LocalDate.now());
         model.addAttribute("dlp_name", getActiveProgramName());
@@ -183,10 +190,15 @@ public class mainController {
     @GetMapping("/Logs/date")
     public View showDailyLogDate(@ModelAttribute("User_id") Long userid, @RequestParam("date") LocalDate date,
             Model model) {
+        Long logCount = dLogRepo.checkLogsForDate(userid, date);
+        if (logCount == 0) {
+            String day = date.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+        }
+
         model.addAttribute("Program", dLogRepo.findByDate(userid, date, getActiveProgramID()));
         model.addAttribute("date", date);
         return FragmentsRendering
-                .fragment("fragments/Switch/Date.html :: new_date(date = ${date}, Program = ${Program})").build();
+                .fragment("fragments/Details/Date.html :: new_date(date = ${date}, Program = ${Program})").build();
     }
 
     @HxRequest
@@ -199,7 +211,7 @@ public class mainController {
 
         model.addAttribute("Program", dto);
         model.addAttribute("date", date);
-        model.addAttribute("logstatus", logStatus.values());
+        model.addAttribute("logstatus", log_status.values());
         return FragmentsRendering
                 .fragment("fragments/popups/date-edit.html :: dlp_edit(date = ${date}, Program = ${Program})").build();
     }
@@ -209,14 +221,14 @@ public class mainController {
     public View showDailyLogEditrow(@ModelAttribute("User_id") Long userid, @RequestParam("index") int index,
             Model model) {
         model.addAttribute("index", index);
-        model.addAttribute("logstatus", logStatus.values());
+        model.addAttribute("logstatus", log_status.values());
         DLEditIncrement();
         model.addAttribute("count", dledit);
         return FragmentsRendering.fragment("fragments/Tables/new-row :: dl_edit_row(${index})").build();
     }
 
     @HxRequest
-    @GetMapping("/Logs/delete")
+    @DeleteMapping("/Logs/delete")
     public String deleteDailyLogEditrow() {
         return "";
     }
@@ -224,11 +236,10 @@ public class mainController {
     @PostMapping("/Logs/edit")
     public String showDailyLogPostEdit(@ModelAttribute("User_id") Long userid, @ModelAttribute("Program") EntryDTO edit,
             Model model) {
-        String duration, comment, day = edit.getDay();
+        String duration, comment, day = edit.getDay(), status;
         LocalDate date = edit.getDate();
         Long exerid, currEntries = pLogRepo.countByCurrentProgram(userid, getActiveProgramID()), log_id;
         Integer weights, sets, reps;
-        logStatus status;
 
         for (int i = 0; i < currEntries; i++) {
             log_id = edit.getLogs().get(0).getLog_id();
@@ -238,7 +249,7 @@ public class mainController {
             reps = edit.getLogs().get(0).getReps();
             duration = edit.getLogs().get(0).getDuration();
             comment = edit.getLogs().get(0).getComment();
-            status = edit.getLogs().get(0).getLog_status();
+            status = edit.getLogs().get(0).getLog_status().toString();
 
             dLogRepo.updateDailyLog(userid, getActiveProgramID(), log_id, exerid, day, weights, sets, reps, duration,
                     comment,
@@ -255,7 +266,7 @@ public class mainController {
             reps = edit.getLogs().get(i).getReps();
             duration = edit.getLogs().get(i).getDuration();
             comment = edit.getLogs().get(i).getComment();
-            status = edit.getLogs().get(i).getLog_status();
+            status = edit.getLogs().get(i).getLog_status().toString();
 
             dLogRepo.insertDailyLog(userid, getActiveProgramID(), exerid, day, weights, sets, reps, duration, comment,
                     status,
@@ -273,23 +284,42 @@ public class mainController {
         model.addAttribute("programname", getActiveProgramName());
         model.addAttribute("programId", getActiveProgramID());
 
-        List<programDTO> itres;
-        Map<String, List<programDTO>> inactiveGroup;
-        List<programDTO> ipstat = programrepo.findByInactiveStatus(Status.valueOf("inactive"), userid);
-        Iterator<programDTO> iterator = ipstat.iterator();
-        Map<String, Map<String, List<programDTO>>> finalData = new HashMap<>();
-        while (iterator.hasNext()) {
-            String progname = iterator.next().getProgram_name();
-            itres = pLogRepo.findByProgramNamewithDetails(progname, userid);
-            inactiveGroup = itres.stream()
-                    .collect(Collectors.groupingBy(programDTO::getDay, LinkedHashMap::new, Collectors.toList()));
-            finalData.put(progname, inactiveGroup);
+        Map<String, Long> programsMap = new HashMap<String, Long>();
+        List<String> ipstat = programrepo.findByInactiveStatus(program_status.valueOf("inactive").toString(), userid)
+                .stream()
+                .map(programDTO::getProgram_name).collect(Collectors.toList());
+        for (String progname : ipstat) {
+            programsMap.put(progname, programrepo.findProgramId(progname, userid).getProgram_id());
         }
 
-        model.addAttribute("tag", Tag.values());
-        model.addAttribute("status", Status.values());
-        model.addAttribute("otherProgram", finalData);
+        model.addAttribute("tag", program_tag.values());
+        model.addAttribute("status", program_status.values());
+        model.addAttribute("programMap", programsMap);
         return "Programs";
+    }
+
+    @HxRequest
+    @GetMapping("/Programs/details")
+    public View showProgramDetails(@RequestParam("programName") String progname, @RequestParam("programId") Long progId,
+            @ModelAttribute("User_id") Long userid,
+            Model model) {
+
+        Map<String, List<programDTO>> currentProgram = pLogRepo.findByProgramNamewithDetails(progname, userid)
+                .stream()
+                .collect(Collectors.groupingBy(programDTO::getDay, LinkedHashMap::new,
+                        Collectors.toList()));
+
+        model.addAttribute("Program", currentProgram);
+        model.addAttribute("prog_id", progId);
+
+        model.addAttribute("prog_name", progname);
+
+        return FragmentsRendering
+                .fragment("fragments/Details/Program :: OProgam(Program = ${Program}, prog_id = ${prog_id})")
+                .build();
+
+        // return FragmentsRendering.fragment("fragments/Details/test.html ::
+        // test(progname = ${prog_name})").build();
     }
 
     @HxRequest
@@ -302,8 +332,8 @@ public class mainController {
     @HxRequest
     @PostMapping("/Programs/switch")
     public String PostProgramSwitch(@RequestParam("id") Long progid, @ModelAttribute("User_id") Long userid) {
-        programrepo.updateProgramStatus(Status.valueOf("active"), progid, userid);
-        programrepo.updateProgramStatus(Status.valueOf("inactive"), getActiveProgramID(), userid);
+        programrepo.updateProgramStatus(program_status.valueOf("active").toString(), progid, userid);
+        programrepo.updateProgramStatus(program_status.valueOf("inactive").toString(), getActiveProgramID(), userid);
         setActiveProgram(userid);
         return "redirect:/Programs";
     }
@@ -316,7 +346,7 @@ public class mainController {
     }
 
     @HxRequest
-    @PostMapping(value = "/Programs/delete")
+    @DeleteMapping(value = "/Programs/delete")
     public String deleteProgram(@RequestParam("id") Long progid, @ModelAttribute("User_id") Long userid,
             Model model) {
         programrepo.deleteById(progid);
@@ -331,28 +361,30 @@ public class mainController {
         mapDTO dto = new mapDTO();
         dto.setMapDto(pLogRepo.findByProgramNamewithDetails(progname, userid).stream()
                 .collect(Collectors.groupingBy(programDTO::getDay, LinkedHashMap::new, Collectors.toList())));
+        dto.setTag(pLogRepo.findByProgramNamewithDetails(progname, userid).stream()
+                .collect(Collectors.toMap(programDTO::getDay, programDTO::getProgram_tag)));
 
         model.addAttribute("Program", dto);
         model.addAttribute("prog_id", progId);
         model.addAttribute("prog_name", progname);
-        model.addAttribute("tag", Tag.values());
-        model.addAttribute("status", Status.values());
+        model.addAttribute("tag", program_tag.values());
+        model.addAttribute("status", program_status.values());
         return FragmentsRendering.fragment(
                 "fragments/popups/Prog-edit :: Program_edit(Program = ${Program}, prog_name = ${prog_name}, prog_id = ${prog_id})")
                 .build();
     }
 
-    @PostMapping(value = "/Programs/edit", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PutMapping(value = "/Programs/edit", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String showProgramsEdit(@ModelAttribute("Program") mapDTO map, Model model,
             @ModelAttribute("User_id") Long userid) {
         for (Map.Entry<String, Boolean> item : map.getDaypair().entrySet()) {
             if (item.getValue().equals(true)) {
-                String duration, day = item.getKey(), progname = map.getProg_name();
+                String duration, day = item.getKey(), progname = map.getProg_name(),
+                        tag = map.getTagmap().get(item.getKey()).toString();
                 List<programDTO> dto = map.getMapdto().get(item.getKey());
                 Long progid = map.getProg_id();
                 Long exerid, log_id, currEntries = pLogRepo.countByCurrentProgram(userid, progid);
                 Integer sets, reps;
-                Tag tag = map.getTagmap().get(item.getKey());
 
                 programrepo.updateProgramName(progname, progid, userid);
 
@@ -363,7 +395,7 @@ public class mainController {
                     duration = dto.get(0).getDuration();
                     log_id = dto.get(0).getPlog_id();
 
-                    pLogRepo.updateProgramLog(userid, progid, log_id, exerid, day, sets, reps, duration);
+                    pLogRepo.updateProgramLog(userid, progid, log_id, exerid, day, sets, reps, duration, tag);
 
                     dto.remove(0);
                 }
@@ -412,14 +444,14 @@ public class mainController {
         dto.setList();
 
         model.addAttribute("dto", dto);
-        model.addAttribute("tag", Tag.values());
-        model.addAttribute("status", Status.values());
+        model.addAttribute("tag", program_tag.values());
+        model.addAttribute("status", program_status.values());
         model.addAttribute("days", List.of("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"));
         return FragmentsRendering.fragment("fragments/popups/Prog-edit :: Add_Prog(dto = ${dto})").build();
     }
 
     @HxRequest
-    @GetMapping("/Programs/delete-row")
+    @DeleteMapping("/Programs/delete-row")
     public String deleteProgramrow() {
         return "";
     }
@@ -433,7 +465,7 @@ public class mainController {
 
         for (Map.Entry<String, List<programDTO>> item : program.getMapdto().entrySet()) {
             day = item.getKey();
-            Tag tag = program.getTagmap().get(day);
+            String tag = program.getTagmap().get(day).toString();
 
             for (programDTO dto : item.getValue()) {
                 exerid = exerciserepo.findByNameWithUser(dto.getExercise_name(), userid).getExercise_id();
@@ -449,12 +481,40 @@ public class mainController {
         return "redirect:/Programs";
     }
 
+    @SuppressWarnings("null")
     @GetMapping("/Exercise")
-    public String showExercise(Model model) {
-        model.addAttribute("ExerciseList", new ExerciseList());
-        model.addAttribute("category", exerciserepo.findByAllCategory());
-        model.addAttribute("muscle_group", exerciserepo.findByAllMuscleGroup());
+    public String showExercise(@ModelAttribute("User_id") Long userid, Model model) {
+        Map<String, List<ExerciseList>> muscle = exerciserepo.findByAllMuscleGroup(userid).stream()
+                .collect(Collectors.groupingBy(ExerciseList::getMuscle_group, LinkedHashMap::new, Collectors.toList()));
+        Map<String, List<ExerciseList>> category = exerciserepo.findByAllCategory(userid).stream()
+                .collect(Collectors.groupingBy(ExerciseList::getCategory, LinkedHashMap::new, Collectors.toList()));
+
+        Map<String, List<ExerciseList>> result = Stream.concat(muscle.entrySet().stream(), category.entrySet().stream())
+                .sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (existing, replacement) -> {
+                    existing.addAll(replacement);
+                    return existing;
+                }, LinkedHashMap::new));
+
+        model.addAttribute("all", result);
         return "Exercise";
+    }
+
+    @HxRequest
+    @GetMapping("/Exercise/add")
+    public String getMethodName(@RequestParam("type") String name, Model model) {
+        if (Arrays.asList("cardio", "flexibility", "isometrics").contains(name)) {
+            model.addAttribute("ExerciseList", new ExerciseList());
+            model.addAttribute("category", name);
+
+            return "fragments/popups/exercise-form :: category-form(category=${category})";
+
+        } else {
+            model.addAttribute("ExerciseList", new ExerciseList());
+            model.addAttribute("muscle", name);
+
+            return "fragments/popups/exercise-form :: muscle-form(muscle=${muscle})";
+        }
     }
 
     @PostMapping(path = "/Exercise", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
@@ -466,10 +526,10 @@ public class mainController {
     @GetMapping("/Analyze")
     public String showAnalyze(@ModelAttribute("User_id") Long userid, Model model) {
         model.addAttribute("exercisesum",
-                dLogRepo.sumByExerciseAndStatus(userid, logStatus.valueOf("completed")));
-        model.addAttribute("SCsum", dLogRepo.sumByStatus(userid, logStatus.valueOf("completed")));
-        model.addAttribute("SPsum", dLogRepo.sumByStatus(userid, logStatus.valueOf("pending")));
-        model.addAttribute("SIsum", dLogRepo.sumByStatus(userid, logStatus.valueOf("cancelled")));
+                dLogRepo.sumByExerciseAndStatus(userid, log_status.valueOf("completed").name()));
+        model.addAttribute("SCsum", dLogRepo.countByStatus(userid, log_status.valueOf("completed").name()));
+        model.addAttribute("SPsum", dLogRepo.countByStatus(userid, log_status.valueOf("pending").name()));
+        model.addAttribute("SIsum", dLogRepo.countByStatus(userid, log_status.valueOf("cancelled").name()));
         model.addAttribute("volumesum", dLogRepo.sumByVolume(userid));
         model.addAttribute("WSRsum", dLogRepo.TotalWSR(userid));
         return "Analyze";
@@ -492,13 +552,13 @@ public class mainController {
                 .map(AnalyzeDTO::getTotal_sets).collect(Collectors.toList()));
         model.addAttribute("preworkreps", preList.stream().filter(item -> item.getTotal_reps() != null)
                 .map(AnalyzeDTO::getTotal_reps).collect(Collectors.toList()));
-        return FragmentsRendering.fragment("fragments/Charts/workChart :: workChartjs").build();
+        return FragmentsRendering.fragment("fragments/Charts/workChart :: workChart").build();
     }
 
     @SuppressWarnings("null")
     @HxRequest
     @PostMapping("/Analyze/workouts")
-    public String showPostWorkouts(@ModelAttribute("User_id") Long userid,
+    public View showPostWorkouts(@ModelAttribute("User_id") Long userid,
             @RequestParam(value = "category") String category,
             Model model) {
         if (category.equals("cardio") || category.equals("isometrics") || category.equals("flexibility")) {
@@ -507,16 +567,16 @@ public class mainController {
 
         List<AnalyzeDTO> postList = dLogRepo.WorkoutsTabCategoryQuery(8, category, userid);
         model.addAttribute("postworklabels", postList.stream().filter(item -> item.getDates() != null)
-                .map(AnalyzeDTO::getDates).collect(Collectors.toList()));
+                .map(AnalyzeDTO::getDates).collect(Collectors.toList())); // String
         model.addAttribute("postworkvolume", postList.stream().filter(item -> item.getTotal_volume() != null)
-                .map(AnalyzeDTO::getTotal_volume).collect(Collectors.toList()));
+                .map(AnalyzeDTO::getTotal_volume).collect(Collectors.toList())); // Long
         model.addAttribute("postworkweights", postList.stream().filter(item -> item.getTotal_weight() != null)
                 .map(AnalyzeDTO::getTotal_weight).collect(Collectors.toList()));
         model.addAttribute("postworksets", postList.stream().filter(item -> item.getTotal_sets() != null)
                 .map(AnalyzeDTO::getTotal_sets).collect(Collectors.toList()));
         model.addAttribute("postworkreps", postList.stream().filter(item -> item.getTotal_reps() != null)
                 .map(AnalyzeDTO::getTotal_reps).collect(Collectors.toList()));
-        return "";
+        return FragmentsRendering.fragment("fragments/Charts/workChart :: workChart").build();
     }
 
     @HxRequest
@@ -543,17 +603,7 @@ public class mainController {
         model.addAttribute("breakSets", totalSets);
         model.addAttribute("breakReps", totalReps);
         model.addAttribute("breakVolume", totalVolume);
-        return FragmentsRendering.fragment("fragments/Charts/breakChart :: breakChartjs").build();
-    }
-
-    @SuppressWarnings("null")
-    @HxRequest
-    @GetMapping("/Analyze/exercise")
-    public View showPreExercises(Model model, @ModelAttribute("User_id") Long userid) {
-        List<AnalyzeDTO> postList = dLogRepo.ExerciseTabDates(8, userid);
-        model.addAttribute("exerciseDates", postList.stream().filter(item -> item.getDates() != null)
-                .map(AnalyzeDTO::getDates).collect(Collectors.toList()));
-        return FragmentsRendering.fragment("fragments/Charts/exerciseChart :: exerciseChartjs").build();
+        return FragmentsRendering.fragment("fragments/Charts/breakChart :: breakChart").build();
     }
 
     @HxRequest
@@ -579,7 +629,7 @@ public class mainController {
         model.addAttribute("exerciseSets", totalSets);
         model.addAttribute("exerciseReps", totalReps);
         model.addAttribute("exerciseVolume", totalVolume);
-        return FragmentsRendering.fragment("fragments/Charts/exerciseChart :: exerciseChartjs").build();
+        return FragmentsRendering.fragment("fragments/Charts/exerciseChart :: exerciseChart").build();
     }
 
     @HxRequest
@@ -605,6 +655,20 @@ public class mainController {
             return "redirect:/api/sign-out";
         }
 
+    }
+
+    @HxRequest
+    @GetMapping("/content")
+    public String getMethodName(@RequestParam("Name") String name, @RequestParam("Email") String email, Model model) {
+        model.addAttribute("Name", name);
+        model.addAttribute("Email", email);
+        return "fragments/content :: content(Name=${Name}, Email=${Email})";
+    }
+
+    @HxRequest
+    @GetMapping("/chart")
+    public String getChart(Model model) {
+        return "fragments/chart :: chart";
     }
 
 }
