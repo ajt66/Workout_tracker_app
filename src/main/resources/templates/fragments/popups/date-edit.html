@@ -25,11 +25,11 @@
                             <th scope="row">Comment</th>
                             <th>Status</th>
                         </tr>
-                        <tr th:each="item, stat : ${Program}">
+                        <tr th:each="item, stat : ${Program.logs}">
                             <input type="hidden" th:value="${item.getLog_id()}" th:name="|logs[${stat.index}].log_id|">
                             <td><span th:text="${stat.count}"></span></td>
                             <td>
-                                <input type="text" th:value="${item.getExerciseName()}"
+                                <input type="text" th:value="${item.getExercise_name()}"
                                     th:name="|logs[${stat.index}].exercise_name|">
                             </td>
                             <td><input type="number" th:value="${item.getWeights()}"
@@ -53,7 +53,7 @@
                         </tr>
                     </table>
                     <button id="add-row-button" hx-get="/api/main/Logs/add" hx-trigger="click" hx-swap="beforeend"
-                        hx-target="#dl-popup-table" th:hx-vals='|{"index":"${Program.size()}"}|'>Add
+                        hx-target="#dl-popup-table" th:hx-vals='|{"index":"${Program.getLogs().size()}"}|'>Add
                         new row</buton>
                 </th:block>
             </div>

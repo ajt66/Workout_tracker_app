@@ -53,4 +53,11 @@ public class ExerciseList {
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User users;
 
+    public ExerciseList(String exercise_name, String exercise_type, String muscle_group, String category, User users) {
+        this.exercise_name = exercise_name;
+        this.exercise_type = exercise_type;
+        this.muscle_group = muscle_group;
+        this.category = category;
+        this.users = users;
+    }
 }

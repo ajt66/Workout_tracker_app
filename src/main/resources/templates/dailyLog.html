@@ -72,14 +72,14 @@
 
             <div class="content-header" id="prog-header">
                 <h3>Current Program: <span th:text="${dlp_name}">program name</span></h3>
-                <p>Date:<input id="date-select" hx-get="/api/main/Logs/date" hx-trigger="change" hx-swap="innerHTML"
-                        hx-target="#dlcol-card" th:hx-vals='|{"date":"curdate"}|' type="date"></p>
+                <p>Date:<input id="date-select" name="date-select" hx-get="/api/main/Logs/date" hx-trigger="changed"
+                        hx-swap="innerHTML" hx-target="#dlcol-card" type="date"></p>
             </div>
             <div class="columns-container">
                 <div class="column-card" id="dlcol-card">
                     <p>
                         <span th:text="${#temporals.format(curdate, 'dd MMMM yyyy')}">Date</span> - <span
-                            th:text="${#temporals.day(curdate)}">Day</span><br>
+                            th:text="${#temporals.day(curdate)}">Day</span><br><!--th:text="${#temporals.format(curdate, 'dd MMMM yyyy')}"-->
                         <hr>
                     </p>
                     <table class="cc-table">
@@ -115,7 +115,7 @@
                 </div>
             </div>
             <button class="program-button" hx-get="/api/main/Logs/edit" hx-trigger="click" hx-swap="innerHTML"
-                hx-target="#dlp-edit" th:hx-vals='|{"date":"curdate"}|' onclick="openpopup('dlp-edit')">Edit
+                hx-target="#dlp-edit" th:hx-vals='|{"date":"${curdate}"}|' onclick="openpopup('dlp-edit')">Edit
                 Workout</button>
         </div>
     </div>

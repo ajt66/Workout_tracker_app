@@ -1,97 +1,38 @@
-<script th:inline="javascript" th:fragment="workChart" defer>
-    var preworklabel = /*[[${preworklabels}]]*/ 'default label';
-    var preworkvolume = /*[[${preworkvolume}]]*/ 'default volume';
-    var preworkweight = /*[[${preworkweight}]]*/ 'default weight';
-    var preworkreps = /*[[${preworkreps}]]*/ 'default reps';
-    var preworksets = /*[[${preworksets}]]*/ 'default sets';
+<div th:fragment="workChart">
+    <p>
+        <span th:text="${workfilter}"></span>
+    <ul th:each="li: ${pwd}">
+        <li th:text="${li}"></li>
+    </ul>
+    <br>
+    Labels:
+    <ul th:each="li: ${pwl}">
+        <li th:text="${li}"></li>
+    </ul>
+    <br>
+    </p>
 
-    var postworklabel = /*[[${postworklabels}]]*/ 'post label';
-    var postworkvolume = /*[[${postworkvolume}]]*/ 'post volume';
-    var postworkweight = /*[[${postworkweight}]]*/ 'post weight';
-    var postworkreps = /*[[${postworkreps}]]*/ 'post reps';
-    var postworksets = /*[[${postworksets}]]*/ 'post sets';
+    <script type="text/javascript" th:inline="javascript">
+        (() => {
+            const workfilter = /*[[${workfilter}]]*/ 'volume';
+            const postworklabels = /*[[${pwl}]]*/[];
+            const selectedData = /*[[${pwd}]]*/[];
+            const chart = Chart.getChart('workChart');
 
-    function updateworkChart(Chart, filter) {
-        Chart.data.datasets.pop();
-        const newDataset = {
-            label: filter,
-            data: workFilter(filter),
-            borderColor: 'rgb(54, 162, 235, 1)',
-            backgroundColor: 'rgba(54, 162, 235, 0.5)',
-            fill: true
-        };
-        Chart.data.datasets.push(newDataset);
-        Chart.update();
-    }
+            if (!chart) {
+                console.error('Workout chart is not initialized.');
+                return;
+            }
 
-    function workFilter(filter) {
-        switch (filter) {
-            case 'Volume':
-                return postworklabel !== 'post label' ? postworklabel : preworkvolume;
-            case 'Weight':
-                return postworkweight !== 'post weight' ? postworkweight : preworkweight;
-            case 'Reps':
-                return postworkreps !== 'post reps' ? postworkreps : preworkreps;
-            case 'Sets':
-                return postworksets !== 'post sets' ? postworksets : preworksets;
-            default:
-                return [];
-        }
-    }
-
-    try {
-        const chart = Chart.getChart('workChart');
-        if (typeof chart !== 'undefined' && chart !== NULL) {
-
-            chart.data.datasets.pop();
-            var filter = document.getElementById('workfilter').value;
-
-            const newDataset = {
-                label: filter,
-                data: workFilter(filter),
+            chart.data.labels = postworklabels;
+            chart.data.datasets = [{
+                label: workfilter,
+                data: selectedData,
                 borderColor: 'rgb(54, 162, 235, 1)',
                 backgroundColor: 'rgba(54, 162, 235, 0.5)',
                 fill: true
-            };
-            chart.data.labels = postworklabel;
-            chart.data.datasets.push(newDataset);
+            }];
             chart.update();
-
-        } else {
-            throw "new";
-        }
-    } catch (err) {
-        const ctx = document.getElementById('workChart').getContext('2d');
-
-        const predata = {
-            labels: preworklabel,
-            datasets: [
-                {
-                    label: 'Volume',
-                    data: preworkvolume,
-                    borderColor: 'rgb(54, 162, 235, 1)',
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                    fill: true
-                }
-            ]
-        }
-
-        var config = {
-            type: 'line',
-            data: predata,
-            options: {
-                responsive: true,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Workout Chart'
-                    }
-                }
-            }
-        }
-
-        var workChart = new Chart(ctx, config);
-    }
-
-
-</script>
+        })();
+    </script>
+</div>

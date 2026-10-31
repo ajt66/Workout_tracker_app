@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,12 +34,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.swing.text.DateFormatter;
+
 import com.workout_tracker_app.Entity.User;
 import com.workout_tracker_app.Repository.DailyLogRepo;
 import com.workout_tracker_app.Repository.Exerciserepo;
 import com.workout_tracker_app.Repository.UserRepository;
 import com.workout_tracker_app.Repository.programLogRepo;
 import com.workout_tracker_app.dto.AnalyzeDTO;
+import com.workout_tracker_app.dto.DLDTO;
 import com.workout_tracker_app.dto.EntryDTO;
 import com.workout_tracker_app.dto.mapDTO;
 import com.workout_tracker_app.dto.programDTO;
@@ -141,6 +145,10 @@ public class mainController {
         progedit++;
     }
 
+    public void resetProgEdit() {
+        progedit = 1;
+    }
+
     public void setProgAdd(int count) {
         progadd = count;
     }
@@ -149,12 +157,20 @@ public class mainController {
         progadd++;
     }
 
+    public void resetProgAdd() {
+        progadd = 1;
+    }
+
     public void setDLEdit(int count) {
         dledit = count;
     }
 
     public void DLEditIncrement() {
         dledit++;
+    }
+
+    public void resetDLEdit() {
+        dledit = 1;
     }
 
     @GetMapping("")
@@ -188,25 +204,38 @@ public class mainController {
 
     @HxRequest
     @GetMapping("/Logs/date")
-    public View showDailyLogDate(@ModelAttribute("User_id") Long userid, @RequestParam("date") LocalDate date,
+    public View showDailyLogDate(@ModelAttribute("User_id") Long userid, @RequestParam("date-select") String date,
             Model model) {
-        Long logCount = dLogRepo.checkLogsForDate(userid, date);
-        if (logCount == 0) {
-            String day = date.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+        /*
+         * Long logCount = dLogRepo.checkLogsForDate(userid, LocalDate.parse(date));
+         * if (logCount == 0) {
+         * String day =
+         * LocalDate.parse(date).getDayOfWeek().getDisplayName(TextStyle.FULL,
+         * Locale.ENGLISH);
+         * dLogRepo.copyProgramDataForDate(userid, day, LocalDate.parse(date));
+         * }
+         */
+
+        List<DLDTO> logs = dLogRepo.findByDate(userid, LocalDate.parse(date), getActiveProgramID());
+
+        if (logs.isEmpty()) {
+            String day = LocalDate.parse(date).getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+            dLogRepo.copyProgramDataForDate(userid, day, LocalDate.parse(date));
         }
 
-        model.addAttribute("Program", dLogRepo.findByDate(userid, date, getActiveProgramID()));
-        model.addAttribute("date", date);
+        model.addAttribute("Program", dLogRepo.findByDate(userid, LocalDate.parse(date), getActiveProgramID()));
+        model.addAttribute("date", LocalDate.parse(date));
         return FragmentsRendering
                 .fragment("fragments/Details/Date.html :: new_date(date = ${date}, Program = ${Program})").build();
     }
 
     @HxRequest
     @GetMapping("/Logs/edit")
-    public View showDailyLogPopup(@ModelAttribute("User_id") Long userid, @RequestParam("date") LocalDate date,
+    public View showDailyLogPopup(@ModelAttribute("User_id") Long userid, @RequestParam("date") String date,
             Model model) {
         EntryDTO dto = new EntryDTO();
-        dto.setLogs(dLogRepo.findByDate(userid, date, getActiveProgramID()));
+
+        dto.setLogs(dLogRepo.findByDate(userid, LocalDate.parse(date), getActiveProgramID()));
         dto.setValues();
 
         model.addAttribute("Program", dto);
@@ -315,7 +344,7 @@ public class mainController {
         model.addAttribute("prog_name", progname);
 
         return FragmentsRendering
-                .fragment("fragments/Details/Program :: OProgam(Program = ${Program}, prog_id = ${prog_id})")
+                .fragment("fragments/Details/Program :: Progam(Program = ${Program}, prog_id = ${prog_id})")
                 .build();
 
         // return FragmentsRendering.fragment("fragments/Details/test.html ::
@@ -361,8 +390,9 @@ public class mainController {
         mapDTO dto = new mapDTO();
         dto.setMapDto(pLogRepo.findByProgramNamewithDetails(progname, userid).stream()
                 .collect(Collectors.groupingBy(programDTO::getDay, LinkedHashMap::new, Collectors.toList())));
-        dto.setTag(pLogRepo.findByProgramNamewithDetails(progname, userid).stream()
-                .collect(Collectors.toMap(programDTO::getDay, programDTO::getProgram_tag)));
+        Map<String, String> tagsByDay = new LinkedHashMap<>();
+        dto.getMapdto().forEach((day, exercises) -> tagsByDay.put(day, exercises.get(0).getProgram_tag()));
+        dto.setTag(tagsByDay);
 
         model.addAttribute("Program", dto);
         model.addAttribute("prog_id", progId);
@@ -495,6 +525,7 @@ public class mainController {
                     existing.addAll(replacement);
                     return existing;
                 }, LinkedHashMap::new));
+        result.remove("none");
 
         model.addAttribute("all", result);
         return "Exercise";
@@ -503,28 +534,35 @@ public class mainController {
     @HxRequest
     @GetMapping("/Exercise/add")
     public String getMethodName(@RequestParam("type") String name, Model model) {
+        model.addAttribute("user", getUser().get());
+
         if (Arrays.asList("cardio", "flexibility", "isometrics").contains(name)) {
-            model.addAttribute("ExerciseList", new ExerciseList());
-            model.addAttribute("category", name);
+            // model.addAttribute("category", name);
+            model.addAttribute("exercise", ExerciseList.builder().exercise_name(null).exercise_type("none")
+                    .muscle_group("none").category(name).users(getUser().get()).build());
 
-            return "fragments/popups/exercise-form :: category-form(category=${category})";
-
+            return "fragments/popups/exercise-form :: category-form(user = ${user})"; // category=${category},
         } else {
-            model.addAttribute("ExerciseList", new ExerciseList());
-            model.addAttribute("muscle", name);
+            // model.addAttribute("muscle", name);
+            model.addAttribute("exercise", ExerciseList.builder().exercise_name(null).exercise_type("none")
+                    .muscle_group(name).category("none").users(getUser().get()).build());
 
-            return "fragments/popups/exercise-form :: muscle-form(muscle=${muscle})";
+            return "fragments/popups/exercise-form :: muscle-form(user = ${user})"; // muscle=${muscle},
         }
     }
 
     @PostMapping(path = "/Exercise", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String showExercisePost(Model model, @ModelAttribute("ExerciseList") ExerciseList exerlist) {
-        exerciserepo.save(exerlist);
+    public String showExercisePost(Model model, @RequestParam("exercise_name") String name,
+            @RequestParam("exercise_type") String type, @RequestParam("muscle_group") String muscle,
+            @RequestParam("category") String category) {
+        exerciserepo.insertIntoExerciseList(getUserId(), name, type, muscle, category);
         return "redirect:/Exercise";
     }
 
+    @SuppressWarnings("null")
     @GetMapping("/Analyze")
     public String showAnalyze(@ModelAttribute("User_id") Long userid, Model model) {
+        // Metrics Portion
         model.addAttribute("exercisesum",
                 dLogRepo.sumByExerciseAndStatus(userid, log_status.valueOf("completed").name()));
         model.addAttribute("SCsum", dLogRepo.countByStatus(userid, log_status.valueOf("completed").name()));
@@ -532,6 +570,41 @@ public class mainController {
         model.addAttribute("SIsum", dLogRepo.countByStatus(userid, log_status.valueOf("cancelled").name()));
         model.addAttribute("volumesum", dLogRepo.sumByVolume(userid));
         model.addAttribute("WSRsum", dLogRepo.TotalWSR(userid));
+
+        // Workout Portion
+        List<AnalyzeDTO> preworkList = dLogRepo.WorkoutsTabPlainQuery(8, userid);
+
+        model.addAttribute("preworklabels", preworkList.stream().filter(item -> item.getDates() != null)
+                .map(item -> item.getDates().format(DateTimeFormatter.ofPattern("dd MM yyyy")))
+                .collect(Collectors.toList()));
+        model.addAttribute("preworkdata", preworkList.stream().filter(item -> item.getVolume() != null)
+                .map(AnalyzeDTO::getVolume).collect(Collectors.toList()));
+        /*
+         * model.addAttribute("preworkweights", preworkList.stream().filter(item ->
+         * item.getTotal_weight() != null)
+         * .map(AnalyzeDTO::getTotal_weight).collect(Collectors.toList()));
+         * model.addAttribute("preworksets", preworkList.stream().filter(item ->
+         * item.getTotal_sets() != null)
+         * .map(AnalyzeDTO::getTotal_sets).collect(Collectors.toList()));
+         * model.addAttribute("preworkreps", preworkList.stream().filter(item ->
+         * item.getTotal_reps() != null)
+         * .map(AnalyzeDTO::getTotal_reps).collect(Collectors.toList()));
+         */
+
+        // Breakdown Portion
+        List<AnalyzeDTO> prebreakList = dLogRepo.BreakdownTabQuery(8, userid);
+
+        model.addAttribute("breakmuscle", prebreakList.stream().filter(item -> item.getName() != null)
+                .map(AnalyzeDTO::getName)
+                .collect(Collectors.toList()));
+        /*
+         * model.addAttribute("breakWeights", totalWeights);
+         * model.addAttribute("breakSets", totalSets);
+         * model.addAttribute("breakReps", totalReps);
+         */
+        model.addAttribute("breakdata", prebreakList.stream().filter(item -> item.getVolume() != null)
+                .map(AnalyzeDTO::getVolume).collect(Collectors.toList()));
+
         return "Analyze";
     }
 
@@ -539,96 +612,154 @@ public class mainController {
     @HxRequest
     @GetMapping("/Analyze/workouts")
     public View showPreWorkouts(@ModelAttribute("User_id") Long userid,
-            @RequestParam(value = "category") String category,
+            @RequestParam(value = "workcategory") String workcategory,
+            @RequestParam(value = "workfilter") String workfilter,
             Model model) {
-        List<AnalyzeDTO> preList = dLogRepo.WorkoutsTabPlainQuery(8, userid);
-        model.addAttribute("preworklabels", preList.stream().filter(item -> item.getDates() != null)
-                .map(AnalyzeDTO::getDates).collect(Collectors.toList()));
-        model.addAttribute("preworkvolume", preList.stream().filter(item -> item.getTotal_volume() != null)
-                .map(AnalyzeDTO::getTotal_volume).collect(Collectors.toList()));
-        model.addAttribute("preworkweights", preList.stream().filter(item -> item.getTotal_weight() != null)
-                .map(AnalyzeDTO::getTotal_weight).collect(Collectors.toList()));
-        model.addAttribute("preworksets", preList.stream().filter(item -> item.getTotal_sets() != null)
-                .map(AnalyzeDTO::getTotal_sets).collect(Collectors.toList()));
-        model.addAttribute("preworkreps", preList.stream().filter(item -> item.getTotal_reps() != null)
-                .map(AnalyzeDTO::getTotal_reps).collect(Collectors.toList()));
-        return FragmentsRendering.fragment("fragments/Charts/workChart :: workChart").build();
-    }
-
-    @SuppressWarnings("null")
-    @HxRequest
-    @PostMapping("/Analyze/workouts")
-    public View showPostWorkouts(@ModelAttribute("User_id") Long userid,
-            @RequestParam(value = "category") String category,
-            Model model) {
-        if (category.equals("cardio") || category.equals("isometrics") || category.equals("flexibility")) {
+        if (workcategory.equals("cardio") || workcategory.equals("isometrics") || workcategory.equals("flexibility")) {
             model.addAttribute("workResult", "No data available for this category.");
+            model.addAttribute("workfilter", workfilter);
+            model.addAttribute("pwl", List.of());
+            model.addAttribute("pwd", List.of());
+        } else if (workcategory.equals("none")) {
+            List<AnalyzeDTO> noneList = dLogRepo.WorkoutsTabPlainQuery(8, userid);
+
+            switch (workfilter) {
+                case "volume":
+                    model.addAttribute("pwd",
+                            noneList.stream().filter(item -> item.getVolume() != null)
+                                    .map(AnalyzeDTO::getVolume).collect(Collectors.toList()));
+                    break;
+
+                case "weights":
+                    model.addAttribute("pwd",
+                            noneList.stream().filter(item -> item.getWeights() != null)
+                                    .map(AnalyzeDTO::getWeights).collect(Collectors.toList()));
+                    break;
+
+                case "sets":
+                    model.addAttribute("pwd", noneList.stream().filter(item -> item.getSets() != null)
+                            .map(AnalyzeDTO::getSets).collect(Collectors.toList()));
+                    break;
+
+                case "reps":
+                    model.addAttribute("pwd", noneList.stream().filter(item -> item.getReps() != null)
+                            .map(AnalyzeDTO::getReps).collect(Collectors.toList()));
+                    break;
+            }
+
+            model.addAttribute("workfilter", workfilter);
+            model.addAttribute("pwl", noneList.stream().filter(item -> item.getDates() != null)
+                    .map(item -> item.getDates().format(DateTimeFormatter.ofPattern("dd MM yyyy")))
+                    .collect(Collectors.toList()));
+
+        } else {
+            List<AnalyzeDTO> nameList = dLogRepo.WorkoutsTabMuscleGroupQuery(8, workcategory, userid);
+
+            switch (workfilter) {
+                case "volume":
+                    model.addAttribute("pwd",
+                            nameList.stream().filter(item -> item.getVolume() != null)
+                                    .map(AnalyzeDTO::getVolume).collect(Collectors.toList()));
+                    break;
+
+                case "weights":
+                    model.addAttribute("pwd",
+                            nameList.stream().filter(item -> item.getWeights() != null)
+                                    .map(AnalyzeDTO::getWeights).collect(Collectors.toList()));
+                    break;
+
+                case "sets":
+                    model.addAttribute("pwd", nameList.stream().filter(item -> item.getSets() != null)
+                            .map(AnalyzeDTO::getSets).collect(Collectors.toList()));
+                    break;
+
+                case "reps":
+                    model.addAttribute("pwd", nameList.stream().filter(item -> item.getReps() != null)
+                            .map(AnalyzeDTO::getReps).collect(Collectors.toList()));
+                    break;
+            }
+
+            model.addAttribute("workfilter", workfilter);
+            model.addAttribute("pwl", nameList.stream().filter(item -> item.getDates() != null)
+                    .map(item -> item.getDates().format(DateTimeFormatter.ofPattern("dd MM yyyy")))
+                    .collect(Collectors.toList()));
         }
 
-        List<AnalyzeDTO> postList = dLogRepo.WorkoutsTabCategoryQuery(8, category, userid);
-        model.addAttribute("postworklabels", postList.stream().filter(item -> item.getDates() != null)
-                .map(AnalyzeDTO::getDates).collect(Collectors.toList())); // String
-        model.addAttribute("postworkvolume", postList.stream().filter(item -> item.getTotal_volume() != null)
-                .map(AnalyzeDTO::getTotal_volume).collect(Collectors.toList())); // Long
-        model.addAttribute("postworkweights", postList.stream().filter(item -> item.getTotal_weight() != null)
-                .map(AnalyzeDTO::getTotal_weight).collect(Collectors.toList()));
-        model.addAttribute("postworksets", postList.stream().filter(item -> item.getTotal_sets() != null)
-                .map(AnalyzeDTO::getTotal_sets).collect(Collectors.toList()));
-        model.addAttribute("postworkreps", postList.stream().filter(item -> item.getTotal_reps() != null)
-                .map(AnalyzeDTO::getTotal_reps).collect(Collectors.toList()));
         return FragmentsRendering.fragment("fragments/Charts/workChart :: workChart").build();
     }
 
     @HxRequest
     @GetMapping("/Analyze/breakdown")
     public View showPreBreakdown(@ModelAttribute("User_id") Long userid,
-            @RequestParam(value = "filter") String filter,
+            @RequestParam(value = "breakfilter") String breakfilter,
             Model model) {
-        List<Object[]> preList = dLogRepo.BreakdownTabQuery(8,
-                userid);
-        List<String> muscleGroups = new ArrayList<>();
-        List<Long> totalWeights = new ArrayList<>();
-        List<Long> totalSets = new ArrayList<>();
-        List<Long> totalReps = new ArrayList<>();
-        List<Long> totalVolume = new ArrayList<>();
-        for (Object[] row : preList) {
-            muscleGroups.add((String) row[0]);
-            totalWeights.add((Long) row[1]);
-            totalSets.add((Long) row[2]);
-            totalReps.add((Long) row[3]);
-            totalVolume.add((Long) row[4]);
+        List<AnalyzeDTO> breakList = dLogRepo.BreakdownTabQuery(8, userid);
+
+        switch (breakfilter) {
+            case "volume":
+
+                model.addAttribute("pbd", breakList.stream().filter(item -> item.getVolume() != null)
+                        .map(AnalyzeDTO::getVolume).collect(Collectors.toList()));
+                break;
+
+            case "weights":
+                model.addAttribute("pbd", breakList.stream().filter(item -> item.getWeights() != null)
+                        .map(AnalyzeDTO::getWeights).collect(Collectors.toList()));
+                break;
+
+            case "sets":
+                model.addAttribute("pbd", breakList.stream().filter(item -> item.getSets() != null)
+                        .map(AnalyzeDTO::getSets).collect(Collectors.toList()));
+                break;
+
+            case "reps":
+                model.addAttribute("pbd", breakList.stream().filter(item -> item.getReps() != null)
+                        .map(AnalyzeDTO::getReps).collect(Collectors.toList()));
+                break;
         }
-        model.addAttribute("breakmuscle", muscleGroups);
-        model.addAttribute("breakWeights", totalWeights);
-        model.addAttribute("breakSets", totalSets);
-        model.addAttribute("breakReps", totalReps);
-        model.addAttribute("breakVolume", totalVolume);
+
+        model.addAttribute("breakfilter", breakfilter);
+        model.addAttribute("pbm", breakList.stream().filter(item -> item.getName() != null)
+                .map(AnalyzeDTO::getName).collect(Collectors.toList()));
         return FragmentsRendering.fragment("fragments/Charts/breakChart :: breakChart").build();
     }
 
     @HxRequest
-    @PostMapping("/Analyze/exercise")
+    @GetMapping("/Analyze/exercise")
     public View showPostExercises(@ModelAttribute("User_id") Long userid,
             @RequestParam(value = "exercise") String exercise,
+            @RequestParam(value = "exercisefilter") String exercisefilter,
             Model model) {
-        List<Object[]> preList = dLogRepo.ExerciseTabQuery(8, exercise, userid);
-        List<String> exerciseDates = new ArrayList<>();
-        List<Long> totalWeights = new ArrayList<>();
-        List<Long> totalSets = new ArrayList<>();
-        List<Long> totalReps = new ArrayList<>();
-        List<Long> totalVolume = new ArrayList<>();
-        for (Object[] row : preList) {
-            exerciseDates.add((String) row[0]);
-            totalWeights.add((Long) row[1]);
-            totalSets.add((Long) row[2]);
-            totalReps.add((Long) row[3]);
-            totalVolume.add((Long) row[4]);
+        List<AnalyzeDTO> preList = dLogRepo.ExerciseTabQuery(8, exercise, userid);
+
+        switch (exercisefilter) {
+            case "volume":
+                model.addAttribute("ped", preList.stream().filter(item -> item.getVolume() != null)
+                        .map(AnalyzeDTO::getVolume).collect(Collectors.toList()));
+                break;
+
+            case "weights":
+                model.addAttribute("ped", preList.stream().filter(item -> item.getWeights() != null)
+                        .map(AnalyzeDTO::getWeights).collect(Collectors.toList()));
+                break;
+
+            case "sets":
+                model.addAttribute("ped", preList.stream().filter(item -> item.getSets() != null)
+                        .map(AnalyzeDTO::getSets).collect(Collectors.toList()));
+                break;
+
+            case "reps":
+                model.addAttribute("ped", preList.stream().filter(item -> item.getReps() != null)
+                        .map(AnalyzeDTO::getReps).collect(Collectors.toList()));
+                break;
+
         }
-        model.addAttribute("exerciseDates", exerciseDates);
-        model.addAttribute("exerciseWeights", totalWeights);
-        model.addAttribute("exerciseSets", totalSets);
-        model.addAttribute("exerciseReps", totalReps);
-        model.addAttribute("exerciseVolume", totalVolume);
+
+        model.addAttribute("exercisefilter", exercisefilter);
+        model.addAttribute("pel", preList.stream().filter(item -> item.getDates() != null)
+                .map(item -> item.getDates().format(DateTimeFormatter.ofPattern("dd MM yyyy")))
+                .collect(Collectors.toList()));
+
         return FragmentsRendering.fragment("fragments/Charts/exerciseChart :: exerciseChart").build();
     }
 
@@ -668,6 +799,7 @@ public class mainController {
     @HxRequest
     @GetMapping("/chart")
     public String getChart(Model model) {
+        model.addAttribute("data", List.of(10, 11, 12, 13, 14));
         return "fragments/chart :: chart";
     }
 

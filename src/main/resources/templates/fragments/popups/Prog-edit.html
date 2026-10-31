@@ -14,15 +14,15 @@
                 <div class="column-card" th:id="${program.key}">
                     <p>
                         <span th:text="${program.key}">Day</span> - <select class="prog-edit-change"
-                            th:id="|tagmap[${program.key}]|" th:name="|tagmap[${program.key}]|"
-                            th:data-day="${program.key}">
-                            <option th:each="tags : ${tag}" th:value="${tag}" th:text="${tag}"
-                                th:selected="${program.value.get(0).getProgram_tag()}"></option>
+                            th:field="*{tagmap[__${program.key}__]}" th:data-day="${program.key}">
+                            <!--th:id="|tagmap[${program.key}]|" th:name="|tagmap[${program.key}]|"-->
+                            <option th:each="tags : ${tag}" th:value="${tags}" th:text="${tags}"></option>
+                            <!--th:selected="${Program.tagmap.get(program.key)}"-->
                         </select><br>
                         <hr>
                     </p>
                     <input type="hidden" class="modified" th:id="${program.key} + '-bool'"
-                        th:name="|daypair[${Program.key}]|" value="false">
+                        th:name="|daypair[${program.key}]|" value="false">
                     <table id="prog-edit-table">
                         <tr>
                             <th>No.</th>
@@ -35,21 +35,24 @@
                             <tr>
                                 <input class="prog-edit-change" type="hidden" th:value="${item.getPlog_id()}"
                                     th:name="|mapdto[${program.key}][${istat.index}].plog_id|"
-                                    th:data-day="${program.key}">
+                                    th:data-day="${program.key}"><!--th:field="*{mapdto[__${program.key}__][__${istat.index}__].plog_id}"-->
                                 <td><span th:text="${istat.count}">No.</td>
-                                <td><input class="prog-edit-change" type="text" th:value="${item.getExercise_name()}"
-                                        th:name="|mapdto[${program.key}][${istat.index}].exercise_name|"
-                                        th:data-day="${program.key}">
+                                <td><input class="prog-edit-change" type="text"
+                                        th:field="*{mapdto[__${program.key}__][__${istat.index}__].exercise_name}"
+                                        th:data-day="${program.key}"><!--th:value="${item.getExercise_name()}"
+                                        th:name="|mapdto[${program.key}][${istat.index}].exercise_name|"-->
                                 </td>
                                 <td><input class="prog-edit-change" type="number" th:value="${item.getSets()}"
-                                        th:name="|mapdto[${program.key}][${istat.index}].sets|"
+                                        th:field="*{mapdto[__${program.key}__][__${istat.index}__].sets}"
                                         th:data-day="${program.key}"></td>
+                                <!--th:name="|mapdto[${program.key}][${istat.index}].sets|"-->
                                 <td><input class="prog-edit-change" type="number" th:value="${item.getReps()}"
-                                        th:name="|mapdto[${program.key}][${istat.index}].reps|"
+                                        th:field="*{mapdto[__${program.key}__][__${istat.index}__].reps}"
                                         th:data-day="${program.key}"></td>
-                                <td><input class="prog-edit-change" type="number" th:value="${item.getDuration()}"
-                                        th:name="|mapdto[${program.key}][${istat.index}].duration|"
-                                        th:data-day="${program.key}">
+                                <!--th:name="|mapdto[${program.key}][${istat.index}].reps|"-->
+                                <td><input class="prog-edit-change" type="text" th:value="${item.getDuration()}"
+                                        th:field="*{mapdto[__${program.key}__][__${istat.index}__].duration}"
+                                        th:data-day="${program.key}"><!--th:name="|mapdto[${program.key}][${istat.index}].duration|"-->
                                 </td>
                             </tr>
                         </th:block>
@@ -108,7 +111,7 @@
                                     th:field="*{mapdto[__${day.key}__][__${istat.index}__].sets}"></td>
                             <td><input type="number" placeholder="reps"
                                     th:field="*{mapdto[__${day.key}__][__${istat.index}__].reps}"></td>
-                            <td><input type="number" placeholder="duration"
+                            <td><input type="text" placeholder="duration"
                                     th:field="*{mapdto[__${day.key}__][__${istat.index}__].duration}"></td>
                         </tr>
                     </th:block>

@@ -56,6 +56,18 @@ public interface DailyLogRepo extends JpaRepository<DailyLog, Long> {
         @Modifying
         @Transactional
         @Query(value = """
+                        INSERT INTO workoutapp.daily_log (program_id, day, logging_date, exercise_id, sets, reps, duration, dstatus)
+                        SELECT pl.program_id, pl.day, :logging_date, pl.exercise_id, pl.sets, pl.reps, pl.duration, 'cancelled'
+                        FROM workoutapp.programs p
+                        JOIN workoutapp.program_log pl ON pl.program_id = p.program_id
+                        WHERE p.user_id = :userId AND p.pstatus = 'active' AND pl.day = :day
+                        """, nativeQuery = true)
+        int copyProgramDataForDate(@Param("userId") Long userId, @Param("day") String day,
+                        @Param("logging_date") LocalDate logging_date);
+
+        @Modifying
+        @Transactional
+        @Query(value = """
                         UPDATE workoutapp.daily_log
                         SET dstatus = 'cancelled'
                         WHERE dstatus = 'pending' AND logging_date < CURRENT_DATE
@@ -175,7 +187,7 @@ public interface DailyLogRepo extends JpaRepository<DailyLog, Long> {
 
         // For workout page
         @Query(value = """
-                        SELECT TO_CHAR(d.logging_date, 'DD Mon YYYY') AS Dates, COALESCE(SUM(d.weights),0) AS Total_weight, COALESCE(SUM(d.sets),0) AS Total_sets,
+                        SELECT d.logging_date AS Dates, COALESCE(SUM(d.weights),0) AS Total_weight, COALESCE(SUM(d.sets),0) AS Total_sets,
                         COALESCE(SUM(d.reps),0) AS Total_reps, COALESCE(SUM(d.weights * d.sets * d.reps),0) AS Total_volume
                         FROM workoutapp.daily_log d
                         JOIN workoutapp.programs p ON d.program_id = p.program_id JOIN workoutapp.users u ON p.user_id = u.id
@@ -185,9 +197,9 @@ public interface DailyLogRepo extends JpaRepository<DailyLog, Long> {
                         @Param("user_id") Long user_id);
 
         @Query(value = """
-                        SELECT TO_CHAR(d.logging_date, 'DD Mon YYYY') AS Dates, COALESCE(SUM(d.weights),0) AS Total_weight, COALESCE(SUM(d.sets),0) AS Total_sets,
+                        SELECT d.logging_date AS Dates, COALESCE(SUM(d.weights),0) AS Total_weight, COALESCE(SUM(d.sets),0) AS Total_sets,
                         COALESCE(SUM(d.reps),0) AS Total_reps, COALESCE(SUM(d.weights * d.sets * d.reps),0) AS Total_volume
-                        FROM workoutapp.daily_log d JOIN workoutapp.exercise_list e ON d.exercise_id = e.exercise_ida
+                        FROM workoutapp.daily_log d JOIN workoutapp.exercise_list e ON d.exercise_id = e.exercise_id
                         JOIN workoutapp.programs p ON d.program_id = p.program_id JOIN workoutapp.users u ON p.user_id = u.id
                         WHERE EXTRACT(MONTH FROM d.logging_date) = :month AND e.category = :category AND u.id = :user_id AND d.dstatus = 'completed'
                         AND d.weights IS NOT NULL AND d.sets IS NOT NULL AND d.reps IS NOT NULL GROUP BY d.logging_date""", nativeQuery = true)
@@ -195,7 +207,7 @@ public interface DailyLogRepo extends JpaRepository<DailyLog, Long> {
                         @Param("user_id") Long user_id);
 
         @Query(value = """
-                        SELECT TO_CHAR(d.logging_date, 'DD Mon YYYY') AS Dates, COALESCE(SUM(d.weights),0) AS Total_weight, COALESCE(SUM(d.sets),0) AS Total_sets,
+                        SELECT d.logging_date AS Dates, COALESCE(SUM(d.weights),0) AS Total_weight, COALESCE(SUM(d.sets),0) AS Total_sets,
                         COALESCE(SUM(d.reps),0) AS Total_reps, COALESCE(SUM(d.weights * d.sets * d.reps),0) AS Total_volume
                         FROM workoutapp.daily_log d JOIN workoutapp.exercise_list e ON d.exercise_id = e.exercise_id
                         JOIN workoutapp.programs p ON d.program_id = p.program_id JOIN workoutapp.users u ON p.user_id = u.id
@@ -207,30 +219,30 @@ public interface DailyLogRepo extends JpaRepository<DailyLog, Long> {
 
         // For breakdown page
         @Query(value = """
-                        SELECT e.muscle_group AS Exercise, COALESCE(SUM(d.weights),0) AS Total_weight, COALESCE(SUM(d.sets),0) AS Total_sets,
-                        COALESCE(SUM(d.reps),0) AS Total_reps, COALESCE(SUM(d.weights * d.sets * d.reps),0) AS Total_volume
+                        SELECT DATE_TRUNC('month', d.logging_date)::date AS Dates, e.muscle_group AS name, COALESCE(SUM(d.weights), 0) AS Total_weight,
+                        COALESCE(SUM(d.sets), 0) AS Total_sets, COALESCE(SUM(d.reps), 0) AS Total_reps, COALESCE(SUM(d.weights * d.sets * d.reps), 0) AS Total_volume
                         FROM workoutapp.daily_log d JOIN workoutapp.exercise_list e ON d.exercise_id = e.exercise_id
                         JOIN workoutapp.programs p ON d.program_id = p.program_id JOIN workoutapp.users u ON p.user_id = u.id
                         WHERE EXTRACT(MONTH FROM d.logging_date) = :month AND u.id = :user_id AND d.dstatus = 'completed' AND e.muscle_group IS NOT NULL
-                        AND d.weights IS NOT NULL AND d.sets IS NOT NULL AND d.reps IS NOT NULL GROUP BY e.muscle_group""", nativeQuery = true)
-        List<Object[]> BreakdownTabQuery(@Param("month") int month,
+                        AND d.weights IS NOT NULL AND d.sets IS NOT NULL AND d.reps IS NOT NULL GROUP BY DATE_TRUNC('month', d.logging_date)::date, e.muscle_group""", nativeQuery = true)
+        List<AnalyzeDTO> BreakdownTabQuery(@Param("month") int month,
                         @Param("user_id") Long user_id);
 
         // For exercise page
         @Query(value = """
-                        SELECT DISTINCT TO_CHAR(d.logging_date, 'DD Mon YYYY') AS Dates FROM workoutapp.daily_log d
+                        SELECT DISTINCT d.logging_date AS Dates FROM workoutapp.daily_log d
                         JOIN workoutapp.programs p ON d.program_id = p.program_id JOIN workoutapp.users u ON p.user_id = u.id
                         WHERE EXTRACT(MONTH FROM d.logging_date) = :month AND u.id = :user_id AND d.dstatus = 'completed'""", nativeQuery = true)
         List<AnalyzeDTO> ExerciseTabDates(@Param("month") int month,
                         @Param("user_id") Long user_id);
 
         @Query(value = """
-                        SELECT TO_CHAR(d.logging_date, 'DD Mon YYYY') AS Dates, e.exercise_name AS Exercise, COALESCE(SUM(d.weights),0) AS Total_weight, COALESCE(SUM(d.sets),0) AS Total_sets,
+                        SELECT d.logging_date AS Dates, COALESCE(SUM(d.weights),0) AS Total_weight, COALESCE(SUM(d.sets),0) AS Total_sets,
                         COALESCE(SUM(d.reps),0) AS Total_reps, COALESCE(SUM(d.weights * d.sets * d.reps),0) AS Total_volume
                         FROM workoutapp.daily_log d JOIN workoutapp.exercise_list e ON d.exercise_id = e.exercise_id
                         JOIN workoutapp.programs p ON d.program_id = p.program_id JOIN workoutapp.users u ON p.user_id = u.id
                         WHERE EXTRACT(MONTH FROM d.logging_date) = :month AND u.id = :user_id AND d.dstatus = 'completed' AND e.exercise_name = :exercise_name
-                        AND d.weights IS NOT NULL AND d.sets IS NOT NULL AND d.reps IS NOT NULL GROUP BY d.logging_date, e.exercise_name""", nativeQuery = true)
-        List<Object[]> ExerciseTabQuery(@Param("month") int month, @Param("exercise_name") String exercise_name,
+                        AND d.weights IS NOT NULL AND d.sets IS NOT NULL AND d.reps IS NOT NULL GROUP BY d.logging_date""", nativeQuery = true)
+        List<AnalyzeDTO> ExerciseTabQuery(@Param("month") int month, @Param("exercise_name") String exercise_name,
                         @Param("user_id") Long user_id);
 }

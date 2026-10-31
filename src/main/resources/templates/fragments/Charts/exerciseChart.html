@@ -1,51 +1,30 @@
-<script th:inline="javascript" th:fragment="exerciseChart" defer>
+<div th:fragment="exerciseChart">
+    <p>
+        <span th:text="${exercisefilter}"></span>
+    <ul th:each="li: ${ped}">
+        <li th:text="${li}"></li>
+    </ul>
+    <br>
+    Labels:
+    <ul th:each="di: ${pel}">
+        <li th:text="${di}"></li>
+    </ul>
+    <br>
 
-    const ctx = document.getElementById('exercisesChart').getContext('2d');
-    var exerciseDates = /*[[${exerciseDates}]]*/ 'default label';
-    var exerciseVolume = /*[[${exerciseVolume}]]*/ 'default volume';
-    var exerciseWeights = /*[[${exerciseWeights}]]*/ 'default weight';
-    var exerciseReps = /*[[${exerciseReps}]]*/ 'default reps';
-    var exerciseSets = /*[[${exerciseSets}]]*/ 'default sets';
+    </p>
+    <script th:inline="javascript">
+        (function () {
+            const exercisefilter = /*[[${exercisefilter}]]*/ 'volume';
+            const exerciseDates = /*[[${pel}]]*/[];
 
-    function updateexerciseChart(chart, filter) {
-        chart.data.datasets.pop();
-        const newDataset = {
-            label: filter,
-            data: exerciseFilter(filter),
-            borderColor: 'rgb(54, 162, 235, 1)',
-            backgroundColor: 'rgba(54, 162, 235, 0.5)',
-            fill: true
-        }
-        chart.data.datasets.push(newDataset);
-        chart.update();
-    };
-
-    function exerciseFilter(filter) {
-        switch (filter) {
-            case 'Volume':
-                return exerciseVolume;
-            case 'Weight':
-                return exerciseWeights;
-            case 'Reps':
-                return exerciseReps;
-            case 'Sets':
-                return exerciseSets;
-            default:
-                return [];
-        }
-    }
-
-    try {
-        const chart = Chart.getChart('exerciseChart');
-        if (typeof chart !== 'undefined' && chart !== NULL) {
+            const selection = /*[[${ped}]]*/[];
+            const chart = Chart.getChart('exerciseChart');
 
             chart.data.datasets.pop();
-            var filter = document.getElementById('workfilter').value;
-
-            const datasets =
+            const newDataset =
             {
-                label: filter,
-                data: exerciseFilter(filter),
+                label: exercisefilter,
+                data: selection,
                 borderColor: 'rgb(54, 162, 235, 1)',
                 backgroundColor: 'rgba(54, 162, 235, 0.5)',
                 fill: true
@@ -54,39 +33,44 @@
             chart.data.datasets.push(newDataset);
             chart.update();
 
-        } else {
-            throw "new";
-        }
-    } catch (err) {
-        const data = {
-            label: exerciseDates,
-            datasets: [
-                {
-                    label: 'filler value',
-                    data: [],
-                    borderColor: 'rgb(54, 162, 235, 1)',
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                    fill: true
+            /*if (typeof postexercisechart !== 'undefined' && postexercisechart !== NULL) {
+    
+                
+    
+            } else {
+                const postexercisectx = document.getElementById('exerciseChart').getContext('2d');
+    
+                const postexercisedata = {
+                    label: exerciseDates,
+                    datasets: [
+                        {
+                            label: exercisefilter,
+                            data: exerciseFilter(exercisefilter),
+                            borderColor: 'rgb(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            fill: true
+                        }
+                    ]
+    
                 }
-            ]
-
-        }
-
-        var config = {
-            type: 'line',
-            data: data,
-            options: {
-                responsive: true,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Exercise Chart'
+    
+                var config = {
+                    type: 'line',
+                    data: postexercisedata,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Exercise Chart'
+                            }
+                        }
                     }
                 }
-            }
+    
+                var exerciseChart = new Chart(postexercisectx, config);
+            }*/
         }
-
-        var exerciseChart = new Chart(ctx, config);
-    }
-
-</script>
+        )();
+    </script>
+</div>

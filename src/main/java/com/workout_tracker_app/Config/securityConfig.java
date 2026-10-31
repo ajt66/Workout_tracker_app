@@ -35,6 +35,7 @@ public class securityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 // Disable CSRF - not needed for stateless JWT auth
                 .csrf(csrf -> csrf.disable())
                 // Configure authorization rules
@@ -49,6 +50,8 @@ public class securityConfig {
                                 "/img/**",
                                 "/js/**",
                                 "/webjars/**",
+                                "/h2-console",
+                                "/h2-console/**",
                                 "/favicon.ico")
                         .permitAll()
                         // Everything else requires authentication

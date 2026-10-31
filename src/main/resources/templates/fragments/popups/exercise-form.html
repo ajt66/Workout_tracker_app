@@ -1,15 +1,15 @@
-<th:block th:fragment="muscle-form(muscle)">
+<th:block th:fragment="muscle-form(user)">
     <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
-    <form th:action="@{/api/main/Exercise}" th:object="${ExerciseList}" method="post">
+    <form th:action="@{/api/main/Exercise}" method="post">
         <h2>Add new Abs exercise</h2>
         <div class="form-group">
             <label for="name">Enter Exercise Name :</label><br>
-            <input type="text" id="name" th:field="*{exercise_name}" required>
+            <input type="text" id="name" name="exercise_name" required>
         </div>
 
         <div class="form-group">
             <label for="type">Enter Exercise type :</label>
-            <select th:field="*{exercise_type}">
+            <select name="exercise_type" id="type">
                 <option th:value="isolation" th:text="Isolation">Isolation</option>
                 <option th:value="compound" th:text="Compound">Compound</option>
                 <option th:value="none" th:text="None">None</option>
@@ -18,14 +18,15 @@
 
         <div class="form-group">
             <label for="muscleGroup">Muscle Group :</label>
-            <input type="text" th:value="${muscle}" id="muscleGroup" th:field="*{muscle_group}" readonly>
+            <input type="text" name="muscle_group" id="muscleGroup" readonly>
         </div>
 
         <div class="form-group">
             <label for="category">Select the appropriate category :</label>
-            <select th:field="*{category}">
+            <select name="category" id="category">
                 <option th:value="strength" th:text="Strength">Strength</option>
                 <option th:value="hypertrophy" th:text="Hypertrophy">Hypertrophy</option>
+                <option th:value="none" th:text="None">None</option>
             </select>
         </div>
 
@@ -33,18 +34,18 @@
     </form>
 </th:block>
 
-<th:block th:fragment="category-form(category)">
+<th:block th:fragment="category-form(user)">
     <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
-    <form th:action="@{/api/main/Exercise}" th:object="${ExerciseList}" method="post">
+    <form th:action="@{/api/main/Exercise}" method="post">
         <h2>Add new Abs exercise</h2>
         <div class="form-group">
             <label for="name">Enter Exercise Name :</label><br>
-            <input type="text" id="name" th:field="*{exercise_name}" required>
+            <input type="text" id="name" name="exercise_name" required>
         </div>
 
         <div class="form-group">
             <label for="type">Enter Exercise type :</label>
-            <select th:field="*{exercise_type}">
+            <select name="type" id="type">
                 <option th:value="isolation" th:text="Isolation">Isolation</option>
                 <option th:value="compound" th:text="Compound">Compound</option>
                 <option th:value="none" th:text="None">None</option>
@@ -53,12 +54,12 @@
 
         <div class="form-group">
             <label for="muscleGroup">Muscle Group :</label>
-            <input type="text" value="none" id="muscleGroup" th:field="*{muscle_group}" readonly>
+            <input type="text" id="muscleGroup" name="muscle_group" readonly>
         </div>
 
         <div class="form-group">
-            <label for="category">Category :</label>
-            <input type="text" th:value="${category}" id="category" th:field="*{category}" readonly>
+            <label for="category" id="category">Category :</label>
+            <input type="text" id="category" name="category" readonly>
         </div>
 
         <button type="submit">Add Exercise</button>

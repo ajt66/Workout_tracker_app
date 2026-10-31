@@ -38,12 +38,7 @@ function openpopup(popupname) {
 
 // Analyze page ----------------------------------------------------------------------------------------------------------
 window.onload = function () {
-    const activeTab = localStorage.getItem('activeTab');
-    if (activeTab) {
-        document.getElementById(activeTab).click();
-    } else {
-        document.getElementById("metrics").click();
-    }
+    document.getElementById("metrics").click();
 };
 
 function opentab(evt, tabName) {
@@ -61,7 +56,6 @@ function opentab(evt, tabName) {
 
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " selected";
-    localStorage.setItem('activeTab', evt.currentTarget.id);
 }
 
 // daily-log page -------------------------------------------------------------------------------------------------------

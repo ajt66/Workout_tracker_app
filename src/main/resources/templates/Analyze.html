@@ -17,7 +17,7 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
     <link rel="stylesheet" href="../static/css/style.css" th:href="@{/css/style.css}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"
         integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V"
@@ -102,12 +102,10 @@
                                 <li>Total volume:<span class="tab1"></span><span th:text="${volumesum}">volume</span>
                                 </li>
                                 <li>Total weights:<span class="tab1"></span><span
-                                        th:text="${WSRsum.getTotal_weight()}">weights</span></li>
-                                <li>Total sets:<span class="tab1"></span><span
-                                        th:text="${WSRsum.getTotal_sets()}">sets</span>
+                                        th:text="${WSRsum.getWeights()}">weights</span></li>
+                                <li>Total sets:<span class="tab1"></span><span th:text="${WSRsum.getSets()}">sets</span>
                                 </li>
-                                <li>Total reps:<span class="tab1"></span><span
-                                        th:text="${WSRsum.getTotal_reps()}">reps</span>
+                                <li>Total reps:<span class="tab1"></span><span th:text="${WSRsum.getReps()}">reps</span>
                                 </li>
                             </ul>
                         </div>
@@ -119,45 +117,81 @@
                         weights and volume. Exercise categories can also be selected for comparison.</p>
 
                     <div class="Analyze-options">
-                        <label for="workcategory">category :</label><span class="tab1"></span>
-                        <select id="workcategory" hx-post="/api/main/Analyze/workouts" hx-trigger="change"
-                            hx-target="#workjs" hx-swap="none" name="workcategory">
-                            <option value="none">None</option>
-                            <option value="abs">Abs</option>
-                            <option value="back">Back</option>
-                            <option value="biceps">Biceps</option>
-                            <option value="cardio">Cardio</option>
-                            <option value="chest">Chest</option>
-                            <option value="flexibility">Flexibility</option>
-                            <option value="forearms">Forearms</option>
-                            <option value="isometrics">Isometrics</option>
-                            <option value="legs">Legs</option>
-                            <option value="shoulders">Shoulders</option>
-                            <option value="triceps">Triceps</option>
-                        </select>
-                        <label for="workfilter">Filter :</label><span class="tab1"></span>
-                        <select id="workfilter" name="workfilter"
-                            onchange="updateworkChart(Chart.getChart('workChart'), this.value)">
-                            <option value="volume">Total volume</option>
-                            <option value="weights">Total Weights</option>
-                            <option value="sets">Total sets</option>
-                            <option value="reps">Total reps</option>
-                        </select>
-                    </div>
+                        <form id="workform" hx-get="/api/main/Analyze/workouts" hx-target="#workupdatediv"
+                            hx-swap="innerHTML" hx-indicator="#workindicator">
+                            <label for="workcategory">category :</label><span class="tab1"></span>
+                            <select th:id="workcategory" th:name="workcategory">
+                                <option value="none">None</option>
+                                <option value="abs">Abs</option>
+                                <option value="back">Back</option>
+                                <option value="biceps">Biceps</option>
+                                <option value="cardio">Cardio</option>
+                                <option value="chest">Chest</option>
+                                <option value="flexibility">Flexibility</option>
+                                <option value="forearms">Forearms</option>
+                                <option value="isometrics">Isometrics</option>
+                                <option value="legs">Legs</option>
+                                <option value="shoulders">Shoulders</option>
+                                <option value="triceps">Triceps</option>
+                            </select>
+                            <label for="workfilter">Filter :</label><span class="tab1"></span>
+                            <select th:id="workfilter" th:name="workfilter">
+                                <option value="volume">Total volume</option>
+                                <option value="weights">Total Weights</option>
+                                <option value="sets">Total sets</option>
+                                <option value="reps">Total reps</option>
+                            </select>
 
-                    <form id="workform" hx-get="/api/main/Analyze/workouts" hx-trigger="revealed once"
-                        hx-swap="innerHTML" hx-target="#workjs" hx-indicator="#workindicator">
-                        <input type="hidden" name="category" id="preworkcategory" value="none">
-                    </form>
+                            <button class="program-button" type="submit">Show results</button>
+                        </form>
+                    </div>
 
                     <div id="workChartdiv">
+                        <canvas id="workChart" width="500" height="200"></canvas>
                         <img id="workindicator" class="htmx-indicator" src="../static/svg-loaders/oval.svg"
                             alt="loading">
-                        <canvas id="workChart" width="400" height="200"></canvas>
                     </div>
 
-                    <div id="workjs"></div>
+                    <div id="workjs">
+                        <script th:inline="javascript">
+                            const workctx = document.getElementById('workChart').getContext('2d');
 
+                            var Labels = /*[[${preworklabels}]]*/['01 Aug 2026', '02 Aug 2026', '03 Aug 2026', '04 Aug 2026', '05 Aug 2026',
+                                '06 Aug 2026', '07 Aug 2026', '08 Aug 2026', '09 Aug 2026', '10 Aug 2026'];
+                            var workdata = /*[[${preworkdata}]]*/[1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+                            const preworkdata = {
+                                labels: Labels,
+                                datasets: [
+                                    {
+                                        label: 'Volume',
+                                        data: workdata,
+                                        borderColor: 'rgb(54, 162, 235, 1)',
+                                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                                        fill: true
+                                    }
+                                ]
+                            }
+
+                            var config = {
+                                type: 'line',
+                                data: preworkdata,
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        title: {
+                                            display: true,
+                                            text: 'Workout Chart'
+                                        }
+                                    }
+                                }
+                            }
+
+                            var workChart = new Chart(workctx, config);
+                        </script>
+                    </div>
+
+                    <div id="workupdatediv"></div>
                 </div>
 
                 <div class="tab-content" id="breakdownTab">
@@ -166,46 +200,87 @@
                     </p>
 
                     <div class="Analyze-options">
-                        <label for="breakfilter">Filter :</label><span class="tab1"></span>
-                        <select id="breakfilter" name="breakfilter"
-                            onchange="updatebreakChart(Chart.getChart('breakChart'), this.value)">
-                            <option value="volume">Total volume</option>
-                            <option value="weights">Total Weights</option>
-                            <option value="sets">Total sets</option>
-                            <option value="reps">Total reps</option>
-                        </select>
-                    </div>
+                        <form hx-get="/api/main/Analyze/breakdown" hx-swap="innerHTML" hx-target="#breakupdatediv"
+                            hx-indicator="#breakindicator">
+                            <label for="breakfilter">Filter :</label><span class="tab1"></span>
+                            <select id="breakfilter" name="breakfilter">
+                                <option value="volume">Total volume</option>
+                                <option value="weights">Total Weights</option>
+                                <option value="sets">Total sets</option>
+                                <option value="reps">Total reps</option>
+                            </select>
 
-                    <form id="breakform" hx-get="/api/main/Analyze/breakdown" hx-trigger="revealed once"
-                        hx-swap="innerHTML" hx-target="#breakjs" hx-indicator="#breakindicator">
-                        <input type="hidden" name="filter" id="prebreakfilter" value="volume">
-                    </form>
+                            <button class="program-button" type="submit">Show results</button>
+                        </form>
+                    </div>
 
                     <div id="breakChartdiv">
                         <img id="breakindicator" class="htmx-indicator" src="../static/svg-loaders/oval.svg"
                             alt="loading">
-                        <canvas id="breakChart" width="400" height="200"></canvas>
+                        <canvas id="breakChart" width="100" height="100"></canvas>
                     </div>
 
-                    <div id="breakjs"></div>
+                    <div id="breakjs">
+                        <script th:inline="javascript">
+                            var muscle = /*[[${breakmuscle}]]*/["chest", "back", "legs"];
+                            var breakdata = /*[[${breakdata}]]*/[4000, 3200, 6000];
+
+                            const breakctx = document.getElementById('breakChart').getContext('2d');
+
+                            const prebreakdata = {
+                                labels: muscle,
+                                datasets: [
+                                    {
+                                        label: "volume",
+                                        data: breakdata,
+                                        backgroundColor: [
+                                            'rgb(255, 99, 132)',
+                                            'rgb(54, 162, 235)',
+                                            'rgb(255, 205, 86)'
+                                        ],
+                                        hoverOffset: 4
+                                    }
+                                ]
+                            }
+
+                            var config = {
+                                type: 'pie',
+                                data: prebreakdata,
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        title: {
+                                            display: true,
+                                            text: 'BreakDown Chart'
+                                        }
+                                    }
+                                }
+                            }
+
+                            var breakChart = new Chart(breakctx, config);
+                        </script>
+                    </div>
+
+                    <div id="breakupdatediv"></div>
                 </div>
 
                 <div class="tab-content" id="exercisesTab">
                     <p>Tab used for comparing performance for a single exercise.</p>
 
                     <div class="Analyze-options">
-                        <label for="name">Exercise Name :</label><span class="tab1"></span>
-                        <input type="text" id="exercise" name="exercise" hx-post="/api/main/Analyze/exercise"
-                            hx-trigger="change" hx-target="#exercisejs" hx-swap="innerHTML"
-                            placeholder="Enter exercise name">
-                        <label for="exercisefilter">Filter :</label><span class="tab1"></span>
-                        <select id="exercisefilter" name="exercisefilter"
-                            onchange="updateexerciseChart(Chart.getChart('exerciseChart'), this.value)">
-                            <option value="volume">Total volume</option>
-                            <option value="weights">Total Weights</option>
-                            <option value="sets">Total sets</option>
-                            <option value="reps">Total reps</option>
-                        </select>
+                        <form hx-get="/api/main/Analyze/exercise" hx-target="#exercisejs" hx-swap="innerHTML">
+                            <label for="name">Exercise Name :</label><span class="tab1"></span>
+                            <input type="text" id="exercise" name="exercise" placeholder="Enter exercise name">
+                            <label for="exercisefilter">Filter :</label><span class="tab1"></span>
+                            <select id="exercisefilter" name="exercisefilter">
+                                <option value="volume">Total volume</option>
+                                <option value="weights">Total Weights</option>
+                                <option value="sets">Total sets</option>
+                                <option value="reps">Total reps</option>
+                            </select>
+
+                            <button class="program-button" type="submit">Show results</button>
+                        </form>
                     </div>
 
                     <div id="exerciseChartdiv">
@@ -213,7 +288,41 @@
                         <canvas id="exerciseChart" width="400" height="200"></canvas>
                     </div>
 
-                    <div id="exercisejs"></div>
+                    <div id="exercisejs">
+                        <script th:inline="javascript">
+                            const exercisectx = document.getElementById('exerciseChart').getContext('2d');
+
+                            const preExdata = {
+                                labels: ['01 Aug 2026', '02 Aug 2026', '03 Aug 2026', '04 Aug 2026', '05 Aug 2026',
+                                    '06 Aug 2026', '07 Aug 2026', '08 Aug 2026', '09 Aug 2026', '10 Aug 2026'],
+                                datasets: [
+                                    {
+                                        label: 'Volume',
+                                        data: [],
+                                        borderColor: 'rgb(54, 162, 235, 1)',
+                                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                                        fill: true
+                                    }
+                                ]
+                            }
+
+                            var config = {
+                                type: 'line',
+                                data: preExdata,
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        title: {
+                                            display: true,
+                                            text: 'Workout Chart'
+                                        }
+                                    }
+                                }
+                            }
+
+                            var exerciseChart = new Chart(exercisectx, config);
+                        </script>
+                    </div>
                 </div>
             </div>
         </div>
@@ -227,15 +336,6 @@
             </div>
         </section>
     </div>
-
-    <script type="module" id="workjs">
-    </script>
-
-    <script type="module" id="workjs">
-    </script>
-
-    <script type="module" id="workjs">
-    </script>
 
     <script src="../static/js/post-verify.js" th:src="@{/js/post-verify.js}">
     </script>

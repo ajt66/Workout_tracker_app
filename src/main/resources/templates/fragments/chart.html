@@ -1,11 +1,13 @@
 <div th:fragment="chart">
-    <script>
+    <script type="text/javascript" th:inline="javascript">
+        var Data = /*[[${data}]]*/[5, 6, 7, 8, 9];
+
         const chart = Chart.getChart('Chart');
 
         chart.data.datasets.pop();
         const newDataset = {
             label: 'aad',
-            data: [2, -1, 2, 3, 4],
+            data: Data,
             borderColor: 'rgb(54, 162, 235, 1)',
             backgroundColor: 'rgba(54, 162, 235, 0.5)',
             fill: true

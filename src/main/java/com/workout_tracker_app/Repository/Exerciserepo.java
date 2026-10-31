@@ -52,4 +52,12 @@ public interface Exerciserepo extends JpaRepository<ExerciseList, Long> {
         @Query("SELECT e FROM ExerciseList e JOIN e.users u WHERE e.exercise_id = :exerciseId AND u.id = :user_id")
         Optional<ExerciseList> findByExerciseId(@Param("exerciseId") Long exerciseId, @Param("user_id") Long user_id);
 
+        @Modifying
+        @Query(value = """
+                        INSERT INTO workoutapp.exercise_list(user_id, exercise_name, etype, muscle_group, category)
+                        VALUES (:user_id, :exercise_name, :etype, :muscle_group, :category)""", nativeQuery = true)
+        void insertIntoExerciseList(@Param("user_id") Long user_id, @Param("exercise_name") String exercise_name,
+                        @Param("etype") String etype,
+                        @Param("muscle_group") String muscle_group, @Param("category") String category);
+
 }

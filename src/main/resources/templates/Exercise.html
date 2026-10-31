@@ -72,8 +72,8 @@
             <div class="main-content">
                 <th:block th:each="item: ${all}">
                     <button class="collapsible" th:text="${item.key}"></button>
-                    <div class="collapsible-content" id="${item.key} + '-content'">
-                        <ul class="exercise-table">
+                    <div class="collapsible-content">
+                        <ul class="exercise-table" id="${item.key} + '-content'">
                             <li><button class="add-item" hx-get="/api/main/Exercise/add" hx-target="#form-popup"
                                     hx-trigger="click" hx-swap="innerHTML" th:hx-vals='|{"type":"${item.key}"}|'
                                     onclick="openpopup('form-popup')">Add new exercise</button>

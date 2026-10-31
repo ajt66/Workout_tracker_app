@@ -1,52 +1,48 @@
 package com.workout_tracker_app.dto;
 
-import org.springframework.data.annotation.PersistenceCreator;
-
+import java.time.LocalDate;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class AnalyzeDTO {
-    private String Dates;
-    private Long Total_weight;
-    private Long Total_sets;
-    private Long Total_reps;
-    private Long Total_volume;
+    private LocalDate dates;
+    private String name;
+    private Long volume;
+    private Long weights;
+    private Long sets;
+    private Long reps;
 
-    @PersistenceCreator
-    public AnalyzeDTO(String Dates, Long Total_weight, Long Total_sets,
-            Long Total_reps, Long Total_volume) {
-        this.Dates = Dates;
-        this.Total_weight = Total_weight;
-        this.Total_sets = Total_sets;
-        this.Total_reps = Total_reps;
-        this.Total_volume = Total_volume;
+    public AnalyzeDTO(LocalDate dates, String name, Long volume, Long weights, Long sets, Long reps) {
+        this.dates = dates;
+        this.name = name;
+        this.volume = volume;
+        this.weights = weights;
+        this.sets = sets;
+        this.reps = reps;
     }
 
-    public AnalyzeDTO() {
+    public AnalyzeDTO(LocalDate dates, Long volume, Long weights, Long sets, Long reps) {
+        this.dates = dates;
+        this.volume = volume;
+        this.weights = weights;
+        this.sets = sets;
+        this.reps = reps;
     }
 
-    public AnalyzeDTO(String Dates, Long Total_weight, Long Total_sets, Long Total_reps) {
-        this.Dates = Dates;
-        this.Total_weight = Total_weight;
-        this.Total_sets = Total_sets;
-        this.Total_reps = Total_reps;
+    public AnalyzeDTO(Long volume, Long weights, Long sets, Long reps) {
+        this.volume = volume;
+        this.weights = weights;
+        this.sets = sets;
+        this.reps = reps;
     }
 
-    public AnalyzeDTO(Long Total_weight, Long Total_sets, Long Total_reps) {
-        this.Total_weight = Total_weight;
-        this.Total_sets = Total_sets;
-        this.Total_reps = Total_reps;
-    }
-
-    public AnalyzeDTO(String Dates, Long Total_volume) {
-        this.Dates = Dates;
-        this.Total_volume = Total_volume;
-    }
-
-    public AnalyzeDTO(Long Total_volume) {
-        this.Total_volume = Total_volume;
+    public AnalyzeDTO(Long weights, Long sets, Long reps) {
+        this.weights = weights;
+        this.sets = sets;
+        this.reps = reps;
     }
 
 }

@@ -1,11 +1,10 @@
-<div class="column-card" th:fragment="OProgam(Program, prog_id)" th:each="program : ${Program}">
+<div class="column-card" th:fragment="Progam(Program, prog_id)" th:each="program : ${Program}">
     <p>
         <span th:text="${program.key}">Day</span> - <span
             th:text="${program.value.get(0).getProgram_tag()}">tag</span><br>
         <hr>
     </p>
     <table>
-        <tr>
         <tr>
             <th>Name</th>
             <th>Sets</th>
