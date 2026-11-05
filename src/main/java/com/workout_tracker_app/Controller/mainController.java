@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -142,11 +143,11 @@ public class mainController {
     }
 
     public void ProgEditIncrement() {
-        progedit++;
+        ++progedit;
     }
 
     public void resetProgEdit() {
-        progedit = 1;
+        progedit = 0;
     }
 
     public void setProgAdd(int count) {
@@ -154,11 +155,11 @@ public class mainController {
     }
 
     public void ProgAddIncrement() {
-        progadd++;
+        ++progadd;
     }
 
     public void resetProgAdd() {
-        progadd = 1;
+        progadd = 0;
     }
 
     public void setDLEdit(int count) {
@@ -166,11 +167,11 @@ public class mainController {
     }
 
     public void DLEditIncrement() {
-        dledit++;
+        ++dledit;
     }
 
     public void resetDLEdit() {
-        dledit = 1;
+        dledit = 0;
     }
 
     @GetMapping("")
@@ -198,6 +199,7 @@ public class mainController {
         model.addAttribute("logstatus", log_status.values());
         model.addAttribute("curProgram", dLogRepo.findByCurrentDate(userid, getActiveProgramID()));
         model.addAttribute("curdate", LocalDate.now());
+        model.addAttribute("curday", LocalDate.now().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
         model.addAttribute("dlp_name", getActiveProgramName());
         return "dailyLog";
     }
@@ -225,8 +227,11 @@ public class mainController {
 
         model.addAttribute("Program", dLogRepo.findByDate(userid, LocalDate.parse(date), getActiveProgramID()));
         model.addAttribute("date", LocalDate.parse(date));
+        model.addAttribute("day", LocalDate.parse(date).getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
         return FragmentsRendering
-                .fragment("fragments/Details/Date.html :: new_date(date = ${date}, Program = ${Program})").build();
+                .fragment("fragments/Details/Date.html :: new_date(date = ${date}, day = ${day}, Program = ${Program})")
+                .build();
+
     }
 
     @HxRequest
@@ -234,75 +239,92 @@ public class mainController {
     public View showDailyLogPopup(@ModelAttribute("User_id") Long userid, @RequestParam("date") String date,
             Model model) {
         EntryDTO dto = new EntryDTO();
+        String day = LocalDate.parse(date).getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
 
         dto.setLogs(dLogRepo.findByDate(userid, LocalDate.parse(date), getActiveProgramID()));
-        dto.setValues();
+        setDLEdit(0);
+        dto.setDate(date);
+        dto.setDay(day);
+        dto.setTag(pLogRepo.findByProgramTag(getActiveProgramName(), userid, day).getProgram_tag());
 
         model.addAttribute("Program", dto);
-        model.addAttribute("date", date);
+        model.addAttribute("date", LocalDate.parse(date));
+        model.addAttribute("day", day);
         model.addAttribute("logstatus", log_status.values());
         return FragmentsRendering
-                .fragment("fragments/popups/date-edit.html :: dlp_edit(date = ${date}, Program = ${Program})").build();
+                .fragment(
+                        "fragments/popups/date-edit.html :: dlp_edit(date = ${date}, day = ${Program.day}, Program = ${Program})")
+                .build();
     }
 
     @HxRequest
     @GetMapping("/Logs/add")
-    public View showDailyLogEditrow(@ModelAttribute("User_id") Long userid, @RequestParam("index") int index,
-            Model model) {
-        model.addAttribute("index", index);
+    public View showDailyLogEditrow(@ModelAttribute("User_id") Long userid, Model model) {
         model.addAttribute("logstatus", log_status.values());
         DLEditIncrement();
         model.addAttribute("count", dledit);
-        return FragmentsRendering.fragment("fragments/Tables/new-row :: dl_edit_row(${index})").build();
+        model.addAttribute("index", dledit - 1);
+
+        return FragmentsRendering
+                .fragment("fragments/Tables/new-row :: dl-edit-row(index = ${index}, count = ${count})").build();
+
+        // return FragmentsRendering.fragment("fragments/Tables/new-row ::
+        // dl-row").build();
     }
 
     @HxRequest
     @DeleteMapping("/Logs/delete")
+    @ResponseBody
     public String deleteDailyLogEditrow() {
         return "";
     }
 
-    @PostMapping("/Logs/edit")
+    @PostMapping(value = "/Logs/edit", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String showDailyLogPostEdit(@ModelAttribute("User_id") Long userid, @ModelAttribute("Program") EntryDTO edit,
             Model model) {
         String duration, comment, day = edit.getDay(), status;
-        LocalDate date = edit.getDate();
-        Long exerid, currEntries = pLogRepo.countByCurrentProgram(userid, getActiveProgramID()), log_id;
+        LocalDate date = LocalDate.parse(edit.getDate());
+        Long exerid, log_id;
+        List<DLDTO> logs = edit.getLogs(), newLogs = edit.getNewLogs();
         Integer weights, sets, reps;
 
-        for (int i = 0; i < currEntries; i++) {
-            log_id = edit.getLogs().get(0).getLog_id();
-            exerid = exerciserepo.findByNameWithUser(edit.getLogs().get(0).getExercise_name(), userid).getExercise_id();
-            weights = edit.getLogs().get(0).getWeights();
-            sets = edit.getLogs().get(0).getSets();
-            reps = edit.getLogs().get(0).getReps();
-            duration = edit.getLogs().get(0).getDuration();
-            comment = edit.getLogs().get(0).getComment();
-            status = edit.getLogs().get(0).getLog_status().toString();
+        for (DLDTO item : logs) {
+            log_id = item.getLog_id();
+            exerid = exerciserepo.findByNameWithUser(item.getExercise_name(), userid).getExercise_id();
+            weights = item.getWeights();
+            sets = item.getSets();
+            reps = item.getReps();
+            duration = item.getDuration();
+            comment = item.getComment();
+            status = item.getLog_status().toString();
 
-            dLogRepo.updateDailyLog(userid, getActiveProgramID(), log_id, exerid, day, weights, sets, reps, duration,
+            dLogRepo.updateDailyLog(getActiveProgramID(), log_id, exerid, day, weights, sets, reps, duration,
                     comment,
                     status,
                     date);
-
-            edit.getLogs().remove(0);
         }
 
-        for (int i = 0; i < edit.getLogs().size(); i++) {
-            exerid = exerciserepo.findByNameWithUser(edit.getLogs().get(i).getExercise_name(), userid).getExercise_id();
-            weights = edit.getLogs().get(i).getWeights();
-            sets = edit.getLogs().get(i).getSets();
-            reps = edit.getLogs().get(i).getReps();
-            duration = edit.getLogs().get(i).getDuration();
-            comment = edit.getLogs().get(i).getComment();
-            status = edit.getLogs().get(i).getLog_status().toString();
+        for (DLDTO item : newLogs) {
+            if (item.getExercise_name() == null || item.getExercise_name().isEmpty()) {
+                continue; // Skip this iteration if exercise_name is null or empty
+            }
 
-            dLogRepo.insertDailyLog(userid, getActiveProgramID(), exerid, day, weights, sets, reps, duration, comment,
+            exerid = exerciserepo.findByNameWithUser(item.getExercise_name(), userid).getExercise_id();
+            weights = item.getWeights();
+            sets = item.getSets();
+            reps = item.getReps();
+            duration = item.getDuration();
+            comment = item.getComment();
+            status = item.getLog_status().toString();
+
+            dLogRepo.insertDailyLog(userid, exerid, day, weights, sets, reps, duration, comment,
                     status,
                     date);
         }
 
-        return "redirect:/dailyLog";
+        resetDLEdit();
+
+        return "redirect:/api/main/Logs";
     }
 
     @SuppressWarnings("null")
@@ -359,12 +381,12 @@ public class mainController {
     }
 
     @HxRequest
-    @PostMapping("/Programs/switch")
+    @PostMapping(value = "/Programs/switch", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String PostProgramSwitch(@RequestParam("id") Long progid, @ModelAttribute("User_id") Long userid) {
         programrepo.updateProgramStatus(program_status.valueOf("active").toString(), progid, userid);
         programrepo.updateProgramStatus(program_status.valueOf("inactive").toString(), getActiveProgramID(), userid);
         setActiveProgram(userid);
-        return "redirect:/Programs";
+        return "redirect:/api/main/Programs";
     }
 
     @HxRequest
@@ -375,11 +397,11 @@ public class mainController {
     }
 
     @HxRequest
-    @DeleteMapping(value = "/Programs/delete")
+    @DeleteMapping(value = "/Programs/delete", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String deleteProgram(@RequestParam("id") Long progid, @ModelAttribute("User_id") Long userid,
             Model model) {
         programrepo.deleteById(progid);
-        return "redirect:/Programs";
+        return "redirect:/api/main/Programs";
     }
 
     @SuppressWarnings("null")
@@ -392,67 +414,77 @@ public class mainController {
                 .collect(Collectors.groupingBy(programDTO::getDay, LinkedHashMap::new, Collectors.toList())));
         Map<String, String> tagsByDay = new LinkedHashMap<>();
         dto.getMapdto().forEach((day, exercises) -> tagsByDay.put(day, exercises.get(0).getProgram_tag()));
+        dto.setLogs();
         dto.setTag(tagsByDay);
+        dto.setProg_id(progId);
+        dto.setProg_name(progname);
+        setProgEdit(0);
 
         model.addAttribute("Program", dto);
-        model.addAttribute("prog_id", progId);
-        model.addAttribute("prog_name", progname);
+        model.addAttribute("count", progedit);
+        // model.addAttribute("prog_name", progname);
         model.addAttribute("tag", program_tag.values());
         model.addAttribute("status", program_status.values());
         return FragmentsRendering.fragment(
-                "fragments/popups/Prog-edit :: Program_edit(Program = ${Program}, prog_name = ${prog_name}, prog_id = ${prog_id})")
+                "fragments/popups/Prog-edit :: Program_edit(Program = ${Program})")
                 .build();
     }
 
     @PutMapping(value = "/Programs/edit", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String showProgramsEdit(@ModelAttribute("Program") mapDTO map, Model model,
             @ModelAttribute("User_id") Long userid) {
-        for (Map.Entry<String, Boolean> item : map.getDaypair().entrySet()) {
-            if (item.getValue().equals(true)) {
-                String duration, day = item.getKey(), progname = map.getProg_name(),
-                        tag = map.getTagmap().get(item.getKey()).toString();
-                List<programDTO> dto = map.getMapdto().get(item.getKey());
+        for (Map.Entry<String, Boolean> dayEntry : map.getDaypair().entrySet()) {
+            if (dayEntry.getValue().equals(true)) {
+                String duration, day = dayEntry.getKey(), progname = map.getProg_name(),
+                        tag = map.getTagmap().get(dayEntry.getKey()).toString();
+                List<programDTO> EList = map.getMapdto().get(dayEntry.getKey());
+                List<programDTO> NList = map.getNewLogs().get(dayEntry.getKey());
                 Long progid = map.getProg_id();
-                Long exerid, log_id, currEntries = pLogRepo.countByCurrentProgram(userid, progid);
+                Long exerid, log_id;
                 Integer sets, reps;
 
                 programrepo.updateProgramName(progname, progid, userid);
 
-                for (int i = 0; i < currEntries; i++) {
-                    exerid = exerciserepo.findByNameWithUser(dto.get(0).getExercise_name(), userid).getExercise_id();
-                    sets = dto.get(0).getSets();
-                    reps = dto.get(0).getReps();
-                    duration = dto.get(0).getDuration();
-                    log_id = dto.get(0).getPlog_id();
+                for (programDTO item : EList) {
+                    exerid = exerciserepo.findByNameWithUser(item.getExercise_name(), userid).getExercise_id();
+                    sets = item.getSets();
+                    reps = item.getReps();
+                    duration = item.getDuration();
+                    log_id = item.getPlog_id();
 
                     pLogRepo.updateProgramLog(userid, progid, log_id, exerid, day, sets, reps, duration, tag);
-
-                    dto.remove(0);
                 }
 
-                for (int i = 0; i < dto.size(); i++) {
-                    exerid = exerciserepo.findByNameWithUser(dto.get(i).getExercise_name(), userid).getExercise_id();
-                    sets = dto.get(i).getSets();
-                    reps = dto.get(i).getReps();
-                    duration = dto.get(i).getDuration();
+                for (programDTO item : NList) {
+                    if (item.getExercise_name() == null || item.getExercise_name().isEmpty()) {
+                        continue; // Skip this iteration if exercise_name is null or empty
+                    }
+
+                    exerid = exerciserepo.findByNameWithUser(item.getExercise_name(), userid).getExercise_id();
+                    sets = item.getSets();
+                    reps = item.getReps();
+                    duration = item.getDuration();
 
                     pLogRepo.insertProgramLog(userid, progid, exerid, day, sets, reps, duration, tag);
                 }
-
             }
         }
 
-        return "redirect:/Programs";
+        resetProgEdit();
+
+        return "redirect:/api/main/Programs";
     }
 
     @HxRequest
     @GetMapping("/Programs/edit-row")
-    public View showProgramsEditrow(@RequestParam("day") String day, @RequestParam("index") int index, Model model) {
+    public View showProgramsEditrow(@RequestParam("day") String day, Model model) {
         model.addAttribute("day", day);
-        model.addAttribute("index", index);
+        model.addAttribute("status", program_status.values());
         ProgEditIncrement();
         model.addAttribute("count", progedit);
-        return FragmentsRendering.fragment("fragments/Tables/new-row :: prog_edit_row(day = ${day}, index = ${index})")
+        model.addAttribute("index", progedit - 1);
+        return FragmentsRendering
+                .fragment("fragments/Tables/new-row :: prog_edit_row(day = ${day}, count = ${count}, index = ${index})")
                 .build();
     }
 
@@ -460,10 +492,12 @@ public class mainController {
     @GetMapping("/Programs/add-row")
     public View showProgramsAddrow(@RequestParam("day") String day, @RequestParam("index") int index, Model model) {
         model.addAttribute("day", day);
-        model.addAttribute("index", index);
+        model.addAttribute("status", program_status.values());
         ProgAddIncrement();
         model.addAttribute("count", progadd);
-        return FragmentsRendering.fragment("fragments/Tables/new-row :: prog_add_row(day = ${day}, index = ${index})")
+        model.addAttribute("index", index);
+        return FragmentsRendering
+                .fragment("fragments/Tables/new-row :: prog_add_row(day = ${day}, count = ${count}, index = ${index})")
                 .build();
     }
 
@@ -482,6 +516,7 @@ public class mainController {
 
     @HxRequest
     @DeleteMapping("/Programs/delete-row")
+    @ResponseBody
     public String deleteProgramrow() {
         return "";
     }
@@ -498,6 +533,10 @@ public class mainController {
             String tag = program.getTagmap().get(day).toString();
 
             for (programDTO dto : item.getValue()) {
+                if (dto.getExercise_name() == null || dto.getExercise_name().isEmpty()) {
+                    continue; // Skip this iteration if exercise_name is null or empty
+                }
+
                 exerid = exerciserepo.findByNameWithUser(dto.getExercise_name(), userid).getExercise_id();
                 sets = dto.getSets();
                 reps = dto.getReps();
@@ -508,7 +547,7 @@ public class mainController {
 
         }
 
-        return "redirect:/Programs";
+        return "redirect:/api/main/Programs";
     }
 
     @SuppressWarnings("null")
@@ -537,17 +576,17 @@ public class mainController {
         model.addAttribute("user", getUser().get());
 
         if (Arrays.asList("cardio", "flexibility", "isometrics").contains(name)) {
-            // model.addAttribute("category", name);
+            model.addAttribute("category", name);
             model.addAttribute("exercise", ExerciseList.builder().exercise_name(null).exercise_type("none")
                     .muscle_group("none").category(name).users(getUser().get()).build());
 
-            return "fragments/popups/exercise-form :: category-form(user = ${user})"; // category=${category},
+            return "fragments/popups/exercise-form :: category-form(category = ${category}, user = ${user})"; // category=${category},
         } else {
-            // model.addAttribute("muscle", name);
+            model.addAttribute("muscle", name);
             model.addAttribute("exercise", ExerciseList.builder().exercise_name(null).exercise_type("none")
                     .muscle_group(name).category("none").users(getUser().get()).build());
 
-            return "fragments/popups/exercise-form :: muscle-form(user = ${user})"; // muscle=${muscle},
+            return "fragments/popups/exercise-form :: muscle-form(muscle = ${muscle}, user = ${user})"; // muscle=${muscle},
         }
     }
 
@@ -556,7 +595,7 @@ public class mainController {
             @RequestParam("exercise_type") String type, @RequestParam("muscle_group") String muscle,
             @RequestParam("category") String category) {
         exerciserepo.insertIntoExerciseList(getUserId(), name, type, muscle, category);
-        return "redirect:/Exercise";
+        return "redirect:/api/main/Exercise";
     }
 
     @SuppressWarnings("null")

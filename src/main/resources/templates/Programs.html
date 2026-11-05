@@ -96,7 +96,6 @@
                             <hr>
                         <table>
                             <tr>
-                                <th>No.</th>
                                 <th>Name</th>
                                 <th>Sets</th>
                                 <th>Reps</th>
@@ -104,7 +103,6 @@
                             </tr>
                             <th:block th:each="item, istat : ${cprogram.value}">
                                 <tr>
-                                    <td><span th:text="${istat.count}"></span></td>
                                     <td><span th:text="${item.getExercise_name()}">exercise name</span></td>
                                     <td><span th:text="${item.getSets() != null ? item.getSets() : '--'}">sets</span>
                                     </td>

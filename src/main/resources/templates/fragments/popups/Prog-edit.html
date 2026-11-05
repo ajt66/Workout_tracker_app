@@ -1,12 +1,12 @@
-<th:block th:fragment="Program_edit(Program, prog_name, prog_id)">
+<th:block th:fragment="Program_edit(Program)">
     <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
     <form class="form-group" th:action="@{/api/main/Programs/edit}" th:object="${Program}" method="put">
         <h2>Program Edit:</h2>
         <p>Click on an item/element you want to change and enter the value</p><br>
         <div>
             <label for="curProg">Program Name:</label>
-            <input type="text" th:value="${prog_name}" th:field="*{prog_name}">
-            <input type="hidden" th:value="${prog_id}" th:field="*{prog_id}">
+            <input type="text" th:field="*{prog_name}">
+            <input type="hidden" th:field="*{prog_id}">
         </div>
 
         <div class="columns-container">
@@ -21,11 +21,10 @@
                         </select><br>
                         <hr>
                     </p>
-                    <input type="hidden" class="modified" th:id="${program.key} + '-bool'"
+                    <input type="text" class="modified" th:id="${program.key} + '-bool'"
                         th:name="|daypair[${program.key}]|" value="false">
                     <table id="prog-edit-table">
                         <tr>
-                            <th>No.</th>
                             <th>Name</th>
                             <th>Sets</th>
                             <th>Reps</th>
@@ -33,10 +32,6 @@
                         </tr>
                         <th:block th:each="item, istat : ${program.value}">
                             <tr>
-                                <input class="prog-edit-change" type="hidden" th:value="${item.getPlog_id()}"
-                                    th:name="|mapdto[${program.key}][${istat.index}].plog_id|"
-                                    th:data-day="${program.key}"><!--th:field="*{mapdto[__${program.key}__][__${istat.index}__].plog_id}"-->
-                                <td><span th:text="${istat.count}">No.</td>
                                 <td><input class="prog-edit-change" type="text"
                                         th:field="*{mapdto[__${program.key}__][__${istat.index}__].exercise_name}"
                                         th:data-day="${program.key}"><!--th:value="${item.getExercise_name()}"
@@ -54,12 +49,15 @@
                                         th:field="*{mapdto[__${program.key}__][__${istat.index}__].duration}"
                                         th:data-day="${program.key}"><!--th:name="|mapdto[${program.key}][${istat.index}].duration|"-->
                                 </td>
+                                <td><input class="prog-edit-change" type="text" th:value="${item.getPlog_id()}"
+                                        th:name="|mapdto[${program.key}][${istat.index}].plog_id|"
+                                        th:data-day="${program.key}"></td>
+                                <!--th:field="*{mapdto[__${program.key}__][__${istat.index}__].plog_id}"-->
                             </tr>
                         </th:block>
                     </table>
-                    <button hx-get="/api/main/Programs/edit-row"
-                        th:hx-vals='|{"day":"${program.key}","index":"${program.value.size()}"}|' hx-trigger="click"
-                        hx-swap="beforeend" hx-target="#prog-edit-table">Add new Row</button>
+                    <button hx-get="/api/main/Programs/edit-row" th:hx-vals='|{"day":"${program.key}"}|'
+                        hx-trigger="click" hx-swap="beforeend" hx-target="#prog-edit-table">Add new Row</button>
                 </div>
             </th:block>
         </div>
@@ -96,7 +94,6 @@
                 </p>
                 <table id="prog-add-table">
                     <tr>
-                        <th>No.</th>
                         <th>Name</th>
                         <th>Sets</th>
                         <th>Reps</th>
@@ -104,7 +101,6 @@
                     </tr>
                     <th:block th:each="item, istat : ${day.value}">
                         <tr>
-                            <td><span th:text="${istat.count}">No.</span></td>
                             <td><input type="text" placeholder="name"
                                     th:field="*{mapdto[__${day.key}__][__${istat.index}__].exercise_name}"></td>
                             <td><input type="number" placeholder="sets"

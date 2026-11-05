@@ -126,14 +126,14 @@ public interface DailyLogRepo extends JpaRepository<DailyLog, Long> {
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
         // Updating repository
+        @Transactional
         @Modifying
         @Query(value = """
                         UPDATE workoutapp.daily_log d
                         SET exercise_id = :exercise_id, day = :day, weights=:weights, sets = :sets,
                         reps = :reps, duration = :duration, comment = :comment, dstatus = :dstatus
-                        FROM workoutapp.programs p INNER JOIN workoutapp.users u ON p.user_id = u.id
-                        WHERE p.program_id = :program_id AND u.id = :user_id AND d.log_id = :log_id AND d.logging_date = :date""", nativeQuery = true)
-        int updateDailyLog(@Param("user_id") Long user_id, @Param("program_id") Long program_id,
+                        WHERE d.program_id = :program_id AND d.log_id = :log_id AND d.logging_date = :date""", nativeQuery = true)
+        int updateDailyLog(@Param("program_id") Long program_id,
                         @Param("log_id") Long log_id,
                         @Param("exercise_id") Long exercise_id, @Param("day") String day,
                         @Param("weights") Integer weights,
@@ -142,13 +142,14 @@ public interface DailyLogRepo extends JpaRepository<DailyLog, Long> {
                         @Param("date") LocalDate date);
 
         // Inserting into repository
+        @Transactional
         @Modifying
         @Query(value = """
                         INSERT INTO workoutapp.daily_log (program_id, day, logging_date, exercise_id, weights, sets, reps, duration, comment, dstatus)
-                        SELECT p.program_id, :day, :logging_date, :exercise_id, :weights, :sets, :reps, :duration, :comment, :dstatus
-                        FROM workoutapp.programs p INNER JOIN workoutapp.users u ON p.user_id = u.id
-                        WHERE p.program_id = :program_id AND u.id = :user_id AND d.logging_date = :date""", nativeQuery = true)
-        void insertDailyLog(@Param("user_id") Long user_id, @Param("program_id") Long program_id,
+                        SELECT p.program_id, :day, :date, :exercise_id, :weights, :sets, :reps, :duration, :comment, :dstatus
+                        FROM workoutapp.programs p
+                        WHERE p.user_id = :user_id AND p.pstatus = 'active'""", nativeQuery = true)
+        void insertDailyLog(@Param("user_id") Long user_id,
                         @Param("exercise_id") Long exercise_id, @Param("day") String day,
                         @Param("weights") Integer weights,
                         @Param("sets") Integer sets, @Param("reps") Integer reps, @Param("duration") String duration,

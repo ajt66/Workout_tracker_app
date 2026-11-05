@@ -7,58 +7,56 @@
         <div class="columns-container">
             <div class="column-card">
                 <p>
-                    <input type="hidden" th:value="${date}" th:field="*{date}">
-                    <input type="hidden" th:value="${day}" th:field="*{day}">
-                    <span th:text="${#temporals.format(curdate, 'dd MMMM yyyy')}">Date</span> - <span
-                        th:text="${#temporals.day(curdate)}">Day</span><br>
+                    <input type="text" th:value="${Program.getDate()}" name="date">
+                    <input type="text" th:value="${Program.getDay()}" name="day">
+                    <span th:text="${#temporals.format(date, 'dd MMMM yyyy')}">Date</span> - <span
+                        th:text="${day}">Day</span><br>
                     <hr>
                 </p>
                 <th:block>
                     <table class="cc-table" id="dl-popup-table">
                         <tr>
-                            <th>No.</th>
                             <th>Exercise</th>
                             <th>Weights</th>
                             <th>Sets</th>
                             <th>Reps</th>
                             <th>Duration</th>
-                            <th scope="row">Comment</th>
+                            <th>Comment</th>
                             <th>Status</th>
                         </tr>
                         <tr th:each="item, stat : ${Program.logs}">
-                            <input type="hidden" th:value="${item.getLog_id()}" th:name="|logs[${stat.index}].log_id|">
-                            <td><span th:text="${stat.count}"></span></td>
+                            <input type="text" th:value="${item.getLog_id()}" th:name="|logs[${stat.index}].log_id|">
                             <td>
                                 <input type="text" th:value="${item.getExercise_name()}"
-                                    th:name="|logs[${stat.index}].exercise_name|">
+                                    th:name="|logs[${stat.index}].exercise_name|"><!--th:field="*{newLogs[__${stat.index}__].exercise_name}"-->
                             </td>
                             <td><input type="number" th:value="${item.getWeights()}"
                                     th:name="|logs[${stat.index}].weights|"></td>
+                            <!-- th:field="*{newLogs[__${stat.index}__].weights}"-->
                             <td><input type="number" th:value="${item.getSets()}" th:name="|logs[${stat.index}].sets|">
-                            </td>
+                            </td><!-- th:field="*{newLogs[__${stat.index}__].sets}"-->
                             <td><input type="number" th:value="${item.getReps()}" th:name="|logs[${stat.index}].reps|">
+                            </td><!--th:field="*{newLogs[__${stat.index}__].reps}"-->
+                            <td><input type="duration" th:value="${item.getDuration()}"
+                                    th:name="|logs[${stat.index}].duration|"><!-- th:field="*{newLogs[__${stat.index}__].duration}"-->
                             </td>
-                            <td><input type="number" th:value="${item.getDuration()}"
-                                    th:name="|logs[${stat.index}].duration|">
-                            </td>
-                            <td scope="row"><textarea th:value="${item.getComment()}"
+                            <td><textarea th:value="${item.getComment()}"
                                     th:name="|logs[${stat.index}].comment|"></textarea>
-                            </td>
+                            </td><!--th:field="*{newLogs[__${stat.index}__].comment}"-->
                             <td><select th:id="|logs[${stat.index}].log_status|"
-                                    th:name="|logs[${stat.index}].log_status|">
-                                    <option th:each="status : ${logstatus}" th:value="${status}" th:text="${status}"
-                                        th:selected="${item.getLog_status()}"></option>
+                                    th:name="|logs[${stat.index}].log_status|"><!--th:field="*{newLogs[__${stat.index}__].log_status}"-->
+                                    <option th:each="status : ${logstatus}" th:value="${status}" th:text="${status}">
+                                    </option>
                                 </select>
                             </td>
                         </tr>
                     </table>
                     <button id="add-row-button" hx-get="/api/main/Logs/add" hx-trigger="click" hx-swap="beforeend"
-                        hx-target="#dl-popup-table" th:hx-vals='|{"index":"${Program.getLogs().size()}"}|'>Add
-                        new row</buton>
+                        hx-target="#dl-popup-table">Add new row</button>
                 </th:block>
             </div>
         </div>
-
+        <div id="dummy"></div>
         <button type="submit">Save Program</button>
     </form>
 </th:block>

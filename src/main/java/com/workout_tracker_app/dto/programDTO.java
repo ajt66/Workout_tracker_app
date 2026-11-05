@@ -46,14 +46,11 @@ public class programDTO {
     }
 
     // For Queries with only programName, day, exerciseName, and status
-    public programDTO(Long program_id, String program_name, String day, String exercise_name, String program_tag,
-            String exercise_type) {
+    public programDTO(Long program_id, String program_name, String day, String program_tag) {
         this.program_name = program_name;
         this.day = day;
-        this.exercise_name = exercise_name;
         this.program_tag = program_tag;
         this.program_id = program_id;
-        this.exercise_type = exercise_type;
     }
 
     public programDTO(Long program_id) {

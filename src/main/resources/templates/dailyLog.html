@@ -72,51 +72,57 @@
 
             <div class="content-header" id="prog-header">
                 <h3>Current Program: <span th:text="${dlp_name}">program name</span></h3>
-                <p>Date:<input id="date-select" name="date-select" hx-get="/api/main/Logs/date" hx-trigger="changed"
-                        hx-swap="innerHTML" hx-target="#dlcol-card" type="date"></p>
+                <p>Date:<input id="date-select" name="date-select" hx-get="/api/main/Logs/date"
+                        hx-trigger="input changed" hx-swap="innerHTML" hx-target="#date-container" type="date"></p>
             </div>
-            <div class="columns-container">
-                <div class="column-card" id="dlcol-card">
-                    <p>
-                        <span th:text="${#temporals.format(curdate, 'dd MMMM yyyy')}">Date</span> - <span
-                            th:text="${#temporals.day(curdate)}">Day</span><br><!--th:text="${#temporals.format(curdate, 'dd MMMM yyyy')}"-->
-                        <hr>
-                    </p>
-                    <table class="cc-table">
-                        <tr>
-                            <th>No.</th>
-                            <th>Exercise</th>
-                            <th>Weights</th>
-                            <th>Sets</th>
-                            <th>Reps</th>
-                            <th>Duration</th>
-                            <th scope="row">Comment</th>
-                            <th>Status</th>
-                        </tr>
-                        <tr th:each="item, stat : ${curProgram}">
-                            <td><span th:text="${stat.count}"></span></td>
-                            <td><span th:text="${item.getExercise_name()}">exercise name</span></td>
-                            <td><span th:text="${item.getWeights() != null ? item.getWeights() : '--'}">weights</span>
-                            </td>
-                            <td><span th:text="${item.getSets() != null ? item.getSets() : '--'}">sets</span>
-                            </td>
-                            <td><span th:text="${item.getReps() != null ? item.getReps() : '--'}">reps</span>
-                            </td>
-                            <td><span
-                                    th:text="${item.getDuration() != null ? item.getDuration() : '--'}">duration</span>
-                            </td>
-                            <td scope="row"><textarea
-                                    th:text="${item.getComment() != null ? item.getComment() : '--'}"></textarea>
-                            </td>
-                            <td><span th:text="${item.getLog_status()}">Status</span></td>
-                        </tr>
-                    </table>
 
+            <div id="date-container">
+                <div class="columns-container">
+                    <div class="column-card" id="dlcol-card">
+                        <p>
+                            <span th:text="${#temporals.format(curdate, 'dd MMMM yyyy')}">Date</span> - <span
+                                th:text="${curday}">Day</span><br><!--th:text="${#temporals.format(curdate, 'dd MMMM yyyy')}"-->
+                            <hr>
+                        </p>
+                        <table class="cc-table">
+                            <tr>
+                                <th>Exercise</th>
+                                <th>Weights</th>
+                                <th>Sets</th>
+                                <th>Reps</th>
+                                <th>Duration</th>
+                                <th scope="row">Comment</th>
+                                <th>Status</th>
+                            </tr>
+                            <tr th:each="item, stat : ${curProgram}">
+                                <td><span th:text="${item.getExercise_name()}">exercise name</span></td>
+                                <td><span
+                                        th:text="${item.getWeights() != null ? item.getWeights() : '--'}">weights</span>
+                                </td>
+                                <td><span th:text="${item.getSets() != null ? item.getSets() : '--'}">sets</span>
+                                </td>
+                                <td><span th:text="${item.getReps() != null ? item.getReps() : '--'}">reps</span>
+                                </td>
+                                <td><span
+                                        th:text="${item.getDuration() != null ? item.getDuration() : '--'}">duration</span>
+                                </td>
+                                <td scope="row"><textarea
+                                        th:text="${item.getComment() != null ? item.getComment() : '--'}"></textarea>
+                                </td>
+                                <td><span th:text="${item.getLog_status()}">Status</span></td>
+                            </tr>
+                        </table>
+
+                    </div>
                 </div>
+
+                <button class="program-button" hx-get="/api/main/Logs/edit" hx-trigger="click" hx-swap="innerHTML"
+                    hx-target="#dlp-edit" th:hx-vals='|{"date":"${curdate}"}|' onclick="openpopup('dlp-edit')">Edit
+                    Workout</button>
             </div>
-            <button class="program-button" hx-get="/api/main/Logs/edit" hx-trigger="click" hx-swap="innerHTML"
-                hx-target="#dlp-edit" th:hx-vals='|{"date":"${curdate}"}|' onclick="openpopup('dlp-edit')">Edit
-                Workout</button>
+        </div>
+
+        <div id="sub-div">
         </div>
     </div>
 

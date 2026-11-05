@@ -5,6 +5,7 @@ import java.util.List;
 import org.antlr.v4.runtime.atn.SemanticContext.AND;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -39,7 +40,7 @@ public interface programLogRepo extends JpaRepository<programLog, Long> {
          */
 
         @Query(value = """
-                        SELECT p.program_id, p.program_name, pl.day, e.exercise_name, e.etype,
+                        SELECT p.program_id, p.program_name, pl.plog_id, pl.day, e.exercise_name, e.etype,
                         pl.sets, pl.reps, pl.duration, pl.tag, p.pstatus
                         FROM workoutapp.program_log pl INNER JOIN workoutapp.programs p ON p.program_id = pl.program_id
                         INNER JOIN workoutapp.exercise_list e ON pl.exercise_id = e.exercise_id
@@ -47,8 +48,16 @@ public interface programLogRepo extends JpaRepository<programLog, Long> {
         List<programDTO> findByProgramNamewithDetails(@Param("program_name") String program_name,
                         @Param("id") Long id);
 
+        @Query(value = """
+                        SELECT p.program_id, p.program_name, pl.day, pl.tag
+                        FROM workoutapp.program_log pl INNER JOIN workoutapp.programs p ON p.program_id = pl.program_id
+                        WHERE p.program_name = :program_name AND p.user_id = :id AND pl.day = :day LIMIT 1""", nativeQuery = true)
+        programDTO findByProgramTag(@Param("program_name") String program_name, @Param("id") Long id,
+                        @Param("day") String day);
+
         // ----------------------------------------------------------------------------------------------------------------------------------------------------
         // Insert section
+        @Transactional
         @Modifying
         @Query(value = """
                         UPDATE workoutapp.program_log pl
@@ -61,6 +70,7 @@ public interface programLogRepo extends JpaRepository<programLog, Long> {
                         @Param("sets") Integer sets, @Param("reps") Integer reps, @Param("duration") String duration,
                         @Param("tag") String tag);
 
+        @Transactional
         @Modifying
         @Query(value = """
                         INSERT INTO workoutapp.program_log (program_id, exercise_id, day, sets, reps, duration, tag)
