@@ -1,19 +1,20 @@
-<th:block th:fragment="switch(switchId)">
+<th:block th:fragment="switch(switchId, nprog, curId, cprog)">
     <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
     <form class="form-group" th:action="@{/api/main/Programs/switch}" method="post">
         <h2>Program Switch Confirmation:</h2>
-        <p>Are you sure you want to switch ?</p><br>
+        <p>Are you sure you want to switch from <span th:text="${nprog + ':' + switchId}"></span> to <span
+                th:text="${cprog + ':' + curId}"></span>?</p><br>
         <input type="hidden" class="hidden-name" th:id="switch-id" th:name="id" th:value="${switchId}">
         <button class="program-button" type="submit">Switch</button>
         <button class="program-button" onclick="this.parentElement.style.display='none'">Cancel</button>
     </form>
 </th:block>
 
-<th:block th:fragment="delete(deleteId)">
+<th:block th:fragment="delete(deleteId, nprog)">
     <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
-    <form class="form-group" th:action="@{/api/main/Programs/delete}" method="delete">
+    <form class="form-group" th:action="@{/api/main/Programs/delete}" method="post">
         <h2>Program deletion Confirmation:</h2>
-        <p>Are you sure you want to delete ?</p><br>
+        <p>Are you sure you want to delete <span th:text="${nprog + ':' + deleteId}"></span>?</p><br>
         <input type="hidden" class="hidden-name" th:id="delete-id" th:name="id" th:value="${deleteId}">
         <button class="program-button" type="submit">Delete</button>
         <button class="program-button" onclick="this.parentElement.style.display='none'">Cancel</button>

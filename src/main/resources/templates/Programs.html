@@ -143,12 +143,14 @@
                             Program</button>
 
                         <button class="program-button" hx-get="/api/main/Programs/switch" hx-trigger="click"
-                            th:hx-vals='|{"id":"${programlist.value}"}|' hx-target="#Prog-switch" hx-swap="innerHTMl"
-                            onclick="openpopup('Prog-switch')">Select Program</button>
+                            th:hx-vals='|{"id":"${programlist.value}", "name":"${programlist.key}"}|'
+                            hx-target="#Prog-switch" hx-swap="innerHTMl" onclick="openpopup('Prog-switch')">Select
+                            Program</button>
 
                         <button class="program-button" hx-get="/api/main/Programs/delete" hx-trigger="click"
-                            th:hx-vals='|{"id":"${programlist.value}"}|' hx-target="#Prog-delete" hx-swap="innerHTML"
-                            onclick="openpopup('Prog-delete')">Delete Program</button>
+                            th:hx-vals='|{"id":"${programlist.value}", "name":"${programlist.key}"}|'
+                            hx-target="#Prog-delete" hx-swap="innerHTML" onclick="openpopup('Prog-delete')">Delete
+                            Program</button>
                     </div>
                 </li>
             </ul>

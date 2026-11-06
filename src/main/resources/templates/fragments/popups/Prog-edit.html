@@ -1,6 +1,6 @@
 <th:block th:fragment="Program_edit(Program)">
     <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
-    <form class="form-group" th:action="@{/api/main/Programs/edit}" th:object="${Program}" method="put">
+    <form class="form-group" th:action="@{/api/main/Programs/edit}" th:object="${Program}" method="post">
         <h2>Program Edit:</h2>
         <p>Click on an item/element you want to change and enter the value</p><br>
         <div>
@@ -22,9 +22,10 @@
                         <hr>
                     </p>
                     <input type="text" class="modified" th:id="${program.key} + '-bool'"
-                        th:name="|daypair[${program.key}]|" value="false">
+                        th:name="|daypair[${program.key}]|" th:value="${Program.daypair.get(program.key)}">
                     <table id="prog-edit-table">
                         <tr>
+                            <th>No</th>
                             <th>Name</th>
                             <th>Sets</th>
                             <th>Reps</th>
@@ -32,6 +33,7 @@
                         </tr>
                         <th:block th:each="item, istat : ${program.value}">
                             <tr>
+                                <td th:text="${istat.index}"></td>
                                 <td><input class="prog-edit-change" type="text"
                                         th:field="*{mapdto[__${program.key}__][__${istat.index}__].exercise_name}"
                                         th:data-day="${program.key}"><!--th:value="${item.getExercise_name()}"

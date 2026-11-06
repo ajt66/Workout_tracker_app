@@ -63,8 +63,8 @@ public interface programLogRepo extends JpaRepository<programLog, Long> {
                         UPDATE workoutapp.program_log pl
                         SET exercise_id = :exercise_id, day = :day, sets = :sets,
                         reps = :reps, duration = :duration, tag = :tag
-                        FROM workoutapp.programs p INNER JOIN workoutapp.users u ON p.user_id = u.id
-                        WHERE p.program_id = :program_id AND u.id = :id AND pl.plog_id = :plog_id""", nativeQuery = true)
+                        FROM workoutapp.programs p
+                        WHERE p.program_id = :program_id AND p.user_id = :id AND pl.plog_id = :plog_id""", nativeQuery = true)
         int updateProgramLog(@Param("id") Long id, @Param("program_id") Long program_id, @Param("plog_id") Long plog_id,
                         @Param("exercise_id") Long exercise_id, @Param("day") String day,
                         @Param("sets") Integer sets, @Param("reps") Integer reps, @Param("duration") String duration,
@@ -82,6 +82,13 @@ public interface programLogRepo extends JpaRepository<programLog, Long> {
                         @Param("day") String day,
                         @Param("sets") Integer sets, @Param("reps") Integer reps, @Param("duration") String duration,
                         @Param("tag") String tag);
+
+        @Transactional
+        @Modifying
+        @Query(value = """
+                        DELETE FROM workoutapp.program_log pl
+                        WHERE pl.program_id = :program_id""", nativeQuery = true)
+        void deleteProgramLog(@Param("program_id") Long program_id);
 
         @Query(value = """
                         SELECT COALESCE(SUM(*),0)

@@ -10,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
@@ -52,10 +53,10 @@ public class User {
                 .build();
     }
 
-    @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, orphanRemoval = false)
+    @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExerciseList> exercise_id;
 
-    @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, orphanRemoval = false)
+    @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Program> program_id;
 
 }

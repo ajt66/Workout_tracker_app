@@ -375,32 +375,42 @@ public class mainController {
 
     @HxRequest
     @GetMapping("/Programs/switch")
-    public View GetProgramSwitch(@RequestParam("id") Long progid, Model model) {
+    public View GetProgramSwitch(@RequestParam("id") Long progid, @RequestParam("name") String progname, Model model) {
         model.addAttribute("switchId", progid);
-        return FragmentsRendering.fragment("fragments/popups/confirmation :: switch(switchId=${switchId})").build();
+        model.addAttribute("nprog", progname);
+        model.addAttribute("curId", getActiveProgramID());
+        model.addAttribute("cprog", getActiveProgramName());
+
+        return FragmentsRendering.fragment(
+                "fragments/popups/confirmation :: switch(switchId=${switchId}, nprog=${nprog}, curId=${curId}, cprog=${cprog})")
+                .build();
     }
 
-    @HxRequest
     @PostMapping(value = "/Programs/switch", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String PostProgramSwitch(@RequestParam("id") Long progid, @ModelAttribute("User_id") Long userid) {
         programrepo.updateProgramStatus(program_status.valueOf("active").toString(), progid, userid);
         programrepo.updateProgramStatus(program_status.valueOf("inactive").toString(), getActiveProgramID(), userid);
         setActiveProgram(userid);
+        setActiveProgramID(userid);
+        setActiveProgramName(userid);
         return "redirect:/api/main/Programs";
     }
 
     @HxRequest
     @GetMapping("/Programs/delete")
-    public View GetProgramdelete(@RequestParam("id") Long progid, Model model) {
+    public View GetProgramdelete(@RequestParam("id") Long progid, @RequestParam("name") String progname, Model model) {
         model.addAttribute("deleteId", progid);
-        return FragmentsRendering.fragment("fragments/popups/confirmation :: delete(deleteId=${deleteId})").build();
+        model.addAttribute("nprog", progname);
+
+        return FragmentsRendering.fragment(
+                "fragments/popups/confirmation :: delete(deleteId=${deleteId}, nprog=${nprog})")
+                .build();
     }
 
-    @HxRequest
-    @DeleteMapping(value = "/Programs/delete", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(value = "/Programs/delete", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String deleteProgram(@RequestParam("id") Long progid, @ModelAttribute("User_id") Long userid,
             Model model) {
-        programrepo.deleteById(progid);
+        programrepo.deleteProgram(progid);
         return "redirect:/api/main/Programs";
     }
 
@@ -414,6 +424,7 @@ public class mainController {
                 .collect(Collectors.groupingBy(programDTO::getDay, LinkedHashMap::new, Collectors.toList())));
         Map<String, String> tagsByDay = new LinkedHashMap<>();
         dto.getMapdto().forEach((day, exercises) -> tagsByDay.put(day, exercises.get(0).getProgram_tag()));
+        dto.setPairs();
         dto.setLogs();
         dto.setTag(tagsByDay);
         dto.setProg_id(progId);
@@ -430,7 +441,7 @@ public class mainController {
                 .build();
     }
 
-    @PutMapping(value = "/Programs/edit", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(value = "/Programs/edit", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String showProgramsEdit(@ModelAttribute("Program") mapDTO map, Model model,
             @ModelAttribute("User_id") Long userid) {
         for (Map.Entry<String, Boolean> dayEntry : map.getDaypair().entrySet()) {
@@ -471,6 +482,8 @@ public class mainController {
         }
 
         resetProgEdit();
+        setActiveProgram(userid);
+        setActiveProgramName(userid);
 
         return "redirect:/api/main/Programs";
     }

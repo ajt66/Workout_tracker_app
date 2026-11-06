@@ -5,6 +5,7 @@ import java.util.List;
 import org.antlr.v4.runtime.atn.SemanticContext.AND;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -43,6 +44,7 @@ public interface programRepo extends JpaRepository<Program, Long> {
         programDTO findProgramId(@Param("program_name") String program_name, @Param("id") Long id);
 
         // ---------------------------------------------------------------------------------------------------------------------------------------------------
+        @Transactional
         @Modifying
         @Query(value = """
                         UPDATE workoutapp.programs p SET program_name = :program_name
@@ -51,6 +53,7 @@ public interface programRepo extends JpaRepository<Program, Long> {
         Long updateProgramName(@Param("program_name") String program_name, @Param("p_id") Long p_id,
                         @Param("id") Long id);
 
+        @Transactional
         @Modifying
         @Query(value = """
                         UPDATE workoutapp.programs p
@@ -59,6 +62,7 @@ public interface programRepo extends JpaRepository<Program, Long> {
                         WHERE p.user_id = u.id AND p.program_id = :p_id AND u.id = :id""", nativeQuery = true)
         Long updateProgramStatus(@Param("pstatus") String pstatus, @Param("p_id") Long p_id, @Param("id") Long id);
 
+        @Transactional
         @Modifying
         @Query(value = """
                         INSERT INTO workoutapp.programs (program_name, user_id, pstatus)
@@ -67,5 +71,12 @@ public interface programRepo extends JpaRepository<Program, Long> {
                         WHERE u.id = :userid
                         RETURNING workoutapp.programs.program_id AS id""", nativeQuery = true)
         Long insertProgram(@Param("program_name") String program_name, @Param("userid") Long userid);
+
+        @Transactional
+        @Modifying
+        @Query(value = """
+                        DELETE FROM workoutapp.programs
+                        WHERE program_id = :program_id""", nativeQuery = true)
+        void deleteProgram(@Param("program_id") Long program_id);
 
 }

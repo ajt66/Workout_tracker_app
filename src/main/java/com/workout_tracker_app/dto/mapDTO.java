@@ -18,6 +18,11 @@ public class mapDTO {
     private Map<String, Boolean> daypair = new HashMap<String, Boolean>();
     private Map<String, List<programDTO>> newLogs = new HashMap<String, List<programDTO>>();
 
+    public mapDTO() {
+        setList();
+        setLogs();
+    }
+
     public void setMapDto(Map<String, List<programDTO>> mapdto) {
         this.mapdto = mapdto;
     }
@@ -30,6 +35,16 @@ public class mapDTO {
         mapdto.put("Friday", new ArrayList<programDTO>(5));
         mapdto.put("Saturday", new ArrayList<programDTO>(5));
         mapdto.put("Sunday", new ArrayList<programDTO>(5));
+    }
+
+    public void setPairs() {
+        daypair.put("Monday", false);
+        daypair.put("Tuesday", false);
+        daypair.put("Wednesday", false);
+        daypair.put("Thursday", false);
+        daypair.put("Friday", false);
+        daypair.put("Saturday", false);
+        daypair.put("Sunday", false);
     }
 
     public void setTag(Map<String, String> tagmap) {
