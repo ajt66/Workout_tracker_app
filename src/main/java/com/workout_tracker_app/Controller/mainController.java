@@ -261,9 +261,9 @@ public class mainController {
     @GetMapping("/Logs/add")
     public View showDailyLogEditrow(@ModelAttribute("User_id") Long userid, Model model) {
         model.addAttribute("logstatus", log_status.values());
+        model.addAttribute("index", dledit);
         DLEditIncrement();
         model.addAttribute("count", dledit);
-        model.addAttribute("index", dledit - 1);
 
         return FragmentsRendering
                 .fragment("fragments/Tables/new-row :: dl-edit-row(index = ${index}, count = ${count})").build();
@@ -366,7 +366,7 @@ public class mainController {
         model.addAttribute("prog_name", progname);
 
         return FragmentsRendering
-                .fragment("fragments/Details/Program :: Progam(Program = ${Program}, prog_id = ${prog_id})")
+                .fragment("fragments/Details/Program :: Program(Program = ${Program}, prog_id = ${prog_id})")
                 .build();
 
         // return FragmentsRendering.fragment("fragments/Details/test.html ::
@@ -493,9 +493,9 @@ public class mainController {
     public View showProgramsEditrow(@RequestParam("day") String day, Model model) {
         model.addAttribute("day", day);
         model.addAttribute("status", program_status.values());
+        model.addAttribute("index", progedit);
         ProgEditIncrement();
         model.addAttribute("count", progedit);
-        model.addAttribute("index", progedit - 1);
         return FragmentsRendering
                 .fragment("fragments/Tables/new-row :: prog_edit_row(day = ${day}, count = ${count}, index = ${index})")
                 .build();
@@ -503,12 +503,12 @@ public class mainController {
 
     @HxRequest
     @GetMapping("/Programs/add-row")
-    public View showProgramsAddrow(@RequestParam("day") String day, @RequestParam("index") int index, Model model) {
+    public View showProgramsAddrow(@RequestParam("day") String day, Model model) {
         model.addAttribute("day", day);
         model.addAttribute("status", program_status.values());
+        model.addAttribute("index", progadd);
         ProgAddIncrement();
         model.addAttribute("count", progadd);
-        model.addAttribute("index", index);
         return FragmentsRendering
                 .fragment("fragments/Tables/new-row :: prog_add_row(day = ${day}, count = ${count}, index = ${index})")
                 .build();
@@ -518,8 +518,18 @@ public class mainController {
     @GetMapping("/Programs/Add")
     public View GetProgramsAdd(Model model) {
         mapDTO dto = new mapDTO();
-        dto.setList();
+        dto.setProg_id(null);
+        dto.setProg_name(null);
+        dto.setPairs();
+        // dto.setTags();
+        for (Map.Entry<String, Boolean> entry : dto.getDaypair().entrySet()) {
+            for (int i = 0; i < 5; i++) {
+                dto.getMapdto().get(entry.getKey()).add(new programDTO());
+                dto.getNewLogs().get(entry.getKey()).add(new programDTO());
+            }
+        }
 
+        setProgAdd(0);
         model.addAttribute("dto", dto);
         model.addAttribute("tag", program_tag.values());
         model.addAttribute("status", program_status.values());
@@ -537,29 +547,46 @@ public class mainController {
     @PostMapping(value = "/Programs/Add", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String showProgramsAdd(@ModelAttribute("dto") mapDTO program, Model model,
             @ModelAttribute("User_id") Long userid) {
-        Long exerid, progid = programrepo.insertProgram(program.getProg_name(), userid);
-        String duration, day;
-        Integer sets, reps;
+        programrepo.insertProgramH2(program.getProg_name(), userid);
 
-        for (Map.Entry<String, List<programDTO>> item : program.getMapdto().entrySet()) {
-            day = item.getKey();
+        Long exerid, progid = programrepo.findProgramId(program.getProg_name(), userid).getProgram_id();
+        String duration;
+        Integer sets, reps;
+        Map<String, List<programDTO>> newLogs = program.getNewLogs();
+        Map<String, List<programDTO>> mapdto = program.getMapdto();
+        List<String> days = List.of("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
+
+        for (String day : days) {
             String tag = program.getTagmap().get(day).toString();
 
-            for (programDTO dto : item.getValue()) {
-                if (dto.getExercise_name() == null || dto.getExercise_name().isEmpty()) {
+            for (programDTO mdto : mapdto.get(day)) {
+                if (mdto.getExercise_name() == null || mdto.getExercise_name().isEmpty()) {
                     continue; // Skip this iteration if exercise_name is null or empty
                 }
 
-                exerid = exerciserepo.findByNameWithUser(dto.getExercise_name(), userid).getExercise_id();
-                sets = dto.getSets();
-                reps = dto.getReps();
-                duration = dto.getDuration();
+                exerid = exerciserepo.findByNameWithUser(mdto.getExercise_name(), userid).getExercise_id();
+                sets = mdto.getSets();
+                reps = mdto.getReps();
+                duration = mdto.getDuration();
+
+                pLogRepo.insertProgramLog(userid, progid, exerid, day, sets, reps, duration, tag);
+            }
+
+            for (programDTO ndto : newLogs.get(day)) {
+                if (ndto.getExercise_name() == null || ndto.getExercise_name().isEmpty()) {
+                    continue; // Skip this iteration if exercise_name is null or empty
+                }
+
+                exerid = exerciserepo.findByNameWithUser(ndto.getExercise_name(), userid).getExercise_id();
+                sets = ndto.getSets();
+                reps = ndto.getReps();
+                duration = ndto.getDuration();
 
                 pLogRepo.insertProgramLog(userid, progid, exerid, day, sets, reps, duration, tag);
             }
 
         }
-
+        resetProgAdd();
         return "redirect:/api/main/Programs";
     }
 
@@ -817,14 +844,16 @@ public class mainController {
 
     @HxRequest
     @GetMapping("sign-out")
-    public String getSignOut(@RequestParam("Origin") String origin, Model model) {
-        model.addAttribute("Origin", origin);
-        return "fragments/popups/signout :: signout(Origin=${Origin})";
+    public String getSignOut(@RequestParam("final") String finalPage,
+            Model model) {
+        model.addAttribute("final", finalPage);
+        return "fragments/popups/signout :: signout(final=${final})";
     }
 
     @HxRequest
     @PostMapping("sign-out")
-    public String postMethodName(@RequestParam("Origin") String origin, Model model, HttpServletResponse response) {
+    public String postMethodName(@RequestParam("final") String finalPage,
+            Model model, HttpServletResponse response) {
         Cookie cookie = new Cookie("jwt", null);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
@@ -832,27 +861,12 @@ public class mainController {
         cookie.setSecure(true);
         response.addCookie(cookie);
 
-        if (origin.equals("main")) {
+        if (finalPage.equals("main")) {
             return "redirect:/api/home";
         } else {
             return "redirect:/api/sign-out";
         }
 
-    }
-
-    @HxRequest
-    @GetMapping("/content")
-    public String getMethodName(@RequestParam("Name") String name, @RequestParam("Email") String email, Model model) {
-        model.addAttribute("Name", name);
-        model.addAttribute("Email", email);
-        return "fragments/content :: content(Name=${Name}, Email=${Email})";
-    }
-
-    @HxRequest
-    @GetMapping("/chart")
-    public String getChart(Model model) {
-        model.addAttribute("data", List.of(10, 11, 12, 13, 14));
-        return "fragments/chart :: chart";
     }
 
 }

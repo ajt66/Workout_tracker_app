@@ -75,6 +75,15 @@ public interface programRepo extends JpaRepository<Program, Long> {
         @Transactional
         @Modifying
         @Query(value = """
+                        INSERT INTO workoutapp.programs (program_name, user_id, pstatus)
+                        SELECT :program_name, u.id, 'inactive'
+                        FROM workoutapp.users u
+                        WHERE u.id = :userid""", nativeQuery = true)
+        Long insertProgramH2(@Param("program_name") String program_name, @Param("userid") Long userid);
+
+        @Transactional
+        @Modifying
+        @Query(value = """
                         DELETE FROM workoutapp.programs
                         WHERE program_id = :program_id""", nativeQuery = true)
         void deleteProgram(@Param("program_id") Long program_id);

@@ -1,17 +1,4 @@
 <div th:fragment="breakChart">
-    <p>
-        <span th:text="${breakfilter}"></span>
-    <ul th:each="li: ${pbd}">
-        <li th:text="${li}"></li>
-    </ul>
-    <br>
-    Labels:
-    <ul th:each="mi: ${pbm}">
-        <li th:text="${mi}"></li>
-    </ul>
-    <br>
-    </p>
-
     <script th:inline="javascript">
 
         (function () {

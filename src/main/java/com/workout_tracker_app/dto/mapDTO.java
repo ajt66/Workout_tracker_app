@@ -1,7 +1,7 @@
 package com.workout_tracker_app.dto;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,58 +11,70 @@ import lombok.Setter;
 @Getter
 @Setter
 public class mapDTO {
-    private Map<String, List<programDTO>> mapdto = new HashMap<String, List<programDTO>>();
+    private static final List<String> WEEKDAYS = List.of(
+            "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
+
+    private Map<String, List<programDTO>> mapdto = new LinkedHashMap<String, List<programDTO>>();
     private String prog_name;
     private Long prog_id;
     private Map<String, String> tagmap;
-    private Map<String, Boolean> daypair = new HashMap<String, Boolean>();
-    private Map<String, List<programDTO>> newLogs = new HashMap<String, List<programDTO>>();
+    private Map<String, Boolean> daypair = new LinkedHashMap<String, Boolean>();
+    private Map<String, List<programDTO>> newLogs = new LinkedHashMap<String, List<programDTO>>();
 
     public mapDTO() {
         setList();
         setLogs();
     }
 
+    public void setMapdto(Map<String, List<programDTO>> mapdto) {
+        this.mapdto = orderByWeekday(mapdto);
+    }
+
     public void setMapDto(Map<String, List<programDTO>> mapdto) {
-        this.mapdto = mapdto;
+        setMapdto(mapdto);
     }
 
     public void setList() {
-        mapdto.put("Monday", new ArrayList<programDTO>(5));
-        mapdto.put("Tuesday", new ArrayList<programDTO>(5));
-        mapdto.put("Wednesday", new ArrayList<programDTO>(5));
-        mapdto.put("Thursday", new ArrayList<programDTO>(5));
-        mapdto.put("Friday", new ArrayList<programDTO>(5));
-        mapdto.put("Saturday", new ArrayList<programDTO>(5));
-        mapdto.put("Sunday", new ArrayList<programDTO>(5));
+        mapdto = new LinkedHashMap<String, List<programDTO>>();
+        WEEKDAYS.forEach(day -> mapdto.put(day, new ArrayList<programDTO>(5)));
     }
 
     public void setPairs() {
-        daypair.put("Monday", false);
-        daypair.put("Tuesday", false);
-        daypair.put("Wednesday", false);
-        daypair.put("Thursday", false);
-        daypair.put("Friday", false);
-        daypair.put("Saturday", false);
-        daypair.put("Sunday", false);
+        daypair = new LinkedHashMap<String, Boolean>();
+        WEEKDAYS.forEach(day -> daypair.put(day, false));
     }
 
     public void setTag(Map<String, String> tagmap) {
         this.tagmap = tagmap;
     }
 
+    public void setTags() {
+        tagmap = new LinkedHashMap<String, String>();
+        WEEKDAYS.forEach(day -> tagmap.put(day, ""));
+    }
+
     public void setNewLogs(Map<String, List<programDTO>> newLogs) {
-        this.newLogs = newLogs;
+        this.newLogs = orderByWeekday(newLogs);
     }
 
     public void setLogs() {
-        newLogs.put("Monday", new ArrayList<programDTO>(5));
-        newLogs.put("Tuesday", new ArrayList<programDTO>(5));
-        newLogs.put("Wednesday", new ArrayList<programDTO>(5));
-        newLogs.put("Thursday", new ArrayList<programDTO>(5));
-        newLogs.put("Friday", new ArrayList<programDTO>(5));
-        newLogs.put("Saturday", new ArrayList<programDTO>(5));
-        newLogs.put("Sunday", new ArrayList<programDTO>(5));
+        newLogs = new LinkedHashMap<String, List<programDTO>>();
+        WEEKDAYS.forEach(day -> newLogs.put(day, new ArrayList<programDTO>(5)));
+    }
+
+    private Map<String, List<programDTO>> orderByWeekday(Map<String, List<programDTO>> logs) {
+        Map<String, List<programDTO>> ordered = new LinkedHashMap<String, List<programDTO>>();
+        if (logs == null) {
+            return ordered;
+        }
+
+        WEEKDAYS.forEach(day -> {
+            if (logs.containsKey(day)) {
+                ordered.put(day, logs.get(day));
+            }
+        });
+        logs.forEach(ordered::putIfAbsent);
+        return ordered;
     }
 
 }

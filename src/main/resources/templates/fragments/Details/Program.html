@@ -1,26 +1,30 @@
-<div class="column-card" th:fragment="Progam(Program, prog_id)" th:each="program : ${Program}">
+<div class="column-card" th:fragment="Program(Program, prog_id)" th:each="program : ${Program}">
     <p>
         <span th:text="${program.key}">Day</span> - <span
             th:text="${program.value.get(0).getProgram_tag()}">tag</span><br>
         <hr>
     </p>
     <table>
-        <tr>
-            <th>Name</th>
-            <th>Sets</th>
-            <th>Reps</th>
-            <th>duration</th>
-        </tr>
-        <th:block th:each="item : ${program.value}">
+        <thead>
             <tr>
-                <td><span th:text="${item.getExercise_name()}">exercise name</span></td>
-                <td><span th:text="${item.getSets() != null ? item.getSets() : '--'}">sets</span>
-                </td>
-                <td><span th:text="${item.getReps() != null ? item.getReps() : '--'}">reps</span>
-                </td>
-                <td><span th:text="${item.getDuration() != null ? item.getDuration() : '--'}">duration</span>
-                </td>
+                <th>Name</th>
+                <th>Sets</th>
+                <th>Reps</th>
+                <th>duration</th>
             </tr>
-        </th:block>
+        </thead>
+        <tbody>
+            <th:block th:each="item : ${program.value}">
+                <tr>
+                    <td><span th:text="${item.getExercise_name()}">exercise name</span></td>
+                    <td><span th:text="${item.getSets() != null ? item.getSets() : '--'}">sets</span>
+                    </td>
+                    <td><span th:text="${item.getReps() != null ? item.getReps() : '--'}">reps</span>
+                    </td>
+                    <td><span th:text="${item.getDuration() != null ? item.getDuration() : '--'}">duration</span>
+                    </td>
+                </tr>
+            </th:block>
+        </tbody>
     </table>
 </div>

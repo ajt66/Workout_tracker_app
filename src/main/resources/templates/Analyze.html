@@ -30,10 +30,12 @@
             <ul class="links-container">
                 <span class="toggle-button" onclick="openNav()">&#9776;</span>
                 <li class="link-item"><a onclick="openpopup('signout')" hx-get="/api/main/sign-out" hx-trigger="click"
-                        hx-target="#signout" hx-vals='{"Origin": "main"}' hx-swap="innerHTML">Home</a></li>
+                        hx-target="#signout" hx-vals='{"final": "main"}' hx-swap="innerHTML">Home</a>
+                </li>
                 <li class="link-item"><a onclick="openpopup('signout')" hx-get="/api/main/sign-out" hx-trigger="click"
-                        hx-target="#signout" hx-vals='{"Origin": "signout"}' hx-swap="innerHTML">Sign out</a></li>
-                <li class="link-item"><a href="#support-div">Support</a></li>
+                        hx-target="#signout" hx-vals='{"final": "signout"}' hx-swap="innerHTML">Sign
+                        out</a></li>
+                <li class="link-item"><a href="#support-section">Support</a></li>
             </ul>
         </nav>
     </header>

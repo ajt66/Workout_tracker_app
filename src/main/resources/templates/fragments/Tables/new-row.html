@@ -1,44 +1,52 @@
 <th:block th:fragment="dl-edit-row(index, count)">
-    <tr><!--th:id="'dl_edit_row:' + ${count}"-->
-        <td>
-            <input type="text" placeholder="name" th:name="|newLogs[${index}].exercise_name|">
-        </td>
-        <td><input type="number" placeholder="weights" th:name="|newLogs[${index}].weights|"></td>
-        <td><input type="number" placeholder="sets" th:name="|newLogs[${index}].sets|">
-        </td>
-        <td><input type="number" placeholder="reps" th:name="|newLogs[${index}].reps|">
-        </td>
-        <td><input type="text" placeholder="duration" th:name="|newLogs[${index}].duration|">
-        </td>
-        <td><textarea placeholder="comment" th:name="|newLogs[${index}].comment|"></textarea>
-        </td>
-        <td><select th:name="|newLogs[${index}].log_status|">
-                <option th:each="status : ${logstatus}" th:value="${status}" th:text="${status}"></option>
-            </select>
-        </td>
-        <td><span class="row-closebtn" hx-delete="/api/main/Logs/delete" hx-target="closest tr" hx-trigger="click"
-                hx-swap="outerHTML">&times</span></td><!--hx-target="#dl_edit_row:${count}"-->
-    </tr>
+        <tr><!--th:id="'dl_edit_row:' + ${count}"-->
+                <td>
+                        <input type="text" placeholder="name" th:name="|newLogs[${index}].exercise_name|">
+                </td>
+                <td><input type="number" placeholder="weights" th:name="|newLogs[${index}].weights|"></td>
+                <td><input type="number" placeholder="sets" th:name="|newLogs[${index}].sets|">
+                </td>
+                <td><input type="number" placeholder="reps" th:name="|newLogs[${index}].reps|">
+                </td>
+                <td><input type="text" placeholder="duration" th:name="|newLogs[${index}].duration|">
+                </td>
+                <td><textarea placeholder="comment" th:name="|newLogs[${index}].comment|"></textarea>
+                </td>
+                <td><select th:name="|newLogs[${index}].log_status|">
+                                <option th:each="status : ${logstatus}" th:value="${status}" th:text="${status}">
+                                </option>
+                        </select>
+                </td>
+                <td><span class="row-closebtn" hx-delete="/api/main/Logs/delete" hx-target="closest tr"
+                                hx-trigger="click" hx-swap="outerHTML">&times</span></td>
+                <!--hx-target="#dl_edit_row:${count}"-->
+        </tr>
 </th:block>
 
 <tr th:fragment="prog_edit_row(day, count, index)" id="'prog_edit_row:' + ${count}">
-    <td><input class="prog-edit-change" type="text" placeholder="name"
-            th:name="|newLogs[${day}][${index}].exercise_name|"></td>
-    <td><input class="prog-edit-change" type="number" placeholder="sets" th:name="|newLogs[${day}][${index}].sets|">
-    </td>
-    <td><input class="prog-edit-change" type="number" placeholder="reps" th:name="|newLogs[${day}][${index}].reps|">
-    </td>
-    <td><input class="prog-edit-change" type="number" placeholder="duration"
-            th:name="|newLogs[${day}][${index}].duration|"></td>
-    <td><span class="row-closebtn" hx-delete="/api/main/Programs/delete-row" hx-target="closest tr" hx-trigger="click"
-            hx-swap="outerHTML">&times</span></td> <!--hx-target="#prog_edit_row:${count}"-->
+        <td><input class="prog-edit-change" type="text" placeholder="name"
+                        th:name="|newLogs[${day}][${index}].exercise_name|" th:data-day="${day}"></input></td>
+        <td><input class="prog-edit-change" type="number" placeholder="sets" th:name="|newLogs[${day}][${index}].sets|"
+                        th:data-day="${day}"></input>
+        </td>
+        <td><input class="prog-edit-change" type="number" placeholder="reps" th:name="|newLogs[${day}][${index}].reps|"
+                        th:data-day="${day}"></input>
+        </td>
+        <td><input class="prog-edit-change" type="text" placeholder="duration"
+                        th:name="|newLogs[${day}][${index}].duration|" th:data-day="${day}"></input></td>
+        <td><span class="row-closebtn" hx-delete="/api/main/Programs/delete-row" hx-target="closest tr"
+                        hx-trigger="click" hx-swap="outerHTML">&times</span></td>
+        <!--hx-target="#prog_edit_row:${count}"-->
 </tr>
 
 <tr th:fragment="prog_add_row(day, count, index)" id="'prog_add_row:' + ${count}">
-    <td><input type="text" placeholder="name" th:name="|newLogs[${day}][${index}].exercise_name|"></td>
-    <td><input type="number" placeholder="sets" th:name="|newLogs[${day}][${index}].sets|"></td>
-    <td><input type="number" placeholder="reps" th:name="|newLogs[${day}][${index}].reps|"></td>
-    <td><input type="number" placeholder="duration" th:name="|newLogs[${day}][${index}].duration|"></td>
-    <td><span class="row-closebtn" hx-delete="/api/main/Programs/delete-row" hx-target="closest tr" hx-trigger="click"
-            hx-swap="outerHTML">&times</span></td><!--hx-target="#prog_add_row:${count}"-->
+        <td><input type="text" placeholder="name" th:name="|newLogs[${day}][${index}].exercise_name|"></td>
+        <td><input type="number" placeholder="sets" th:name="|newLogs[${day}][${index}].sets|">
+        </td>
+        <td><input type="number" placeholder="reps" th:name="|newLogs[${day}][${index}].reps|">
+        </td>
+        <td><input type="text" placeholder="duration" th:name="|newLogs[${day}][${index}].duration|"></td>
+        <td><span class="row-closebtn" hx-delete="/api/main/Programs/delete-row" hx-target="closest tr"
+                        hx-trigger="click" hx-swap="outerHTML">&times</span></td>
+        <!--hx-target="#prog_add_row:${count}"-->
 </tr>

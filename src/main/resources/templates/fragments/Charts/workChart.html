@@ -1,17 +1,4 @@
 <div th:fragment="workChart">
-    <p>
-        <span th:text="${workfilter}"></span>
-    <ul th:each="li: ${pwd}">
-        <li th:text="${li}"></li>
-    </ul>
-    <br>
-    Labels:
-    <ul th:each="li: ${pwl}">
-        <li th:text="${li}"></li>
-    </ul>
-    <br>
-    </p>
-
     <script type="text/javascript" th:inline="javascript">
         (() => {
             const workfilter = /*[[${workfilter}]]*/ 'volume';

@@ -6,7 +6,7 @@
                 th:text="${cprog + ':' + curId}"></span>?</p><br>
         <input type="hidden" class="hidden-name" th:id="switch-id" th:name="id" th:value="${switchId}">
         <button class="program-button" type="submit">Switch</button>
-        <button class="program-button" onclick="this.parentElement.style.display='none'">Cancel</button>
+        <button class="program-button" type="button"><a th:href="@{/api/main/Programs}">Cancel</a></button>
     </form>
 </th:block>
 
@@ -17,6 +17,6 @@
         <p>Are you sure you want to delete <span th:text="${nprog + ':' + deleteId}"></span>?</p><br>
         <input type="hidden" class="hidden-name" th:id="delete-id" th:name="id" th:value="${deleteId}">
         <button class="program-button" type="submit">Delete</button>
-        <button class="program-button" onclick="this.parentElement.style.display='none'">Cancel</button>
+        <button class="program-button" type="button"><a th:href="@{/api/main/Programs}">Cancel</a></button>
     </form>
 </th:block>

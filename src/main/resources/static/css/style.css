@@ -45,6 +45,11 @@ select {
     cursor: pointer;
 }
 
+a {
+    text-decoration: none;
+    color: #fff;
+}
+
 input,
 select {
     font-size: 17px;

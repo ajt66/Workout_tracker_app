@@ -1,17 +1,4 @@
 <div th:fragment="exerciseChart">
-    <p>
-        <span th:text="${exercisefilter}"></span>
-    <ul th:each="li: ${ped}">
-        <li th:text="${li}"></li>
-    </ul>
-    <br>
-    Labels:
-    <ul th:each="di: ${pel}">
-        <li th:text="${di}"></li>
-    </ul>
-    <br>
-
-    </p>
     <script th:inline="javascript">
         (function () {
             const exercisefilter = /*[[${exercisefilter}]]*/ 'volume';
