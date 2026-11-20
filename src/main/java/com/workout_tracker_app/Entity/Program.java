@@ -48,8 +48,11 @@ public class Program {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User users;
 
-    @OneToMany(mappedBy = "programDL", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<DailyLog> daily_log;
+    /*
+     * @OneToMany(mappedBy = "programDL", fetch = FetchType.LAZY, cascade =
+     * CascadeType.REMOVE)
+     * private List<DailyLog> daily_log;
+     */
 
     @OneToMany(mappedBy = "program", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<programLog> program_log;

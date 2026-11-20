@@ -60,10 +60,8 @@ public class securityConfig {
                 // Stateless session - no server-side session storage
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
                 // Use our custom authentication provider
                 .authenticationProvider(authenticationProvider())
-
                 // Add JWT filter before the standard authentication filter
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

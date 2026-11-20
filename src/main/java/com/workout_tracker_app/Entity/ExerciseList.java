@@ -51,16 +51,15 @@ public class ExerciseList {
     @Column(name = "category", nullable = false)
     private String category; // cardio, strength, flexibility
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    /*@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User users;
+    private User users;*/
 
-    public ExerciseList(String exercise_name, String exercise_type, String muscle_group, String category, User users) {
+    public ExerciseList(String exercise_name, String exercise_type, String muscle_group, String category) {
         this.exercise_name = exercise_name;
         this.exercise_type = exercise_type;
         this.muscle_group = muscle_group;
         this.category = category;
-        this.users = users;
     }
 }

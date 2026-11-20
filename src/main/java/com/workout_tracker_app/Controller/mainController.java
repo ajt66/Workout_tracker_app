@@ -58,6 +58,9 @@ import com.workout_tracker_app.Repository.programRepo;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
 @Controller
 @SessionAttributes({ "User", "User_id" })
@@ -71,6 +74,8 @@ public class mainController {
     private final DailyLogRepo dLogRepo;
     private final HttpSession session;
     private int progedit, progadd, dledit;
+    private String status;
+    private boolean logSeed;
 
     @ModelAttribute("User")
     public Optional<User> getUser() {
@@ -87,6 +92,12 @@ public class mainController {
     @SuppressWarnings("null")
     public void setActiveProgram(Long userid) {
         programDTO pstat = programrepo.findByActiveStatus(program_status.valueOf("active").toString(), userid);
+
+        if (pstat == null) {
+            session.setAttribute("Program", null);
+            return;
+        }
+
         List<programDTO> pres = pLogRepo.findByProgramNamewithDetails(pstat.getProgram_name(), userid);
         Map<String, List<programDTO>> currentProgram = pres.stream()
                 .collect(Collectors.groupingBy(programDTO::getDay, LinkedHashMap::new, Collectors.toList()));
@@ -108,6 +119,11 @@ public class mainController {
     public void setActiveProgramID(Long userid) {
         programDTO pstat = programrepo.findByActiveStatus(program_status.valueOf("active").toString(), userid);
 
+        if (pstat == null) {
+            session.setAttribute("ProgramID", null);
+            return;
+        }
+
         if (session.getAttribute("ProgramID") == null) {
             session.setAttribute("ProgramID",
                     programrepo.findProgramId(pstat.getProgram_name(), userid).getProgram_id());
@@ -125,6 +141,11 @@ public class mainController {
 
     public void setActiveProgramName(Long userid) {
         programDTO pstat = programrepo.findByActiveStatus(program_status.valueOf("active").toString(), userid);
+
+        if (pstat == null) {
+            session.setAttribute("ProgramName", "none");
+            return;
+        }
 
         if (session.getAttribute("ProgramName") == null) {
             session.setAttribute("ProgramName", pstat.getProgram_name());
@@ -179,25 +200,58 @@ public class mainController {
         // Get the authenticated user's username from the security context
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Long userId = getUserId();
+
+        if (session.getAttribute("action").equals("register")) {
+            String count = String.valueOf(userRepo.userCount());
+
+            programrepo.insertProgramH2("push-pull-legs" + count, userId, "active");
+            pLogRepo.insertFirstProgram(programrepo.findProgramId("push-pull-legs" + count, userId).getProgram_id());
+            programrepo.insertProgramH2("upper-lower" + count, userId, "inactive");
+            pLogRepo.insertSecondProgram(programrepo.findProgramId("upper-lower" + count, userId).getProgram_id());
+
+            model.addAttribute("alert", true);
+            session.removeAttribute("action");
+            session.setAttribute("action", "done");
+        } else {
+            model.addAttribute("alert", false);
+            session.removeAttribute("action");
+            session.setAttribute("action", "done");
+        }
+
         setActiveProgram(userId);
         setActiveProgramID(userId);
         setActiveProgramName(userId);
 
-        String today = LocalDate.now().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
-        dLogRepo.copyProgramDataForToday(userId, today);
-        dLogRepo.changeStatus(userId);
+        if (!logSeed) {
+            String today = LocalDate.now().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+            dLogRepo.copyProgramDataForToday(userId, today);
+            dLogRepo.changeStatus(userId);
+            logSeed = true;
+        }
+
         model.addAttribute("User_email", getUser().get().getEmail());
         model.addAttribute("User_name", username);
         model.addAttribute("User_id", userId);
-        model.addAttribute("label", List.of("d1", "d2", "d3", "d4", "d5", "d6"));
-        model.addAttribute("data", List.of(1, 2, 3, 4, 5, 6));
         return "main";
+    }
+
+    @HxRequest
+    @GetMapping(value = "/alert")
+    public View showAlert(Model model) {
+        return FragmentsRendering.fragment("fragments/popups/confirmation :: alert")
+                .build();
     }
 
     @GetMapping("/Logs")
     public String showDailyLog(@ModelAttribute("User_id") Long userid, Model model) {
-        model.addAttribute("logstatus", log_status.values());
-        model.addAttribute("curProgram", dLogRepo.findByCurrentDate(userid, getActiveProgramID()));
+        if (getActiveProgramID().equals(null)) {
+            model.addAttribute("error", true);
+            model.addAttribute("error-message", "No logs available");
+        } else {
+            model.addAttribute("curProgram", dLogRepo.findByCurrentDate(userid, getActiveProgramID()));
+            model.addAttribute("error", false);
+        }
+
         model.addAttribute("curdate", LocalDate.now());
         model.addAttribute("curday", LocalDate.now().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
         model.addAttribute("dlp_name", getActiveProgramName());
@@ -208,21 +262,19 @@ public class mainController {
     @GetMapping("/Logs/date")
     public View showDailyLogDate(@ModelAttribute("User_id") Long userid, @RequestParam("date-select") String date,
             Model model) {
-        /*
-         * Long logCount = dLogRepo.checkLogsForDate(userid, LocalDate.parse(date));
-         * if (logCount == 0) {
-         * String day =
-         * LocalDate.parse(date).getDayOfWeek().getDisplayName(TextStyle.FULL,
-         * Locale.ENGLISH);
-         * dLogRepo.copyProgramDataForDate(userid, day, LocalDate.parse(date));
-         * }
-         */
-
         List<DLDTO> logs = dLogRepo.findByDate(userid, LocalDate.parse(date), getActiveProgramID());
 
         if (logs.isEmpty()) {
-            String day = LocalDate.parse(date).getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
-            dLogRepo.copyProgramDataForDate(userid, day, LocalDate.parse(date));
+            /*
+             * String day =
+             * LocalDate.parse(date).getDayOfWeek().getDisplayName(TextStyle.FULL,
+             * Locale.ENGLISH);
+             * dLogRepo.copyProgramDataForDate(userid, day, LocalDate.parse(date));
+             */
+
+            model.addAttribute("error", "No logs available");
+            return FragmentsRendering.fragment("fragments/Errors.html :: error(error = ${error})")
+                    .build();
         }
 
         model.addAttribute("Program", dLogRepo.findByDate(userid, LocalDate.parse(date), getActiveProgramID()));
@@ -249,6 +301,8 @@ public class mainController {
 
         model.addAttribute("Program", dto);
         model.addAttribute("date", LocalDate.parse(date));
+        model.addAttribute("exerciselist", exerciserepo.findAll().stream()
+                .map(ExerciseList::getExercise_name).collect(Collectors.toList()));
         model.addAttribute("day", day);
         model.addAttribute("logstatus", log_status.values());
         return FragmentsRendering
@@ -290,7 +344,7 @@ public class mainController {
 
         for (DLDTO item : logs) {
             log_id = item.getLog_id();
-            exerid = exerciserepo.findByNameWithUser(item.getExercise_name(), userid).getExercise_id();
+            exerid = exerciserepo.findByName(item.getExercise_name()).getExercise_id();
             weights = item.getWeights();
             sets = item.getSets();
             reps = item.getReps();
@@ -298,7 +352,7 @@ public class mainController {
             comment = item.getComment();
             status = item.getLog_status().toString();
 
-            dLogRepo.updateDailyLog(getActiveProgramID(), log_id, exerid, day, weights, sets, reps, duration,
+            dLogRepo.updateDailyLog(userid, log_id, exerid, day, weights, sets, reps, duration,
                     comment,
                     status,
                     date);
@@ -309,7 +363,7 @@ public class mainController {
                 continue; // Skip this iteration if exercise_name is null or empty
             }
 
-            exerid = exerciserepo.findByNameWithUser(item.getExercise_name(), userid).getExercise_id();
+            exerid = exerciserepo.findByName(item.getExercise_name()).getExercise_id();
             weights = item.getWeights();
             sets = item.getSets();
             reps = item.getReps();
@@ -433,7 +487,8 @@ public class mainController {
 
         model.addAttribute("Program", dto);
         model.addAttribute("count", progedit);
-        // model.addAttribute("prog_name", progname);
+        model.addAttribute("exerciselist", exerciserepo.findAll().stream()
+                .map(ExerciseList::getExercise_name).collect(Collectors.toList()));
         model.addAttribute("tag", program_tag.values());
         model.addAttribute("status", program_status.values());
         return FragmentsRendering.fragment(
@@ -457,7 +512,7 @@ public class mainController {
                 programrepo.updateProgramName(progname, progid, userid);
 
                 for (programDTO item : EList) {
-                    exerid = exerciserepo.findByNameWithUser(item.getExercise_name(), userid).getExercise_id();
+                    exerid = exerciserepo.findByName(item.getExercise_name()).getExercise_id();
                     sets = item.getSets();
                     reps = item.getReps();
                     duration = item.getDuration();
@@ -471,7 +526,7 @@ public class mainController {
                         continue; // Skip this iteration if exercise_name is null or empty
                     }
 
-                    exerid = exerciserepo.findByNameWithUser(item.getExercise_name(), userid).getExercise_id();
+                    exerid = exerciserepo.findByName(item.getExercise_name()).getExercise_id();
                     sets = item.getSets();
                     reps = item.getReps();
                     duration = item.getDuration();
@@ -495,9 +550,8 @@ public class mainController {
         model.addAttribute("status", program_status.values());
         model.addAttribute("index", progedit);
         ProgEditIncrement();
-        model.addAttribute("count", progedit);
         return FragmentsRendering
-                .fragment("fragments/Tables/new-row :: prog_edit_row(day = ${day}, count = ${count}, index = ${index})")
+                .fragment("fragments/Tables/new-row :: prog_edit_row(day = ${day}, index = ${index})")
                 .build();
     }
 
@@ -508,15 +562,14 @@ public class mainController {
         model.addAttribute("status", program_status.values());
         model.addAttribute("index", progadd);
         ProgAddIncrement();
-        model.addAttribute("count", progadd);
         return FragmentsRendering
-                .fragment("fragments/Tables/new-row :: prog_add_row(day = ${day}, count = ${count}, index = ${index})")
+                .fragment("fragments/Tables/new-row :: prog_add_row(day = ${day}, index = ${index})")
                 .build();
     }
 
     @HxRequest
     @GetMapping("/Programs/Add")
-    public View GetProgramsAdd(Model model) {
+    public View GetProgramsAdd(Model model, @ModelAttribute("User_id") Long userid) {
         mapDTO dto = new mapDTO();
         dto.setProg_id(null);
         dto.setProg_name(null);
@@ -531,6 +584,8 @@ public class mainController {
 
         setProgAdd(0);
         model.addAttribute("dto", dto);
+        model.addAttribute("exerciselist", exerciserepo.findAll().stream()
+                .map(ExerciseList::getExercise_name).collect(Collectors.toList()));
         model.addAttribute("tag", program_tag.values());
         model.addAttribute("status", program_status.values());
         model.addAttribute("days", List.of("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"));
@@ -547,7 +602,7 @@ public class mainController {
     @PostMapping(value = "/Programs/Add", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String showProgramsAdd(@ModelAttribute("dto") mapDTO program, Model model,
             @ModelAttribute("User_id") Long userid) {
-        programrepo.insertProgramH2(program.getProg_name(), userid);
+        programrepo.insertProgramH2(program.getProg_name(), userid, "inactive");
 
         Long exerid, progid = programrepo.findProgramId(program.getProg_name(), userid).getProgram_id();
         String duration;
@@ -564,7 +619,7 @@ public class mainController {
                     continue; // Skip this iteration if exercise_name is null or empty
                 }
 
-                exerid = exerciserepo.findByNameWithUser(mdto.getExercise_name(), userid).getExercise_id();
+                exerid = exerciserepo.findByName(mdto.getExercise_name()).getExercise_id();
                 sets = mdto.getSets();
                 reps = mdto.getReps();
                 duration = mdto.getDuration();
@@ -577,7 +632,7 @@ public class mainController {
                     continue; // Skip this iteration if exercise_name is null or empty
                 }
 
-                exerid = exerciserepo.findByNameWithUser(ndto.getExercise_name(), userid).getExercise_id();
+                exerid = exerciserepo.findByName(ndto.getExercise_name()).getExercise_id();
                 sets = ndto.getSets();
                 reps = ndto.getReps();
                 duration = ndto.getDuration();
@@ -593,9 +648,9 @@ public class mainController {
     @SuppressWarnings("null")
     @GetMapping("/Exercise")
     public String showExercise(@ModelAttribute("User_id") Long userid, Model model) {
-        Map<String, List<ExerciseList>> muscle = exerciserepo.findByAllMuscleGroup(userid).stream()
+        Map<String, List<ExerciseList>> muscle = exerciserepo.findByAllMuscleGroup().stream()
                 .collect(Collectors.groupingBy(ExerciseList::getMuscle_group, LinkedHashMap::new, Collectors.toList()));
-        Map<String, List<ExerciseList>> category = exerciserepo.findByAllCategory(userid).stream()
+        Map<String, List<ExerciseList>> category = exerciserepo.findByAllCategory().stream()
                 .collect(Collectors.groupingBy(ExerciseList::getCategory, LinkedHashMap::new, Collectors.toList()));
 
         Map<String, List<ExerciseList>> result = Stream.concat(muscle.entrySet().stream(), category.entrySet().stream())
@@ -618,13 +673,13 @@ public class mainController {
         if (Arrays.asList("cardio", "flexibility", "isometrics").contains(name)) {
             model.addAttribute("category", name);
             model.addAttribute("exercise", ExerciseList.builder().exercise_name(null).exercise_type("none")
-                    .muscle_group("none").category(name).users(getUser().get()).build());
+                    .muscle_group("none").category(name).build());
 
             return "fragments/popups/exercise-form :: category-form(category = ${category}, user = ${user})"; // category=${category},
         } else {
             model.addAttribute("muscle", name);
             model.addAttribute("exercise", ExerciseList.builder().exercise_name(null).exercise_type("none")
-                    .muscle_group(name).category("none").users(getUser().get()).build());
+                    .muscle_group(name).category("none").build());
 
             return "fragments/popups/exercise-form :: muscle-form(muscle = ${muscle}, user = ${user})"; // muscle=${muscle},
         }
@@ -634,7 +689,7 @@ public class mainController {
     public String showExercisePost(Model model, @RequestParam("exercise_name") String name,
             @RequestParam("exercise_type") String type, @RequestParam("muscle_group") String muscle,
             @RequestParam("category") String category) {
-        exerciserepo.insertIntoExerciseList(getUserId(), name, type, muscle, category);
+        exerciserepo.insertIntoExerciseList(name, type, muscle, category);
         return "redirect:/api/main/Exercise";
     }
 
@@ -658,17 +713,6 @@ public class mainController {
                 .collect(Collectors.toList()));
         model.addAttribute("preworkdata", preworkList.stream().filter(item -> item.getVolume() != null)
                 .map(AnalyzeDTO::getVolume).collect(Collectors.toList()));
-        /*
-         * model.addAttribute("preworkweights", preworkList.stream().filter(item ->
-         * item.getTotal_weight() != null)
-         * .map(AnalyzeDTO::getTotal_weight).collect(Collectors.toList()));
-         * model.addAttribute("preworksets", preworkList.stream().filter(item ->
-         * item.getTotal_sets() != null)
-         * .map(AnalyzeDTO::getTotal_sets).collect(Collectors.toList()));
-         * model.addAttribute("preworkreps", preworkList.stream().filter(item ->
-         * item.getTotal_reps() != null)
-         * .map(AnalyzeDTO::getTotal_reps).collect(Collectors.toList()));
-         */
 
         // Breakdown Portion
         List<AnalyzeDTO> prebreakList = dLogRepo.BreakdownTabQuery(8, userid);
@@ -676,13 +720,11 @@ public class mainController {
         model.addAttribute("breakmuscle", prebreakList.stream().filter(item -> item.getName() != null)
                 .map(AnalyzeDTO::getName)
                 .collect(Collectors.toList()));
-        /*
-         * model.addAttribute("breakWeights", totalWeights);
-         * model.addAttribute("breakSets", totalSets);
-         * model.addAttribute("breakReps", totalReps);
-         */
         model.addAttribute("breakdata", prebreakList.stream().filter(item -> item.getVolume() != null)
                 .map(AnalyzeDTO::getVolume).collect(Collectors.toList()));
+
+        model.addAttribute("exerciselist", exerciserepo.findAll().stream()
+                .map(ExerciseList::getExercise_name).collect(Collectors.toList()));
 
         return "Analyze";
     }
@@ -695,7 +737,7 @@ public class mainController {
             @RequestParam(value = "workfilter") String workfilter,
             Model model) {
         if (workcategory.equals("cardio") || workcategory.equals("isometrics") || workcategory.equals("flexibility")) {
-            model.addAttribute("workResult", "No data available for this category.");
+            model.addAttribute("error", true);
             model.addAttribute("workfilter", workfilter);
             model.addAttribute("pwl", List.of());
             model.addAttribute("pwd", List.of());
@@ -727,6 +769,7 @@ public class mainController {
             }
 
             model.addAttribute("workfilter", workfilter);
+            model.addAttribute("error", false);
             model.addAttribute("pwl", noneList.stream().filter(item -> item.getDates() != null)
                     .map(item -> item.getDates().format(DateTimeFormatter.ofPattern("dd MM yyyy")))
                     .collect(Collectors.toList()));
@@ -759,6 +802,7 @@ public class mainController {
             }
 
             model.addAttribute("workfilter", workfilter);
+            model.addAttribute("error", false);
             model.addAttribute("pwl", nameList.stream().filter(item -> item.getDates() != null)
                     .map(item -> item.getDates().format(DateTimeFormatter.ofPattern("dd MM yyyy")))
                     .collect(Collectors.toList()));
@@ -843,17 +887,17 @@ public class mainController {
     }
 
     @HxRequest
-    @GetMapping("sign-out")
+    @GetMapping("/sign-out")
     public String getSignOut(@RequestParam("final") String finalPage,
             Model model) {
         model.addAttribute("final", finalPage);
         return "fragments/popups/signout :: signout(final=${final})";
     }
 
-    @HxRequest
-    @PostMapping("sign-out")
-    public String postMethodName(@RequestParam("final") String finalPage,
+    @PostMapping("/sign-out")
+    public String postMethodName(@RequestParam("final") String finalPage, HttpServletRequest request,
             Model model, HttpServletResponse response) {
+
         Cookie cookie = new Cookie("jwt", null);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
@@ -861,8 +905,14 @@ public class mainController {
         cookie.setSecure(true);
         response.addCookie(cookie);
 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
+        if (auth != null) {
+            logoutHandler.logout(request, response, auth);
+        }
+
         if (finalPage.equals("main")) {
-            return "redirect:/api/home";
+            return "redirect:/api/sign-out";
         } else {
             return "redirect:/api/sign-out";
         }

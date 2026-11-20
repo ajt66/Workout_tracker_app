@@ -76,10 +76,11 @@ public interface programRepo extends JpaRepository<Program, Long> {
         @Modifying
         @Query(value = """
                         INSERT INTO workoutapp.programs (program_name, user_id, pstatus)
-                        SELECT :program_name, u.id, 'inactive'
+                        SELECT :program_name, u.id, :status
                         FROM workoutapp.users u
                         WHERE u.id = :userid""", nativeQuery = true)
-        Long insertProgramH2(@Param("program_name") String program_name, @Param("userid") Long userid);
+        Long insertProgramH2(@Param("program_name") String program_name, @Param("userid") Long userid,
+                        @Param("status") String status);
 
         @Transactional
         @Modifying

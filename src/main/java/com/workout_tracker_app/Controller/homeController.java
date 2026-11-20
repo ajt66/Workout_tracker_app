@@ -15,6 +15,7 @@ import com.workout_tracker_app.dto.RegisterRequest;
 
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class homeController {
     private final authService AService;
+    private final HttpSession session;
 
     @GetMapping("/home")
     public String show() {
@@ -47,6 +49,7 @@ public class homeController {
             cookie.setMaxAge(3600);
             cookie.setSecure(true); // Ensure the cookie is sent over HTTPS
             response.addCookie(cookie);
+            session.setAttribute("action", "register");
 
             return "redirect:/api/main";
         } catch (Exception e) {
@@ -74,6 +77,7 @@ public class homeController {
             cookie.setMaxAge(3600);
             cookie.setSecure(true);
             response.addCookie(cookie);
+            session.setAttribute("action", "login");
 
             return "redirect:/api/main";
         } catch (Exception e) {

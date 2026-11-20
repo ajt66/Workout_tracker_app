@@ -120,7 +120,7 @@
 
                     <div class="Analyze-options">
                         <form id="workform" hx-get="/api/main/Analyze/workouts" hx-target="#workupdatediv"
-                            hx-swap="innerHTML" hx-indicator="#workindicator">
+                            hx-swap="innerHTML">
                             <label for="workcategory">category :</label><span class="tab1"></span>
                             <select th:id="workcategory" th:name="workcategory">
                                 <option value="none">None</option>
@@ -149,9 +149,10 @@
                     </div>
 
                     <div id="workChartdiv">
+                        <span>
+                            <p th:if="${error == true}" class="error">No Data found</p>
+                        </span>
                         <canvas id="workChart" width="500" height="200"></canvas>
-                        <img id="workindicator" class="htmx-indicator" src="../static/svg-loaders/oval.svg"
-                            alt="loading">
                     </div>
 
                     <div id="workjs">
@@ -272,7 +273,8 @@
                     <div class="Analyze-options">
                         <form hx-get="/api/main/Analyze/exercise" hx-target="#exercisejs" hx-swap="innerHTML">
                             <label for="name">Exercise Name :</label><span class="tab1"></span>
-                            <input type="text" id="exercise" name="exercise" placeholder="Enter exercise name">
+                            <input type="text" id="exercise" name="exercise" list="exercise-list"
+                                placeholder="Enter exercise name">
                             <label for="exercisefilter">Filter :</label><span class="tab1"></span>
                             <select id="exercisefilter" name="exercisefilter">
                                 <option value="volume">Total volume</option>
@@ -283,6 +285,12 @@
 
                             <button class="program-button" type="submit">Show results</button>
                         </form>
+                    </div>
+
+                    <div>
+                        <datalist id="exercise-list">
+                            <option th:each="exercise : ${exerciselist}" th:value="${exercise}"></option>
+                        </datalist>
                     </div>
 
                     <div id="exerciseChartdiv">

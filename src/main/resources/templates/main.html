@@ -60,6 +60,23 @@
                 <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
             </div>
 
+            <!--hx-get="/api/main/alert" hx-trigger="load" hx-swap="innerHTML"
+                hx-target="this"-->
+            <div class="popup" id="alert" th:if="${alert}">
+                <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
+                <div id="alert-content">
+                    <p>
+                        Welcome to the main page of our app. We hope this app provides you the tools to fulfill your
+                        fitness goals.
+                    </p>
+                    <br>
+                    <p>
+                        (Note: A basic push-pull-legs programs has been assigned as the default program. A basic
+                        upper-lower program is available as well)
+                    </p>
+                </div>
+            </div>
+
         </div>
 
         <h1 class="welcome-heading">Welcome, <span th:text="${User_name}"></span>
@@ -90,6 +107,16 @@
     </div>
 
     <script src="../static/js/post-verify.js" th:src="@{/js/post-verify.js}">
+    </script>
+
+    <script th:inline="javascript">
+        var alert = /*[[${alert}]]*/ false;
+
+        window.onload = () => {
+            if (alert) {
+                openpopup("alert");
+            }
+        }
     </script>
 
 </body>

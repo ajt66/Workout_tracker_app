@@ -86,6 +86,48 @@ public interface programLogRepo extends JpaRepository<programLog, Long> {
         @Transactional
         @Modifying
         @Query(value = """
+                        INSERT INTO workoutapp.program_log (program_id, exercise_id, day, sets, reps, duration, tag) VALUES
+                        (:id, 53, 'Monday', 3, 8, null, 'push'),
+                        (:id, 49, 'Monday', 3, 12, null, 'push'),
+                        (:id, 18, 'Tuesday', 3, 12, null, 'pull'),
+                        (:id, 21, 'Tuesday', 3, 12, null, 'pull'),
+                        (:id, 59, 'Wednesday', 3, 12, null, 'legs'),
+                        (:id, 66, 'Wednesday', 3, 12, null, 'legs'),
+                        (:id, 53, 'Thursday', 5, 15, null, 'push'),
+                        (:id, 49, 'Thursday', 5, 15, null, 'push'),
+                        (:id, 18, 'Friday', 5, 15, null, 'pull'),
+                        (:id, 21, 'Friday', 5, 15, null, 'pull'),
+                        (:id, 59, 'Saturday', 3, 12, null, 'legs'),
+                        (:id, 66, 'Saturday', 3, 12, null, 'legs'),
+                        (:id, 1,  'Sunday', null, null, null, 'rest')""", nativeQuery = true)
+        void insertFirstProgram(@Param("id") Long id);
+
+        @Transactional
+        @Modifying
+        @Query(value = """
+                        INSERT INTO workoutapp.program_log (program_id, exercise_id, day, sets, reps, duration, tag) VALUES
+                        (:id, 53, 'Monday', 3, 8, null, 'upper'),
+                        (:id, 49, 'Monday', 3, 12, null, 'upper'),
+                        (:id, 18, 'Monday', 3, 12, null, 'upper'),
+                        (:id, 21, 'Monday', 3, 12, null, 'upper'),
+                        (:id, 59, 'Tuesday', 3, 12, null, 'lower'),
+                        (:id, 66, 'Tuesday', 3, 12, null, 'lower'),
+                        (:id, 64, 'Tuesday', 3, 12, null, 'lower'),
+                        (:id, 1,  'Wednesday', null, null, null, 'rest'),
+                        (:id, 53, 'Thursday', 3, 8, null, 'upper'),
+                        (:id, 49, 'Thursday', 3, 12, null, 'upper'),
+                        (:id, 18, 'Thursday', 3, 12, null, 'upper'),
+                        (:id, 21, 'Thursday', 3, 12, null, 'upper'),
+                        (:id, 59, 'Friday', 3, 12, null, 'lower'),
+                        (:id, 66, 'Friday', 3, 12, null, 'lower'),
+                        (:id, 64, 'Friday', 3, 12, null, 'lower'),
+                        (:id, 1,  'Saturday', null, null, null, 'rest'),
+                        (:id, 1,  'Sunday', null, null, null, 'rest')""", nativeQuery = true)
+        void insertSecondProgram(@Param("id") Long id);
+
+        @Transactional
+        @Modifying
+        @Query(value = """
                         DELETE FROM workoutapp.program_log pl
                         WHERE pl.program_id = :program_id""", nativeQuery = true)
         void deleteProgramLog(@Param("program_id") Long program_id);

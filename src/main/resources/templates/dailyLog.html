@@ -79,7 +79,11 @@
             </div>
 
             <div id="date-container">
-                <div class="columns-container">
+                <div class="error-container" th:if="${error == true}">
+                    <p class="error" th:text="${error-message}"></p>
+                </div>
+
+                <div class="columns-container" th:unless="${error == true}">
                     <div class="column-card" id="dlcol-card">
                         <p>
                             <span th:text="${#temporals.format(curdate, 'dd MMMM yyyy')}">Date</span> - <span
@@ -122,9 +126,6 @@
                     hx-target="#dlp-edit" th:hx-vals='|{"date":"${curdate}"}|' onclick="openpopup('dlp-edit')">Edit
                     Workout</button>
             </div>
-        </div>
-
-        <div id="sub-div">
         </div>
     </div>
 

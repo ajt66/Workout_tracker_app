@@ -53,10 +53,16 @@ public class User {
                 .build();
     }
 
-    @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ExerciseList> exercise_id;
+    /*
+     * @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade =
+     * CascadeType.ALL, orphanRemoval = true)
+     * private List<ExerciseList> exercise_id;
+     */
 
     @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Program> program_id;
+
+    @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DailyLog> daily_logs;
 
 }

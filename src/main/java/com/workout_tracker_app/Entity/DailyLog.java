@@ -42,10 +42,20 @@ public class DailyLog {
     @Column(name = "logging_date", nullable = false)
     private LocalDate logging_date;
 
+    /*
+     * @ManyToOne(fetch = FetchType.LAZY)
+     * 
+     * @JoinColumn(name = "program_id", referencedColumnName = "program_id",
+     * nullable = true)
+     * 
+     * @OnDelete(action = OnDeleteAction.CASCADE)
+     * private Program programDL;
+     */
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "program_id", referencedColumnName = "program_id", nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Program programDL;
+    private User users;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exercise_id", referencedColumnName = "exercise_id")

@@ -50,6 +50,12 @@ a {
     color: #fff;
 }
 
+.error {
+    color: #ff4d4d;
+    font-size: 25px;
+    font-weight: bold;
+}
+
 input,
 select {
     font-size: 17px;
@@ -503,6 +509,28 @@ section {
     margin-top: 100px;
 }
 
+#alert {
+    position: fixed;
+    z-index: 6;
+    min-width: 45%;
+    width: auto;
+    max-width: 60%;
+    min-height: 35%;
+    height: auto;
+    max-height: 45%;
+    margin-top: 100px;
+    transition: 1s ease;
+    margin-left: 250px;
+    background-color: #333;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    text-align: center;
+}
+
+#alert-content {
+    margin-top: 60px;
+}
+
 .signout-button {
     border-style: none;
     background: inherit;
@@ -511,10 +539,22 @@ section {
 
 #programedit,
 #currentprogedit,
-#addprog,
+#addprog {
+    position: absolute;
+    margin-top: 300px;
+    width: 95%;
+    height: auto;
+    min-height: 500px;
+    max-height: 1200px;
+    margin-left: -10px;
+    overflow-x: hidden;
+    background-color: #222;
+    margin-bottom: 20px;
+}
+
 #dlp-edit {
     position: absolute;
-    margin-top: 150px;
+    top: 150px;
     width: 95%;
     height: auto;
     min-height: 500px;
