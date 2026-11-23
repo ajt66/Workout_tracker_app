@@ -1,4 +1,8 @@
 <div th:fragment="exerciseChart">
+    <div class="error-container">
+        <p class="error" th:if="${ped == null or #lists.size(ped) == 0}">No Data available</p>
+    </div>
+
     <script th:inline="javascript">
         (function () {
             const exercisefilter = /*[[${exercisefilter}]]*/ 'volume';
@@ -6,6 +10,12 @@
 
             const selection = /*[[${ped}]]*/[];
             const chart = Chart.getChart('exerciseChart');
+
+            if (selection.length == 0) {
+                document.getElementById('exerciseChart').style.display = "none";
+            } else {
+                document.getElementById('exerciseChart').style.display = "block";
+            }
 
             chart.data.datasets.pop();
             const newDataset =
@@ -20,43 +30,6 @@
             chart.data.datasets.push(newDataset);
             chart.update();
 
-            /*if (typeof postexercisechart !== 'undefined' && postexercisechart !== NULL) {
-    
-                
-    
-            } else {
-                const postexercisectx = document.getElementById('exerciseChart').getContext('2d');
-    
-                const postexercisedata = {
-                    label: exerciseDates,
-                    datasets: [
-                        {
-                            label: exercisefilter,
-                            data: exerciseFilter(exercisefilter),
-                            borderColor: 'rgb(54, 162, 235, 1)',
-                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                            fill: true
-                        }
-                    ]
-    
-                }
-    
-                var config = {
-                    type: 'line',
-                    data: postexercisedata,
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: 'Exercise Chart'
-                            }
-                        }
-                    }
-                }
-    
-                var exerciseChart = new Chart(postexercisectx, config);
-            }*/
         }
         )();
     </script>

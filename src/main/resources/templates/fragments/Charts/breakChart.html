@@ -1,4 +1,8 @@
 <div th:fragment="breakChart">
+    <div class="error-container">
+        <p class="error" th:if="${pbd == null or #lists.size(pbd) == 0}">No Data available</p>
+    </div>
+
     <script th:inline="javascript">
 
         (function () {
@@ -10,6 +14,12 @@
             if (!chart) {
                 console.error('Breakdown chart is not initialized.');
                 return;
+            }
+
+            if (selectedData.length == 0) {
+                document.getElementById('breakChart').style.display = "none";
+            } else {
+                document.getElementById('breakChart').style.display = "block";
             }
 
             chart.data.labels = breakmuscle;

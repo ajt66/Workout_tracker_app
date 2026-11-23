@@ -1,4 +1,8 @@
 <div th:fragment="workChart">
+    <div class="error-container">
+        <p class="error" th:if="${pwd == null or #lists.size(pwd) == 0}">No Data available</p>
+    </div>
+
     <script type="text/javascript" th:inline="javascript">
         (() => {
             const workfilter = /*[[${workfilter}]]*/ 'volume';
@@ -9,6 +13,12 @@
             if (!chart) {
                 console.error('Workout chart is not initialized.');
                 return;
+            }
+
+            if (selectedData.length == 0) {
+                document.getElementById('workChart').style.display = "none";
+            } else {
+                document.getElementById('workChart').style.display = "block";
             }
 
             chart.data.labels = postworklabels;
