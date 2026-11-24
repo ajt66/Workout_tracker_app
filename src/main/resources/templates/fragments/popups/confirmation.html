@@ -1,9 +1,9 @@
-<th:block th:fragment="switch(switchId, nprog, curId, cprog)">
+<th:block th:fragment="switch(switchId, nprog, cprog)">
     <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
     <form class="form-group" th:action="@{/api/main/Programs/switch}" method="post">
         <h2>Program Switch Confirmation:</h2>
-        <p>Are you sure you want to switch from <span th:text="${nprog + ':' + switchId}"></span> to <span
-                th:text="${cprog + ':' + curId}"></span>?</p><br>
+        <p>Are you sure you want to switch from <span th:text="${cprog}"></span> to <span th:text="${nprog}"></span>?
+        </p><br>
         <input type="hidden" class="hidden-name" th:id="switch-id" th:name="id" th:value="${switchId}">
         <button class="program-button" type="submit">Switch</button>
         <button class="program-button" type="button"><a th:href="@{/api/main/Programs}">Cancel</a></button>

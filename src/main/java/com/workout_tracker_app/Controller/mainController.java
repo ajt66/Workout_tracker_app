@@ -432,11 +432,10 @@ public class mainController {
     public View GetProgramSwitch(@RequestParam("id") Long progid, @RequestParam("name") String progname, Model model) {
         model.addAttribute("switchId", progid);
         model.addAttribute("nprog", progname);
-        model.addAttribute("curId", getActiveProgramID());
         model.addAttribute("cprog", getActiveProgramName());
 
         return FragmentsRendering.fragment(
-                "fragments/popups/confirmation :: switch(switchId=${switchId}, nprog=${nprog}, curId=${curId}, cprog=${cprog})")
+                "fragments/popups/confirmation :: switch(switchId=${switchId}, nprog=${nprog}, cprog=${cprog})")
                 .build();
     }
 

@@ -52,3 +52,4 @@ CREATE TABLE IF NOT EXISTS workoutapp.daily_log (
     comment VARCHAR(50),
     dstatus VARCHAR(50) DEFAULT 'pending' NOT NULL
 );
+
