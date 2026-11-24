@@ -159,6 +159,26 @@ public class mainController {
         return (String) session.getAttribute("ProgramName");
     }
 
+    public void setDetails(Long userid) {
+        programDTO pstat = programrepo.findByActiveStatus(program_status.valueOf("active").toString(), userid);
+
+        if (pstat == null) {
+            session.setAttribute("Program", null);
+            session.setAttribute("ProgramName", "none");
+            session.setAttribute("ProgramID", null);
+            return;
+        }
+
+        List<programDTO> pres = pLogRepo.findByProgramNamewithDetails(pstat.getProgram_name(), userid);
+        Map<String, List<programDTO>> currentProgram = pres.stream()
+                .collect(Collectors.groupingBy(programDTO::getDay, LinkedHashMap::new, Collectors.toList()));
+
+        session.setAttribute("Program", currentProgram);
+        session.setAttribute("ProgramName", pstat.getProgram_name());
+        session.setAttribute("ProgramID", programrepo.findProgramId(pstat.getProgram_name(), userid).getProgram_id());
+
+    }
+
     public void setProgEdit(int count) {
         progedit = count;
     }
@@ -210,19 +230,16 @@ public class mainController {
             pLogRepo.insertSecondProgram(programrepo.findProgramId("upper-lower" + count, userId).getProgram_id());
 
             model.addAttribute("alert", true);
-            session.removeAttribute("action");
             session.setAttribute("action", "done");
         } else {
             model.addAttribute("alert", false);
-            session.removeAttribute("action");
             session.setAttribute("action", "done");
         }
 
-        setActiveProgram(userId);
-        setActiveProgramID(userId);
-        setActiveProgramName(userId);
-
         if (!logSeed) {
+            setActiveProgram(userId);
+            setActiveProgramID(userId);
+            setActiveProgramName(userId);
             String today = LocalDate.now().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
             dLogRepo.copyProgramDataForToday(userId, today);
             dLogRepo.changeStatus(userId);
@@ -443,9 +460,13 @@ public class mainController {
     public String PostProgramSwitch(@RequestParam("id") Long progid, @ModelAttribute("User_id") Long userid) {
         programrepo.updateProgramStatus(program_status.valueOf("active").toString(), progid, userid);
         programrepo.updateProgramStatus(program_status.valueOf("inactive").toString(), getActiveProgramID(), userid);
-        setActiveProgram(userid);
-        setActiveProgramID(userid);
-        setActiveProgramName(userid);
+        setDetails(userid);
+
+        /*
+         * setActiveProgram(userid);
+         * setActiveProgramID(userid);
+         * setActiveProgramName(userid);
+         */
         return "redirect:/api/main/Programs";
     }
 
@@ -909,6 +930,8 @@ public class mainController {
         if (auth != null) {
             logoutHandler.logout(request, response, auth);
         }
+
+        session.invalidate();
 
         if (finalPage.equals("main")) {
             return "redirect:/api/sign-out";

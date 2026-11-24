@@ -26,8 +26,7 @@
                         </tr>
                         <tr th:each="item, stat : ${Program.logs}">
                             <td>
-                                <input type="text" th:value="${item.getExercise_name()}"
-                                    th:name="|logs[${stat.index}].exercise_name|">
+                                <span th:text="${item.getExercise_name()}"></span>
                             </td>
                             <td><input type="number" th:value="${item.getWeights()}"
                                     th:name="|logs[${stat.index}].weights|"></td>

@@ -91,4 +91,4 @@ Once the user is finished, they can use the home or the signout button on the na
 
 ## Current Issues
 
-* Switching newly or user added programs with pre-made programs back and forth will cause the app to bug and not display the actual active program.
+* Switching programs back and forth will cause the app to bug and not display the actual active program. Switching to the main page afterwards, will result in an error.

@@ -15,78 +15,78 @@ import com.workout_tracker_app.Entity.Program.program_status;
 
 public interface programRepo extends JpaRepository<Program, Long> {
 
-        public static final String TABLESELECT = " FROM Program p INNER JOIN p.users u";
-        public static final String ORDER_BY = " ORDER BY p.program_status ASC";
+    public static final String TABLESELECT = " FROM Program p INNER JOIN p.users u";
+    public static final String ORDER_BY = " ORDER BY p.program_status ASC";
 
-        // Program Name section
-        @Query(value = """
-                        SELECT p.program_id, p.program_name, p.program_status
-                        FROM workoutapp.programs p INNER JOIN workoutapp.users u ON p.user_id = u.id
-                        WHERE p.program_name = :program_name AND u.id = :id""", nativeQuery = true)
-        List<programDTO> findByProgramName(@Param("program_name") String program_name, @Param("id") Long id);
+    // Program Name section
+    @Query(value = """
+            SELECT p.program_id, p.program_name, p.program_status
+            FROM workoutapp.programs p INNER JOIN workoutapp.users u ON p.user_id = u.id
+            WHERE p.program_name = :program_name AND u.id = :id""", nativeQuery = true)
+    List<programDTO> findByProgramName(@Param("program_name") String program_name, @Param("id") Long id);
 
-        // Status section
-        @Query(value = "SELECT new com.workout_tracker_app.dto.programDTO(p.program_id, p.program_name, p.program_status)"
-                        + TABLESELECT
-                        + " WHERE p.program_status = :status AND u.id = :id" + ORDER_BY
-                        + " LIMIT 1")
-        programDTO findByActiveStatus(@Param("status") String status, @Param("id") Long id);
+    // Status section
+    @Query(value = "SELECT new com.workout_tracker_app.dto.programDTO(p.program_id, p.program_name, p.program_status)"
+            + TABLESELECT
+            + " WHERE p.program_status = :status AND u.id = :id" + ORDER_BY
+            + " LIMIT 1")
+    programDTO findByActiveStatus(@Param("status") String status, @Param("id") Long id);
 
-        @Query(value = """
-                        SELECT p.program_id, p.program_name, p.pstatus FROM workoutapp.programs p
-                        INNER JOIN workoutapp.users u ON p.user_id = u.id
-                        WHERE p.pstatus = :status AND u.id = :id""", nativeQuery = true)
-        List<programDTO> findByInactiveStatus(@Param("status") String status, @Param("id") Long id);
+    @Query(value = """
+            SELECT p.program_id, p.program_name, p.pstatus FROM workoutapp.programs p
+            INNER JOIN workoutapp.users u ON p.user_id = u.id
+            WHERE p.pstatus = :status AND u.id = :id""", nativeQuery = true)
+    List<programDTO> findByInactiveStatus(@Param("status") String status, @Param("id") Long id);
 
-        @Query(value = "SELECT new com.workout_tracker_app.dto.programDTO(p.program_id)"
-                        + TABLESELECT
-                        + " WHERE p.program_name = :program_name AND u.id = :id" + ORDER_BY)
-        programDTO findProgramId(@Param("program_name") String program_name, @Param("id") Long id);
+    @Query(value = "SELECT new com.workout_tracker_app.dto.programDTO(p.program_id)"
+            + TABLESELECT
+            + " WHERE p.program_name = :program_name AND u.id = :id" + ORDER_BY)
+    programDTO findProgramId(@Param("program_name") String program_name, @Param("id") Long id);
 
-        // ---------------------------------------------------------------------------------------------------------------------------------------------------
-        @Transactional
-        @Modifying
-        @Query(value = """
-                        UPDATE workoutapp.programs p SET program_name = :program_name
-                        FROM workoutapp.users u
-                        WHERE p.user_id = u.id AND p.program_id = :p_id AND u.id = :id""", nativeQuery = true)
-        Long updateProgramName(@Param("program_name") String program_name, @Param("p_id") Long p_id,
-                        @Param("id") Long id);
+    // ---------------------------------------------------------------------------------------------------------------------------------------------------
+    @Transactional
+    @Modifying
+    @Query(value = """
+            UPDATE workoutapp.programs p SET program_name = :program_name
+            FROM workoutapp.users u
+            WHERE p.user_id = u.id AND p.program_id = :p_id AND u.id = :id""", nativeQuery = true)
+    Long updateProgramName(@Param("program_name") String program_name, @Param("p_id") Long p_id,
+            @Param("id") Long id);
 
-        @Transactional
-        @Modifying
-        @Query(value = """
-                        UPDATE workoutapp.programs p
-                        SET pstatus = :pstatus
-                        FROM workoutapp.users u
-                        WHERE p.user_id = u.id AND p.program_id = :p_id AND u.id = :id""", nativeQuery = true)
-        Long updateProgramStatus(@Param("pstatus") String pstatus, @Param("p_id") Long p_id, @Param("id") Long id);
+    @Transactional
+    @Modifying
+    @Query(value = """
+            UPDATE workoutapp.programs p
+            SET pstatus = :pstatus
+            FROM workoutapp.users u
+            WHERE p.user_id = u.id AND p.program_id = :p_id AND u.id = :id""", nativeQuery = true)
+    Long updateProgramStatus(@Param("pstatus") String pstatus, @Param("p_id") Long p_id, @Param("id") Long id);
 
-        @Transactional
-        @Modifying
-        @Query(value = """
-                        INSERT INTO workoutapp.programs (program_name, user_id, pstatus)
-                        SELECT :program_name, u.id, 'inactive'
-                        FROM workoutapp.users u
-                        WHERE u.id = :userid
-                        RETURNING workoutapp.programs.program_id AS id""", nativeQuery = true)
-        Long insertProgram(@Param("program_name") String program_name, @Param("userid") Long userid);
+    @Transactional
+    @Modifying
+    @Query(value = """
+            INSERT INTO workoutapp.programs (program_name, user_id, pstatus)
+            SELECT :program_name, u.id, 'inactive'
+            FROM workoutapp.users u
+            WHERE u.id = :userid
+            RETURNING workoutapp.programs.program_id AS id""", nativeQuery = true)
+    Long insertProgram(@Param("program_name") String program_name, @Param("userid") Long userid);
 
-        @Transactional
-        @Modifying
-        @Query(value = """
-                        INSERT INTO workoutapp.programs (program_name, user_id, pstatus)
-                        SELECT :program_name, u.id, :status
-                        FROM workoutapp.users u
-                        WHERE u.id = :userid""", nativeQuery = true)
-        Long insertProgramH2(@Param("program_name") String program_name, @Param("userid") Long userid,
-                        @Param("status") String status);
+    @Transactional
+    @Modifying
+    @Query(value = """
+            INSERT INTO workoutapp.programs (program_name, user_id, pstatus)
+            SELECT :program_name, u.id, :status
+            FROM workoutapp.users u
+            WHERE u.id = :userid""", nativeQuery = true)
+    Long insertProgramH2(@Param("program_name") String program_name, @Param("userid") Long userid,
+            @Param("status") String status);
 
-        @Transactional
-        @Modifying
-        @Query(value = """
-                        DELETE FROM workoutapp.programs
-                        WHERE program_id = :program_id""", nativeQuery = true)
-        void deleteProgram(@Param("program_id") Long program_id);
+    @Transactional
+    @Modifying
+    @Query(value = """
+            DELETE FROM workoutapp.programs
+            WHERE program_id = :program_id""", nativeQuery = true)
+    void deleteProgram(@Param("program_id") Long program_id);
 
 }
