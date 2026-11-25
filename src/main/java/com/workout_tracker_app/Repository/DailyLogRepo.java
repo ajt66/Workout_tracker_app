@@ -191,23 +191,13 @@ public interface DailyLogRepo extends JpaRepository<DailyLog, Long> {
         List<AnalyzeDTO> WorkoutsTabCategoryQuery(@Param("month") int month, @Param("category") String category,
                         @Param("user_id") Long user_id);
 
-        @Query(value = """
-                        SELECT d.logging_date AS Dates, COALESCE(SUM(d.weights),0) AS Total_weight, COALESCE(SUM(d.sets),0) AS Total_sets,
-                        COALESCE(SUM(d.reps),0) AS Total_reps, COALESCE(SUM(d.weights * d.sets * d.reps),0) AS Total_volume
-                        FROM workoutapp.daily_log d JOIN workoutapp.exercise_list e ON d.exercise_id = e.exercise_id
-                        WHERE EXTRACT(MONTH FROM d.logging_date) = :month AND e.muscle_group = :muscle_group AND d.user_id = :user_id AND d.dstatus = 'completed'
-                        AND d.weights IS NOT NULL AND d.sets IS NOT NULL AND d.reps IS NOT NULL GROUP BY d.logging_date""", nativeQuery = true)
-        List<AnalyzeDTO> WorkoutsTabMuscleGroupQuery(@Param("month") int month,
-                        @Param("muscle_group") String muscle_group,
-                        @Param("user_id") Long user_id);
-
         // For breakdown page
         @Query(value = """
-                        SELECT DATE_TRUNC('month', d.logging_date)::date AS Dates, e.muscle_group AS name, COALESCE(SUM(d.weights), 0) AS Total_weight,
+                        SELECT DATE_TRUNC('month', d.logging_date)::date AS Dates, e.category AS name, COALESCE(SUM(d.weights), 0) AS Total_weight,
                         COALESCE(SUM(d.sets), 0) AS Total_sets, COALESCE(SUM(d.reps), 0) AS Total_reps, COALESCE(SUM(d.weights * d.sets * d.reps), 0) AS Total_volume
                         FROM workoutapp.daily_log d JOIN workoutapp.exercise_list e ON d.exercise_id = e.exercise_id
-                        WHERE EXTRACT(MONTH FROM d.logging_date) = :month AND d.user_id = :user_id AND d.dstatus = 'completed' AND e.muscle_group IS NOT NULL
-                        AND d.weights IS NOT NULL AND d.sets IS NOT NULL AND d.reps IS NOT NULL GROUP BY DATE_TRUNC('month', d.logging_date)::date, e.muscle_group""", nativeQuery = true)
+                        WHERE EXTRACT(MONTH FROM d.logging_date) = :month AND d.user_id = :user_id AND d.dstatus = 'completed' AND e.category IS NOT NULL
+                        AND d.weights IS NOT NULL AND d.sets IS NOT NULL AND d.reps IS NOT NULL GROUP BY DATE_TRUNC('month', d.logging_date)::date, e.category""", nativeQuery = true)
         List<AnalyzeDTO> BreakdownTabQuery(@Param("month") int month,
                         @Param("user_id") Long user_id);
 

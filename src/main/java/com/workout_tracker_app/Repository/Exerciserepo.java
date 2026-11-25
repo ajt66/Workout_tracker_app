@@ -36,14 +36,6 @@ public interface Exerciserepo extends JpaRepository<ExerciseList, Long> {
         @Query("SELECT e FROM ExerciseList e WHERE e.exercise_type IS NOT NULL")
         List<ExerciseList> findByAllType();
 
-        // Muscle-group section
-
-        @Query("SELECT e FROM ExerciseList e WHERE e.muscle_group = :muscleGroup")
-        List<ExerciseList> findByMuscleGroup(@Param("muscleGroup") String muscleGroup);
-
-        @Query("SELECT e FROM ExerciseList e WHERE e.muscle_group IS NOT NULL")
-        List<ExerciseList> findByAllMuscleGroup();
-
         // Id section
         @Query("SELECT e FROM ExerciseList e WHERE e.exercise_id = :exerciseId")
         Optional<ExerciseList> findByExerciseId(@Param("exerciseId") Long exerciseId);
@@ -54,10 +46,9 @@ public interface Exerciserepo extends JpaRepository<ExerciseList, Long> {
         @Transactional
         @Modifying
         @Query(value = """
-                        INSERT INTO workoutapp.exercise_list(exercise_name, etype, muscle_group, category)
-                        VALUES (:exercise_name, :etype, :muscle_group, :category)""", nativeQuery = true)
+                        INSERT INTO workoutapp.exercise_list(exercise_name, etype, category)
+                        VALUES (:exercise_name, :etype, :category)""", nativeQuery = true)
         void insertIntoExerciseList(@Param("exercise_name") String exercise_name,
-                        @Param("etype") String etype,
-                        @Param("muscle_group") String muscle_group, @Param("category") String category);
+                        @Param("etype") String etype, @Param("category") String category);
 
 }

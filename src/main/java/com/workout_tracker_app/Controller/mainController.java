@@ -519,17 +519,20 @@ public class mainController {
     @PostMapping(value = "/Programs/edit", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String showProgramsEdit(@ModelAttribute("Program") mapDTO map, Model model,
             @ModelAttribute("User_id") Long userid) {
+
+        Long progid = map.getProg_id();
+        String progname = map.getProg_name();
+
+        programrepo.updateProgramName(progname, progid, userid);
+
         for (Map.Entry<String, Boolean> dayEntry : map.getDaypair().entrySet()) {
             if (dayEntry.getValue().equals(true)) {
-                String duration, day = dayEntry.getKey(), progname = map.getProg_name(),
+                String duration, day = dayEntry.getKey(),
                         tag = map.getTagmap().get(dayEntry.getKey()).toString();
                 List<programDTO> EList = map.getMapdto().get(dayEntry.getKey());
                 List<programDTO> NList = map.getNewLogs().get(dayEntry.getKey());
-                Long progid = map.getProg_id();
                 Long exerid, log_id;
                 Integer sets, reps;
-
-                programrepo.updateProgramName(progname, progid, userid);
 
                 for (programDTO item : EList) {
                     exerid = exerciserepo.findByName(item.getExercise_name()).getExercise_id();
@@ -556,10 +559,11 @@ public class mainController {
             }
         }
 
+        if (progid.equals(getActiveProgramID())) {
+            setActiveProgramName(userid);
+            setActiveProgram(userid);
+        }
         resetProgEdit();
-        setActiveProgram(userid);
-        setActiveProgramName(userid);
-
         return "redirect:/api/main/Programs";
     }
 
@@ -668,12 +672,10 @@ public class mainController {
     @SuppressWarnings("null")
     @GetMapping("/Exercise")
     public String showExercise(@ModelAttribute("User_id") Long userid, Model model) {
-        Map<String, List<ExerciseList>> muscle = exerciserepo.findByAllMuscleGroup().stream()
-                .collect(Collectors.groupingBy(ExerciseList::getMuscle_group, LinkedHashMap::new, Collectors.toList()));
         Map<String, List<ExerciseList>> category = exerciserepo.findByAllCategory().stream()
                 .collect(Collectors.groupingBy(ExerciseList::getCategory, LinkedHashMap::new, Collectors.toList()));
 
-        Map<String, List<ExerciseList>> result = Stream.concat(muscle.entrySet().stream(), category.entrySet().stream())
+        Map<String, List<ExerciseList>> result = category.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (existing, replacement) -> {
                     existing.addAll(replacement);
@@ -689,27 +691,19 @@ public class mainController {
     @GetMapping("/Exercise/add")
     public String getMethodName(@RequestParam("type") String name, Model model) {
         model.addAttribute("user", getUser().get());
+        model.addAttribute("category", name);
+        // model.addAttribute("exercise",
+        // ExerciseList.builder().exercise_name(null).exercise_type("none")
+        // .category(name).build());
 
-        if (Arrays.asList("cardio", "flexibility", "isometrics").contains(name)) {
-            model.addAttribute("category", name);
-            model.addAttribute("exercise", ExerciseList.builder().exercise_name(null).exercise_type("none")
-                    .muscle_group("none").category(name).build());
+        return "fragments/popups/exercise-form :: category-form(category = ${category}, user = ${user})";
 
-            return "fragments/popups/exercise-form :: category-form(category = ${category}, user = ${user})"; // category=${category},
-        } else {
-            model.addAttribute("muscle", name);
-            model.addAttribute("exercise", ExerciseList.builder().exercise_name(null).exercise_type("none")
-                    .muscle_group(name).category("none").build());
-
-            return "fragments/popups/exercise-form :: muscle-form(muscle = ${muscle}, user = ${user})"; // muscle=${muscle},
-        }
     }
 
-    @PostMapping(path = "/Exercise", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(path = "/Exercise/add", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String showExercisePost(Model model, @RequestParam("exercise_name") String name,
-            @RequestParam("exercise_type") String type, @RequestParam("muscle_group") String muscle,
-            @RequestParam("category") String category) {
-        exerciserepo.insertIntoExerciseList(name, type, muscle, category);
+            @RequestParam("exercise_type") String type, @RequestParam("category") String category) {
+        exerciserepo.insertIntoExerciseList(name, type, category);
         return "redirect:/api/main/Exercise";
     }
 
@@ -756,12 +750,7 @@ public class mainController {
             @RequestParam(value = "workcategory") String workcategory,
             @RequestParam(value = "workfilter") String workfilter,
             Model model) {
-        if (workcategory.equals("cardio") || workcategory.equals("isometrics") || workcategory.equals("flexibility")) {
-            model.addAttribute("error", true);
-            model.addAttribute("workfilter", workfilter);
-            model.addAttribute("pwl", List.of());
-            model.addAttribute("pwd", List.of());
-        } else if (workcategory.equals("none")) {
+        if (workcategory.equals("none")) {
             List<AnalyzeDTO> noneList = dLogRepo.WorkoutsTabPlainQuery(8, userid);
 
             switch (workfilter) {
@@ -789,13 +778,12 @@ public class mainController {
             }
 
             model.addAttribute("workfilter", workfilter);
-            model.addAttribute("error", false);
             model.addAttribute("pwl", noneList.stream().filter(item -> item.getDates() != null)
                     .map(item -> item.getDates().format(DateTimeFormatter.ofPattern("dd MM yyyy")))
                     .collect(Collectors.toList()));
 
         } else {
-            List<AnalyzeDTO> nameList = dLogRepo.WorkoutsTabMuscleGroupQuery(8, workcategory, userid);
+            List<AnalyzeDTO> nameList = dLogRepo.WorkoutsTabCategoryQuery(8, workcategory, userid);
 
             switch (workfilter) {
                 case "volume":
@@ -822,7 +810,6 @@ public class mainController {
             }
 
             model.addAttribute("workfilter", workfilter);
-            model.addAttribute("error", false);
             model.addAttribute("pwl", nameList.stream().filter(item -> item.getDates() != null)
                     .map(item -> item.getDates().format(DateTimeFormatter.ofPattern("dd MM yyyy")))
                     .collect(Collectors.toList()));

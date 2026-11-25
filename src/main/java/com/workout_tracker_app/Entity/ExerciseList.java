@@ -32,7 +32,7 @@ public class ExerciseList {
     }
 
     public enum exercise_category {
-        cardio, strength, flexibility, hypertrophy, isometrics, hypertrophyorstrength, none
+        abs, back, biceps, cardio, chest, forearms, flexibility, isometrics, legs, shoulders, triceps, none
     }
 
     @Id
@@ -45,21 +45,21 @@ public class ExerciseList {
     @Column(name = "etype", nullable = true)
     private String exercise_type; // Type: compound or isolation
 
-    @Column(name = "muscle_group", nullable = true)
-    private String muscle_group; // Related muscle group of exercise.
-
     @Column(name = "category", nullable = false)
     private String category; // cardio, strength, flexibility
 
-    /*@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private User users;*/
+    /*
+     * @ManyToOne(fetch = FetchType.LAZY)
+     * 
+     * @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+     * 
+     * @OnDelete(action = OnDeleteAction.CASCADE)
+     * private User users;
+     */
 
-    public ExerciseList(String exercise_name, String exercise_type, String muscle_group, String category) {
+    public ExerciseList(String exercise_name, String exercise_type, String category) {
         this.exercise_name = exercise_name;
         this.exercise_type = exercise_type;
-        this.muscle_group = muscle_group;
         this.category = category;
     }
 }
