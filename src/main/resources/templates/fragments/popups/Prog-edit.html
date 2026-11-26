@@ -2,7 +2,12 @@
     <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
     <form class="form-group" th:action="@{/api/main/Programs/edit}" th:object="${Program}" method="post">
         <h2 class="focus">Program Edit:</h2>
+
         <p>Click on an item/element you want to change and enter the value</p><br>
+
+        <p>(Note: When inputting the name of exercises, please select options presented in the datalist popup. Inputting
+            exercises not available in the popup will cause an error.)</p><br>
+
         <div>
             <label for="curProg">Program Name:</label>
             <input type="text" th:field="*{prog_name}">
@@ -94,6 +99,10 @@
     <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
     <form class="form-group" th:action="@{/api/main/Programs/Add}" th:object="${dto}" method="post">
         <h2 class="focus">Add Program:</h2>
+
+        <p>(Note: When inputting the name of exercises, please select options presented in the datalist popup. Inputting
+            exercises not available in the popup will cause an error.)</p><br>
+
         <div>
             <label for="progname">Enter program name:</label>
             <input type="text" id="progname" th:field="*{prog_name}">

@@ -2,7 +2,12 @@
     <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
     <form class="form-group" th:action="@{/api/main/Logs/edit}" th:object="${Program}" method="post">
         <h2>Current Program Edit:</h2>
+
         <p>Click on an item/element you want to change and enter the value</p><br>
+
+        <p>(Note: When inputting the name of exercises, please select options presented in the datalist popup. Inputting
+            exercises not available in the popup will cause an error.)</p><br>
+
         <input type="hidden" th:field="*{date}">
         <input type="hidden" th:field="*{day}">
 

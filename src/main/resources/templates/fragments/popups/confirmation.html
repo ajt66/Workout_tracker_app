@@ -2,9 +2,15 @@
     <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
     <form class="form-group" th:action="@{/api/main/Programs/switch}" method="post">
         <h2>Program Switch Confirmation:</h2>
+
         <p>Are you sure you want to switch from <span th:text="${cprog}"></span> to <span th:text="${nprog}"></span>?
         </p><br>
+
         <input type="hidden" class="hidden-name" th:id="switch-id" th:name="id" th:value="${switchId}">
+
+        <p>(Caution: Switching programs constantly will cause the app to bugout and not display the programs correctly.
+            Try to not switch more than 3 or 4 times)</p><br>
+
         <button class="program-button" type="submit">Switch</button>
         <button class="program-button" type="button"><a th:href="@{/api/main/Programs}">Cancel</a></button>
     </form>
@@ -14,8 +20,11 @@
     <span onclick="this.parentElement.style.display='none'" class="closebtn">&times</span>
     <form class="form-group" th:action="@{/api/main/Programs/delete}" method="post">
         <h2>Program deletion Confirmation:</h2>
+
         <p>Are you sure you want to delete <span th:text="${nprog + ':' + deleteId}"></span>?</p><br>
+
         <input type="hidden" class="hidden-name" th:id="delete-id" th:name="id" th:value="${deleteId}">
+
         <button class="program-button" type="submit">Delete</button>
         <button class="program-button" type="button"><a th:href="@{/api/main/Programs}">Cancel</a></button>
     </form>
